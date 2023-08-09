@@ -58,7 +58,7 @@ char *_strcpy(char *dest, const char *src)
 char *_strdup(const char *str)
 {
 	size_t len = _strlen(str);
-	char *copy = malloc(len + 1);
+	char *copy = (char *)malloc(len + 1);
 		if (copy)
 	{
 		_strcpy(copy, str);

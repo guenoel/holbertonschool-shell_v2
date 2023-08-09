@@ -28,11 +28,12 @@ void run_shell_loop(void)
 		if (num_args == 0)
 		{
 			free(input);
+			free_args(args);
 			continue; /*Empty line*/
 		}
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
-			shell_exit(args);
+			break;
 		}
 		else if (_sstrcmp(args[0], "cd") == 0)
 		{
@@ -54,10 +55,14 @@ void run_shell_loop(void)
 		{
 			execute_command(args);
 		}
-		free(input);
+
 		if (!isatty(STDIN_FILENO))
 		{
 			break;
 		}
+		free(input);
+		free_args(args);
 	}
+	free(input);
+	free_args(args);
 }
