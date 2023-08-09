@@ -16,7 +16,7 @@ int shell_cd(char *args[])
 			perror("cd");
 		}
 	}
-	return 1;
+	return (1);
 }
 
 int shell_exit(char *args[])
@@ -29,12 +29,12 @@ int shell_env(char *args[])
 {
 	UNUSED(args);
 	char **env = environ;
-	while (*env)
+		while (*env)
 	{
 		printf("%s\n", *env);
 		env++;
 	}
-	return 1;
+	return (1);
 }
 
 int shell_unsetenv(char *args[])
@@ -46,7 +46,7 @@ int shell_unsetenv(char *args[])
 			perror("unsetenv");
 		}
 	}
-	return 1;
+	return (1);
 }
 
 int shell_setenv(char *args[])
@@ -58,7 +58,7 @@ int shell_setenv(char *args[])
 			perror("setenv");
 		}
 	}
-	return 1;
+	return (1);
 }
 
 void free_args(char *args[])

@@ -1,7 +1,7 @@
 #include "shell.h"
 
-int main()
+int main(void)
 {
 	run_shell_loop();
-	return 0;
+	return (0);
 }

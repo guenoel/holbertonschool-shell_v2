@@ -9,7 +9,7 @@ pid_t pid = fork();
 if (pid == 0)
 {
 	char *env[] = {NULL};
-	if (access(args[0], X_OK) == 0)
+		if (access(args[0], X_OK) == 0)
 	{
 		execve(args[0], args, env);
 		perror("Error executing command");
@@ -18,9 +18,10 @@ if (pid == 0)
 	char *path = _getenv("PATH");
 	char *path_copy = _strdup(path);
 	char *dir = strtok(path_copy, ":");
-	while (dir != NULL) {
+		while (dir != NULL)
+	{
 		char executable_path[MAX_INPUT_LENGTH];
-		snprintf(executable_path, sizeof(executable_path), "%s/%s", dir, args[0]);
+			snprintf(executable_path, sizeof(executable_path), "%s/%s", dir, args[0]);
 		if (access(executable_path, X_OK) == 0)
 		{
 			execve(executable_path, args, env);
