@@ -27,9 +27,9 @@ int shell_exit(char *args[])
 
 int shell_env(char *args[])
 {
-	UNUSED(args);
 	char **env = environ;
-		while (*env)
+	UNUSED(args);
+	while (*env)
 	{
 		printf("%s\n", *env);
 		env++;
