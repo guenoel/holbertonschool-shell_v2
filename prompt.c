@@ -1,12 +1,12 @@
-	#include "shell.h"
+#include "shell.h"
 
-	char *read_input()
-	{
-	char *line = NULL;
-	size_t bufsize = MAX_INPUT_LENGTH;
-		getline(&line, &bufsize, stdin);
-	return (line);
-	}
+char *read_input()
+{
+char *line = NULL;
+size_t bufsize = MAX_INPUT_LENGTH;
+	getline(&line, &bufsize, stdin);
+return (line);
+}
 
 void run_shell_loop(void)
 {
@@ -27,9 +27,13 @@ void run_shell_loop(void)
 		num_args = tokenize_input(input, args);
 		if (num_args == 0)
 		{
-			free(input);
-			free_args(args);
-			continue; /*Empty line*/
+			if (isatty(STDIN_FILENO))
+			{
+				free(input);
+				free_args(args);
+				continue; /*Empty line*/
+			} else
+				break;
 		}
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
@@ -54,11 +58,6 @@ void run_shell_loop(void)
 		else
 		{
 			execute_command(args);
-		}
-
-		if (!isatty(STDIN_FILENO))
-		{
-			break;
 		}
 		free(input);
 		free_args(args);
