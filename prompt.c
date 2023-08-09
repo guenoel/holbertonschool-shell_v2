@@ -55,4 +55,3 @@ void run_shell_loop(void)
 		free(input);
 	}
 }
-
