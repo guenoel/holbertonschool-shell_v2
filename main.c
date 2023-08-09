@@ -2,6 +2,8 @@
 
 int main(int argc, char *argv[])
 {
+	char *args[MAX_ARGS];
+
 	if (argc == 1)
 	{
 		run_shell_loop();
@@ -16,7 +18,6 @@ int main(int argc, char *argv[])
 			while (fgets(line, sizeof(line), input_file))
 			{
 				printf("$ %s", line);
-				char *args[MAX_ARGS];
 				tokenize_input(line, args);
 			}
 			fclose(input_file);
