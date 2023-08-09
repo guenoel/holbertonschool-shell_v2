@@ -13,34 +13,43 @@ void run_shell_loop() {
 	char *args[MAX_ARGS];
 	int num_args;
 
-	while (1) {
+	while (1)
+	{
 		printf("$ ");
 		input = read_input();
-		if (input == NULL) {
+		if (input == NULL)
+		{
 			printf("\n");
 			break; // Ctrl+D or EOF
 		}
 		num_args = tokenize_input(input, args);
-		if (num_args == 0) {
+		if (num_args == 0)
+		{
 			free(input);
 			continue; // Empty line
 		}
-		if (strcmp(args[0], "exit") == 0) {
+		if (strcmp(args[0], "exit") == 0)
+		{
 			shell_exit(args);
 		}
-		else if (strcmp(args[0], "cd") == 0) {
+		else if (strcmp(args[0], "cd") == 0)
+		{
 			shell_cd(args);
 		}
-		else if (strcmp(args[0], "env") == 0) {
+		else if (strcmp(args[0], "env") == 0)
+		{
 			shell_env(args);
 		}
-		else if (strcmp(args[0], "setenv") == 0) {
+		else if (strcmp(args[0], "setenv") == 0)
+		{
 			shell_setenv(args);
 		}
-		else if (strcmp(args[0], "unsetenv") == 0) {
+		else if (strcmp(args[0], "unsetenv") == 0)
+		{
 			shell_unsetenv(args);
 		}
-		else {
+		else
+		{
 			execute_command(args);
 		}
 		free(input);
