@@ -98,9 +98,10 @@ void print_error(const char *message)
 
 char *_getenv(const char *name)
 {
+	char **env = NULL;
 	size_t name_len = _strlen(name);
 
-	for (char **env = environ; *env != NULL; env++)
+	for (env = environ; *env != NULL; env++)
 	{
 		if (_strncmp(*env, name, name_len) == 0 && (*env)[name_len] == '=')
 		{
