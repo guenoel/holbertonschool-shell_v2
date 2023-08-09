@@ -1,0 +1,29 @@
+#ifndef SHELL_H
+#define SHELL_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#define MAX_INPUT_LENGTH 1024
+#define MAX_ARGS 64
+
+extern char **environ;
+
+int tokenize_input(char *input, char *args[]);
+void execute_command(char *args[]);
+void run_shell_loop();
+
+int shell_cd(char *args[]);
+int shell_exit(char *args[]);
+int shell_env(char *args[]);
+int shell_setenv(char *args[]);
+int shell_unsetenv(char *args[]);
+
+void print_error(const char *message);
+
+char *read_input();
+void free_args(char *args[]);
+
+#endif /* SHELL_H */
