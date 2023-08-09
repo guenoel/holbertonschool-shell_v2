@@ -9,7 +9,6 @@ int tokenize_input(char *input, char *args[])
 	while (token != NULL)
 	{
 		args[i] = _strdup(token); /* Duplicar el token*/
-		token = NULL;
 		token = strtok(NULL, " \t\n");
 		i++;
 	}

@@ -3,8 +3,11 @@
 char *read_input()
 {
 char *line = NULL;
+size_t char_read = 0;
 size_t bufsize = MAX_INPUT_LENGTH;
-	getline(&line, &bufsize, stdin);
+char_read = getline(&line, &bufsize, stdin);
+if (char_read == 0)
+	line[0] = '\0';
 return (line);
 }
 
