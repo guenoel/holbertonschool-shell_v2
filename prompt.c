@@ -18,7 +18,6 @@ void run_shell_loop(void)
 		if (isatty(STDIN_FILENO)) {
 			printf("$ "); /* Solo mostramos el prompt en modo interactivo */
 		}
-
 		input = read_input();
 		if (input == NULL)
 		{
@@ -56,5 +55,9 @@ void run_shell_loop(void)
 			execute_command(args);
 		}
 		free(input);
+		if (!isatty(STDIN_FILENO))
+		{
+			break;
+		}
 	}
 }
