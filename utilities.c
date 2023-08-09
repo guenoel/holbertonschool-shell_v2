@@ -98,7 +98,6 @@ void print_error(const char *message)
 
 char *_getenv(const char *name)
 {
-	extern char **environ;
 	size_t name_len = _strlen(name);
 
 	for (char **env = environ; *env != NULL; env++)
