@@ -6,7 +6,7 @@ int tokenize_input(char *input, char *args[])
 	char *token = strtok(input, " \t\n");
 	while (token != NULL)
 	{
-		args[i] = strdup(token); // Duplicar el token
+		args[i] = _strdup(token); /* Duplicar el token*/
 		token = strtok(NULL, " \t\n");
 		i++;
 	}

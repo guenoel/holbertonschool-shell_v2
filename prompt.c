@@ -28,23 +28,23 @@ void run_shell_loop() {
 			free(input);
 			continue; // Empty line
 		}
-		if (strcmp(args[0], "exit") == 0)
+		if (_sstrcmp(args[0], "exit") == 0)
 		{
 			shell_exit(args);
 		}
-		else if (strcmp(args[0], "cd") == 0)
+		else if (_sstrcmp(args[0], "cd") == 0)
 		{
 			shell_cd(args);
 		}
-		else if (strcmp(args[0], "env") == 0)
+		else if (_sstrcmp(args[0], "env") == 0)
 		{
 			shell_env(args);
 		}
-		else if (strcmp(args[0], "setenv") == 0)
+		else if (_sstrcmp(args[0], "setenv") == 0)
 		{
 			shell_setenv(args);
 		}
-		else if (strcmp(args[0], "unsetenv") == 0)
+		else if (_sstrcmp(args[0], "unsetenv") == 0)
 		{
 			shell_unsetenv(args);
 		}

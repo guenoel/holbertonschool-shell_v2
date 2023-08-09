@@ -7,7 +7,7 @@ int shell_cd(char *args[])
 {
 	if (args[1] == NULL)
 	{
-		chdir(getenv("HOME"));
+		chdir(_getenv("HOME"));
 	}
 	else
 	{

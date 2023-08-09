@@ -23,6 +23,14 @@ int shell_unsetenv(char *args[]);
 
 void print_error(const char *message);
 
+char *_getenv(const char *name);
+char *_strdup(const char *str);
+size_t _strlen(const char *str);
+char *_strcpy(char *dest, const char *src);
+int _strncmp(const char *s1, const char *s2, size_t n);
+int _sstrcmp(const char *s1, const char *s2);
+
+
 char *read_input();
 void free_args(char *args[]);
 

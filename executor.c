@@ -15,8 +15,8 @@ if (pid == 0)
 		perror("Error executing command");
 		exit(EXIT_FAILURE);
 	}
-	char *path = getenv("PATH");
-	char *path_copy = strdup(path);
+	char *path = _getenv("PATH");
+	char *path_copy = _strdup(path);
 	char *dir = strtok(path_copy, ":");
 	while (dir != NULL) {
 		char executable_path[MAX_INPUT_LENGTH];
