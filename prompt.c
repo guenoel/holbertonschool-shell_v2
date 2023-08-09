@@ -10,9 +10,10 @@ return (line);
 
 void run_shell_loop(void)
 {
-	char *input;
-	char *args[MAX_ARGS];
-	int num_args;
+	char *input = NULL;
+	char *args[MAX_ARGS] = {NULL};
+	int num_args = 0;
+
 	while (1)
 	{
 		if (isatty(STDIN_FILENO)) {
