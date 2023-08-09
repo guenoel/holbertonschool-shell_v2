@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -pedantic
 SRCS = main.c prompt.c tokenizer.c executor.c builtin.c utilities.c
 OBJS = $(SRCS:.c=.o)
 TARGET = hsh
