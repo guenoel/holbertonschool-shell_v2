@@ -13,7 +13,7 @@ extern char **environ;
 
 int tokenize_input(char *input, char *args[]);
 void execute_command(char *args[]);
-void run_shell_loop();
+void run_shell_loop(void);
 
 int shell_cd(char *args[]);
 int shell_exit(char *args[]);

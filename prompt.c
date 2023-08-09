@@ -4,29 +4,29 @@
 	{
 	char *line = NULL;
 	size_t bufsize = 0;
-	getline(&line, &bufsize, stdin);
-	return line;
+		getline(&line, &bufsize, stdin);
+	return (line);
 	}
 
-void run_shell_loop() {
+void run_shell_loop(void)
+{
 	char *input;
 	char *args[MAX_ARGS];
 	int num_args;
-
-	while (1)
+		while (1)
 	{
 		printf("$ ");
 		input = read_input();
 		if (input == NULL)
 		{
 			printf("\n");
-			break; // Ctrl+D or EOF
+			break; /*Ctrl+D or EOF*/
 		}
 		num_args = tokenize_input(input, args);
 		if (num_args == 0)
 		{
 			free(input);
-			continue; // Empty line
+			continue; /*Empty line*/
 		}
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
