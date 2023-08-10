@@ -10,26 +10,33 @@
 
 void run_shell_loop(void)
 {
-	char *input;
-	char *args[MAX_ARGS];
-	int num_args;
-	while (1)
-	{
+	char *input = NULL;
+	char *args[MAX_ARGS] = {NULL};
+	int num_args = 0;
+
+    while (1)
+        {
 		if (isatty(STDIN_FILENO)) {
-			printf("$ "); /* Solo mostramos el prompt en modo interactivo */
+				printf("$ "); /* Solo mostramos el prompt en modo interactivo */
 		}
 		input = read_input();
 		if (input == NULL)
 		{
-			printf("\n");
-			break; /* Ctrl+D or EOF */
+				printf("\n");
+				break; /* Ctrl+D or EOF */
 		}
 		num_args = tokenize_input(input, args);
 		if (num_args == 0)
 		{
-			free(input);
-			free_args(args);
-			continue; /*Empty line*/
+				if (isatty(STDIN_FILENO))
+				{
+						free(input);
+						free_args(args);
+						continue; /*Empty line*/
+		} else {
+			/*printf("num_args à 0\n");*/
+			break;
+		}
 		}
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
@@ -54,11 +61,6 @@ void run_shell_loop(void)
 		else
 		{
 			execute_command(args);
-		}
-
-		if (!isatty(STDIN_FILENO))
-		{
-			break;
 		}
 		free(input);
 		free_args(args);
