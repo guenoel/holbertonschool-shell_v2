@@ -19,7 +19,7 @@ void execute_command(char *args[])
 			perror("Error executing command");
 			exit(EXIT_FAILURE);
 		}
-		
+
 			while (dir != NULL)
 		{
 			char executable_path[MAX_INPUT_LENGTH];
@@ -33,8 +33,8 @@ void execute_command(char *args[])
 			dir = strtok(NULL, ":");
 		}
 		free(path_copy);
-		print_error("Command not found");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
+		exit(127);
 	}
 	else if (pid < 0)
 	{
