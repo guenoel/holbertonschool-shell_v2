@@ -7,8 +7,8 @@ char *line = NULL;
 int char_read = 0;
 size_t bufsize = MAX_INPUT_LENGTH;
 char_read = getline(&line, &bufsize, stdin);
-printf("DEBUG: line: %p\n", line);
-printf("DEBUG: char: %d\n", char_read);
+/*printf("DEBUG: line: %p\n", line);*/
+/*printf("DEBUG: char: %d\n", char_read);*/
  if (char_read == 0)
 {
         ;
@@ -43,7 +43,7 @@ void run_shell_loop(void)
 							free_args(args);
 							continue; /*Empty line*/
 			} else {
-				printf("num_args à 0\n");
+				/*printf("num_args à 0\n");*/
 				break;
 			}
 		}
