@@ -1,36 +1,47 @@
-	#include "shell.h"
+#include "shell.h"
 
-	char *read_input()
-	{
-	char *line = NULL;
-	size_t bufsize = 0;
-		getline(&line, &bufsize, stdin);
-	return (line);
-	}
+char *read_input()
+{
+char *line = NULL;
+size_t char_read = 0;
+size_t bufsize = MAX_INPUT_LENGTH;
+char_read = getline(&line, &bufsize, stdin);
+if (char_read == 0)
+	line[0] = '\0';
+return (line);
+}
 
 void run_shell_loop(void)
 {
-	char *input;
-	char *args[MAX_ARGS];
-	int num_args;
-		while (1)
+	char *input = NULL;
+	char *args[MAX_ARGS] = {NULL};
+	int num_args = 0;
+
+	while (1)
 	{
-		printf("$ ");
+		if (isatty(STDIN_FILENO)) {
+			printf("$ "); /* Solo mostramos el prompt en modo interactivo */
+		}
 		input = read_input();
 		if (input == NULL)
 		{
 			printf("\n");
-			break; /*Ctrl+D or EOF*/
+			break; /* Ctrl+D or EOF */
 		}
 		num_args = tokenize_input(input, args);
 		if (num_args == 0)
 		{
-			free(input);
-			continue; /*Empty line*/
+			if (isatty(STDIN_FILENO))
+			{
+				free(input);
+				free_args(args);
+				continue; /*Empty line*/
+			} else
+				break;
 		}
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
-			shell_exit(args);
+			break;
 		}
 		else if (_sstrcmp(args[0], "cd") == 0)
 		{
@@ -53,6 +64,8 @@ void run_shell_loop(void)
 			execute_command(args);
 		}
 		free(input);
+		free_args(args);
 	}
+	free(input);
+	free_args(args);
 }
-

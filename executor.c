@@ -42,6 +42,7 @@ void execute_command(char *args[])
 	}
 	else
 	{
+		free(path_copy);
 		wait(NULL);
 	}
 }
