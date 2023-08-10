@@ -26,6 +26,7 @@ void run_shell_loop(void)
 		input = read_input();
 		if (input == NULL)
 		{
+			printf("input null\n");
 			printf("\n");
 			break; /* Ctrl+D or EOF */
 		}
@@ -37,8 +38,10 @@ void run_shell_loop(void)
 				free(input);
 				free_args(args);
 				continue; /*Empty line*/
-			} else
+			} else {
+				printf("num_args à 0\n");
 				break;
+			}
 		}
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
