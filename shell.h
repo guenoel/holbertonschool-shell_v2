@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <locale.h>
 
 #define MAX_INPUT_LENGTH 1024
 #define MAX_ARGS 64
@@ -12,7 +13,7 @@
 extern char **environ;
 
 int tokenize_input(char *input, char *args[]);
-void execute_command(char *args[]);
+void execute_command(char *args[], int line_number);
 void run_shell_loop(void);
 
 int shell_cd(char *args[]);
@@ -29,7 +30,7 @@ size_t _strlen(const char *str);
 char *_strcpy(char *dest, const char *src);
 int _strncmp(const char *s1, const char *s2, size_t n);
 int _sstrcmp(const char *s1, const char *s2);
-
+int compare_data(const void *a, const void *b);
 
 char *read_input();
 void free_args(char *args[]);

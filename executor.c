@@ -3,7 +3,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-void execute_command(char *args[])
+void execute_command(char *args[], int line_number)
 {
 	char *path = _getenv("PATH");
 	char *path_copy = _strdup(path);
@@ -33,7 +33,7 @@ void execute_command(char *args[])
 			dir = strtok(NULL, ":");
 		}
 		free(path_copy);
-		fprintf(stderr, "./hsh: 1: %s: not found\n", args[0]);
+		fprintf(stderr, "./hsh: %d: %s: not found\n", line_number, args[0]);
 		exit(127);
 	}
 	else if (pid < 0)

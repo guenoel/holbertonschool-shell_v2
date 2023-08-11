@@ -13,8 +13,11 @@ void run_shell_loop(void)
 	char *input;
 	char *args[MAX_ARGS];
 	int num_args;
+	int line_number = 0;
+
 	while (1)
 	{
+		line_number++;
 		if (isatty(STDIN_FILENO)) {
 			printf("$ "); /* Solo mostramos el prompt en modo interactivo */
 		}
@@ -53,8 +56,9 @@ void run_shell_loop(void)
 		}
 		else
 		{
-			execute_command(args);
+			execute_command(args, line_number);
 		}
+
 		if (!isatty(STDIN_FILENO))
 		{
 			break;
@@ -65,4 +69,3 @@ void run_shell_loop(void)
 	free(input);
 	free_args(args);
 }
-
