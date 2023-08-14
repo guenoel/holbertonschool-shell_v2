@@ -10,13 +10,15 @@ void execute_command(char *args[], int line_number)
 	char *dir = strtok(path_copy, ":");*/
 	Env_t *PATH = NULL;
 	Env_l_t *env_lists = load_env(environ);
+	pid_t pid;
+
 	while(strcmp(env_lists->name, "PATH"))
 	{
 		env_lists = env_lists->next;
 	}
 	PATH = env_lists->list;
 
-	pid_t pid = fork();
+	pid = fork();
 	if (pid == 0)
 	{
 		char *env[] = {NULL};

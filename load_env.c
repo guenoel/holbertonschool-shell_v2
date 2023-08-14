@@ -5,7 +5,7 @@ Env_t *add_node(Env_t *list, char *value)
 	Env_t *new_node = (Env_t *)malloc(sizeof(Env_t));
 	if (new_node != NULL) {
 		new_node->value = strdup(value);
-		// Store the value separated by ';' in the same Env_Node
+		/* Store the value separated by ';' in the same Env_Node */
 		new_node->next = list;
 		list = new_node;
 	}
