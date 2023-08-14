@@ -5,13 +5,16 @@
 
 void execute_command(char *args[], int line_number)
 {
-	//char *path = _getenv("PATH");
-	//char *path_copy = _strdup(path);
-	//char *dir = strtok(path_copy, ":");
+	/*char *path = _getenv("PATH");
+	char *path_copy = _strdup(path);
+	char *dir = strtok(path_copy, ":");*/
+	Env_t *PATH = NULL;
 	Env_l_t *env_lists = load_env(environ);
 	while(strcmp(env_lists->name, "PATH"))
+	{
 		env_lists = env_lists->next;
-	Env_t *PATH = env_lists->list;
+	}
+	PATH = env_lists->list;
 
 	pid_t pid = fork();
 	if (pid == 0)

@@ -46,24 +46,24 @@ int shell_env(char *args[])
 		env++;
 	}
 
-	// /*test for load_env function*/
-	// Env_l_t *env_lists = load_env(environ);
+	/*test for load_env function
+	Env_l_t *env_lists = load_env(environ);
 
-	// Env_l_t *current_list = env_lists;
-    // while (current_list != NULL) 
-	// {
-    //     printf("Variable: %s\n", current_list->name);
+	Env_l_t *current_list = env_lists;
+    while (current_list != NULL) 
+	{
+        printf("Variable: %s\n", current_list->name);
 
-    //     Env_t *current = current_list->list;
-    //     while (current != NULL) {
-    //         printf("Value: %s\n", current->value);
-    //         current = current->next;
-    //     }
+        Env_t *current = current_list->list;
+        while (current != NULL) {
+            printf("Value: %s\n", current->value);
+            current = current->next;
+        }
 
-    //     current_list = current_list->next;
-    // }
-	// free_list_list(env_lists);
-	// /*end of test*/
+        current_list = current_list->next;
+    }
+	free_list_list(env_lists);
+	end of test*/
 
 	return (1);
 }
