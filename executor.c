@@ -39,10 +39,10 @@ void execute_command(char *args[], int line_number)
 				perror("Error executing command");
 				exit(EXIT_FAILURE);
 			}
-			//dir = strtok(NULL, ":");
+			/*dir = strtok(NULL, ":");*/
 			PATH = PATH->next;
 		}
-		//free(path_copy);
+		/*free(path_copy);*/
 		fprintf(stderr, "./hsh: %d: %s: not found\n", line_number, args[0]);
 		exit(127);
 	}
@@ -52,7 +52,7 @@ void execute_command(char *args[], int line_number)
 	}
 	else
 	{
-		//free(path_copy);
+		/*free(path_copy);*/
 		wait(NULL);
 	}
 
