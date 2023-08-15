@@ -2,36 +2,32 @@
 
 int main(int argc, char *argv[])
 {
-	char *args[MAX_ARGS]; /* Arreglo de punteros a caracteres para almacenar los tokens */
+	char *args[MAX_ARGS];
 
 	if (argc == 1)
 	{
-		/* Modo interactivo */
-		run_shell_loop(); /* Llamar a la función para ejecutar el bucle de la shell */
+		run_shell_loop();
 	}
 	else
 	{
-		/* Modo no interactivo */
-		FILE *input_file = fopen(argv[1], "r"); /* Abrir el archivo de entrada en modo lectura */
-
+		printf("modo no interactivo in main\n");
+		/* // Modo no interactivo*/
+		FILE *input_file = fopen(argv[1], "r");
 		if (input_file)
 		{
-			char line[MAX_INPUT_LENGTH]; /* Almacenar una línea leída del archivo */
-
-			while (fgets(line, sizeof(line), input_file)) /* Leer líneas del archivo */
+			char line[MAX_INPUT_LENGTH];
+			while (fgets(line, sizeof(line), input_file))
 			{
-				printf("$ %s", line); /* Mostrar el indicador de línea y la línea leída */
-				tokenize_input(line, args); /* Tokenizar la línea leída y almacenar los tokens en args */
+				printf("$ %s", line);
+				tokenize_input(line, args);
 			}
-
-			fclose(input_file); /* Cerrar el archivo de entrada */
+			fclose(input_file);
 		}
 		else
 		{
-			perror("Error opening input file"); /* Mostrar mensaje de error si no se puede abrir el archivo */
-			return (1); /* Salir con código de error */
+			perror("Error opening input file");
+			return (1);
 		}
 	}
-
-	return (0); /* Salir con éxito */
+	return (0);
 }
