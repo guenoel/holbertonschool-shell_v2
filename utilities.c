@@ -118,48 +118,49 @@ char *_getenv(const char *name)
 
 int _setenv(const char *name, const char *value)
 {
-    // Verificar si la variable de entorno ya existe
-    if (_getenv(name) != NULL)
-    {
-        // Crear una nueva cadena en memoria y asignarle el valor
-        char *new_var = malloc(strlen(name) + strlen(value) + 2); // +2 para el igual y el terminador nulo
-        if (new_var == NULL)
-        {
-            perror("_setenv");
-            return -1;
-        }
+	int result = 0;
+	/* Verificar si la variable de entorno ya existe */
+	if (_getenv(name) != NULL)
+	{
+		/* Crear una nueva cadena en memoria y asignarle el valor */
+		char *new_var = malloc(strlen(name) + strlen(value) + 2); /* +2 para el igual y el terminador nulo */
+		if (new_var == NULL)
+		{
+			perror("_setenv");
+			return -1;
+		}
 
-        sprintf(new_var, "%s=%s", name, value);
+		sprintf(new_var, "%s=%s", name, value);
 
-        // Reemplazar la variable de entorno
-        int result = putenv(new_var);
-        if (result != 0)
-        {
-            perror("_setenv");
-            free(new_var); // Liberar la memoria si no se pudo establecer la variable
-            return -1;
-        }
-    }
-    else
-    {
-        // Crear una nueva cadena en memoria y asignarle el nombre y el valor
-        char *new_var = malloc(strlen(name) + strlen(value) + 2); // +2 para el igual y el terminador nulo
-        if (new_var == NULL)
-        {
-            perror("_setenv");
-            return -1;
-        }
+		/* Reemplazar la variable de entorno */
+		result = putenv(new_var);
+		if (result != 0)
+		{
+			perror("_setenv");
+			free(new_var); /* Liberar la memoria si no se pudo establecer la variable */
+			return -1;
+		}
+	}
+	else
+	{
+		/* Crear una nueva cadena en memoria y asignarle el nombre y el valor */
+		char *new_var = malloc(strlen(name) + strlen(value) + 2); /* +2 para el igual y el terminador nulo */
+		if (new_var == NULL)
+		{
+			perror("_setenv");
+			return -1;
+		}
 
-        sprintf(new_var, "%s=%s", name, value);
+		sprintf(new_var, "%s=%s", name, value);
 
-        // Agregar la nueva variable al arreglo de variables de entorno
-        if (putenv(new_var) != 0)
-        {
-            perror("_setenv");
-            free(new_var); // Liberar la memoria si no se pudo establecer la variable
-            return -1;
-        }
-    }
+		/* Agregar la nueva variable al arreglo de variables de entorno */
+		if (putenv(new_var) != 0)
+		{
+			perror("_setenv");
+			free(new_var); /* Liberar la memoria si no se pudo establecer la variable */
+			return -1;
+		}
+	}
 
-    return 0; // Éxito
+	return 0; /* Liberar la memoria si no se pudo establecer la variable */
 }
