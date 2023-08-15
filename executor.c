@@ -23,20 +23,26 @@ char *path_remover(char *arg)
 
 void execute_command(char *args[], int line_number)
 {
+	char *dir = NULL;
+	char *path = NULL;
+	char *path_copy = NULL;
+	char *prog = NULL;
+	pid_t pid = 0;
+
 	/* Obtener el valor de la variable de entorno PATH */
-	char *path = _getenv("PATH");
+	path = _getenv("PATH");
 
 	/* Duplicar la cadena de PATH para evitar modificaciones */
-	char *path_copy = _strdup(path);
+	path_copy = _strdup(path);
 	printf("path_copy: %s\n", path_copy);
 	/* Dividir la cadena PATH en directorios usando ":" como delimitador */
-	char *dir = strtok(path_copy, ":");
+	dir = strtok(path_copy, ":");
 	printf("dir: %s\n", dir);
 	/* Crear un nuevo proceso hijo */
-	pid_t pid = fork();
+	pid = fork();
 
 	/* command without path*/
-	char *prog = path_remover(args[0]);
+	prog = path_remover(args[0]);
 
 	/* Código dentro del proceso hijo */
 	if (pid == 0)
