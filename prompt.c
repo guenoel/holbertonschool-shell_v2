@@ -4,10 +4,19 @@
 char *read_input()
 {
 	char *line = NULL;
+	ssize_t read_size;
 	size_t bufsize = MAX_INPUT_LENGTH;
-	getline(&line, &bufsize, stdin); /* Leer la línea desde la entrada estándar */
-	return (line); /* Devolver la línea leída */
+
+	read_size = getline(&line, &bufsize, stdin);
+	if (read_size == -1)
+	{
+		free(line);
+		return (NULL); /* Error o final del archivo */
+	}
+
+	return (line);
 }
+
 
 /* Ejecutar el bucle principal de la shell */
 void run_shell_loop(void)
@@ -25,19 +34,20 @@ void run_shell_loop(void)
 		}
 		input = read_input(); /* Leer la línea de entrada */
 
-		if (feof(stdin)) /* Comprobar si se ha alcanzado el final del archivo */
-        {
-			if(isatty(STDIN_FILENO))
-            	printf("\n");
-            free(input);
-            break; /* Ctrl+D o EOF, salir del bucle */
-        }
+		if (input == NULL)
+		{
+			if (isatty(STDIN_FILENO))
+			{
+				printf("\n");
+			}
+			break; /* Error o final del archivo */
+		}
 
-		 if (strcmp(input, "\n") == 0) /* Comparar con una línea en blanco */
-        {
-            free(input);
-            continue; /* Línea vacía, volver al inicio del bucle */
-        }
+		if (_sstrcmp(input, "\n") == 0) /* Comparar con una línea en blanco */
+		{
+			free(input);
+			continue; /* Línea vacía, volver al inicio del bucle */
+		}
 
 		num_args = tokenize_input(input, args); /* Tokenizar la línea de entrada */
 
@@ -74,11 +84,7 @@ void run_shell_loop(void)
 		{
 			execute_command(args, line_number); /* Ejecutar un comando externo */
 		}
-
 		free(input); /* Liberar la memoria de la línea de entrada */
 		free_args(args); /* Liberar la memoria de los argumentos tokenizados */
 	}
-	//free(input); /* Liberar la memoria de la última línea de entrada */
-	//free_args(args); /* Liberar la memoria de los últimos argumentos */
 }
-
