@@ -39,5 +39,6 @@ char *read_input();
 void free_args(char *args[]);
 int print_sorted_output(char *args[], char **env);
 int compare_strings(const void *a, const void *b);
+char *path_remover(char *arg);
 
 #endif /* SHELL_H */
