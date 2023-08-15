@@ -17,7 +17,8 @@ void execute_command(char *args[], int line_number)
 	/* Crear un nuevo proceso hijo */
 	pid_t pid = fork();
 
-	if (pid == 0) // Código dentro del proceso hijo
+	/* Código dentro del proceso hijo */
+	if (pid == 0)
 	{
 		/* Arreglo de variables de entorno para execve */
 		char *env[] = {NULL};
@@ -68,7 +69,8 @@ void execute_command(char *args[], int line_number)
 		/* Mostrar mensaje de error de fork */
 		print_error("Error forking");
 	}
-	else // Código dentro del proceso padre
+	/* Código dentro del proceso padre */
+	else
 	{
 		/* Liberar la memoria de la copia de la cadena PATH */
 		free(path_copy);
