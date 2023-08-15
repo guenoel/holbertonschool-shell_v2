@@ -34,5 +34,6 @@ int _sstrcmp(const char *s1, const char *s2);
 
 char *read_input();
 void free_args(char *args[]);
+int is_eof();
 
 #endif /* SHELL_H */
