@@ -64,7 +64,8 @@ void execute_command(char *args[], int line_number)
 		/* Salir del proceso hijo con un código de error */
 		exit(127);
 	}
-	else if (pid < 0) // Código en caso de fallo de fork
+	/* Código en caso de fallo de fork */
+	else if (pid < 0)
 	{
 		/* Mostrar mensaje de error de fork */
 		print_error("Error forking");
