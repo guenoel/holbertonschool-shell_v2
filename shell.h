@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <locale.h>
 #include <stddef.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #define MAX_INPUT_LENGTH 1024
 #define MAX_ARGS 64
@@ -35,5 +37,7 @@ int _setenv(const char *name, const char *value);
 
 char *read_input();
 void free_args(char *args[]);
+int print_sorted_output(char *args[], char **env);
+int compare_strings(const void *a, const void *b);
 
 #endif /* SHELL_H */

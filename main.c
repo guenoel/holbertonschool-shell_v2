@@ -3,7 +3,7 @@
 int main(int argc, char *argv[])
 {
 	char *args[MAX_ARGS]; /* Arreglo de punteros a caracteres para almacenar los tokens */
-
+	/* printf("argc: %d\n", argc); */
 	if (argc == 1)
 	{
 		/* Modo interactivo */
@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
+		/* printf("modo no interactivo main\n"); */
 		/* Modo no interactivo */
 		FILE *input_file = fopen(argv[1], "r"); /* Abrir el archivo de entrada en modo lectura */
 

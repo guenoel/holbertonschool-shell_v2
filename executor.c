@@ -17,6 +17,20 @@ void execute_command(char *args[], int line_number)
 	/* Crear un nuevo proceso hijo */
 	pid_t pid = fork();
 
+	/* command without path*/
+	char *dir_copy = _strdup(dir);
+	char *token = strtok(dir_copy, "/");
+	char *prog = NULL;
+	while (token != NULL)
+	{
+		token = strtok(NULL, "/");
+		if (token)
+		{
+			free(prog);
+			prog = _strdup(token);
+		}
+	}
+
 	/* Código dentro del proceso hijo */
 	if (pid == 0)
 	{
@@ -26,8 +40,14 @@ void execute_command(char *args[], int line_number)
 		/* Verificar si el comando es ejecutable en la ubicación actual */
 		if (access(args[0], X_OK) == 0)
 		{
-			/* Ejecutar el comando */
-			execve(args[0], args, env);
+			if (_sstrcmp(prog, "ls") != 0)
+			{
+				/* Ejecutar el comando */
+				execve(args[0], args, environ);
+			}
+			else {
+				print_sorted_output(args, environ);
+			}
 			/* Mostrar mensaje de error si execve falla */
 			perror("Error executing command");
 			/* Salir del proceso hijo con un código de error */
@@ -44,8 +64,13 @@ void execute_command(char *args[], int line_number)
 			/* Verificar si el comando es ejecutable en la nueva ruta */
 			if (access(executable_path, X_OK) == 0)
 			{
-				/* Ejecutar el comando desde la nueva ruta */
-				execve(executable_path, args, env);
+				if (_sstrcmp(args[0], "ls") != 0)
+				{
+					/* Ejecutar el comando desde la nueva ruta */
+					execve(executable_path, args, env);
+				} else {
+					print_sorted_output(args, environ);
+				}
 				/* Mostrar mensaje de error si execve falla */
 				perror("Error executing command");
 				/* Salir del proceso hijo con un código de error */
