@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <locale.h>
+#include <stddef.h>
 
 #define MAX_INPUT_LENGTH 1024
 #define MAX_ARGS 64
@@ -30,7 +31,7 @@ size_t _strlen(const char *str);
 char *_strcpy(char *dest, const char *src);
 int _strncmp(const char *s1, const char *s2, size_t n);
 int _sstrcmp(const char *s1, const char *s2);
-int compare_data(const void *a, const void *b);
+int _setenv(const char *name, const char *value);
 
 char *read_input();
 void free_args(char *args[]);
