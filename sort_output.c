@@ -14,6 +14,7 @@ int print_sorted_output(char *args[], char **env)
     char *lines[100];
     char buffer[1024];
     size_t num_lines = 0;
+    size_t i = 0;
 
     pid_t pid = fork();
     if (pid == 0) {
@@ -58,7 +59,7 @@ int print_sorted_output(char *args[], char **env)
 
     qsort(lines, num_lines, sizeof(char *), compare_strings);
 
-    for (size_t i = 0; i < num_lines; i++) {
+    for (i = 0; i < num_lines; i++) {
         printf("%s\n", lines[i]);
         free(lines[i]);
     }
