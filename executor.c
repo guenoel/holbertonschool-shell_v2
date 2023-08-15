@@ -30,6 +30,7 @@ void execute_command(char *args[], int line_number)
 			prog = _strdup(token);
 		}
 	}
+	printf("prog: %s\n", prog);
 
 	/* Código dentro del proceso hijo */
 	if (pid == 0)
