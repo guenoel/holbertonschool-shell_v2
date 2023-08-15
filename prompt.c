@@ -25,11 +25,19 @@ void run_shell_loop(void)
 		}
 		input = read_input(); /* Leer la línea de entrada */
 
-		if (input == NULL)
-		{
-			printf("\n");
-			break; /* Ctrl+D o EOF, salir del bucle */
-		}
+		if (feof(stdin)) /* Comprobar si se ha alcanzado el final del archivo */
+        {
+			if(isatty(STDIN_FILENO))
+            	printf("\n");
+            free(input);
+            break; /* Ctrl+D o EOF, salir del bucle */
+        }
+
+		 if (strcmp(input, "\n") == 0) /* Comparar con una línea en blanco */
+        {
+            free(input);
+            continue; /* Línea vacía, volver al inicio del bucle */
+        }
 
 		num_args = tokenize_input(input, args); /* Tokenizar la línea de entrada */
 
@@ -42,6 +50,8 @@ void run_shell_loop(void)
 
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
+			free(input);
+			free_args(args);
 			break; /* Salir de la shell si el comando es "exit" */
 		}
 		else if (_sstrcmp(args[0], "cd") == 0)
@@ -65,15 +75,10 @@ void run_shell_loop(void)
 			execute_command(args, line_number); /* Ejecutar un comando externo */
 		}
 
-		if (!isatty(STDIN_FILENO))
-		{
-			break; /* Si no estamos en modo interactivo, salir del bucle */
-		}
-
 		free(input); /* Liberar la memoria de la línea de entrada */
 		free_args(args); /* Liberar la memoria de los argumentos tokenizados */
 	}
-	free(input); /* Liberar la memoria de la última línea de entrada */
-	free_args(args); /* Liberar la memoria de los últimos argumentos */
+	//free(input); /* Liberar la memoria de la última línea de entrada */
+	//free_args(args); /* Liberar la memoria de los últimos argumentos */
 }
 
