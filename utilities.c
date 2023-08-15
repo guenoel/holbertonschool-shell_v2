@@ -123,7 +123,7 @@ int _setenv(const char *name, const char *value)
 	if (_getenv(name) != NULL)
 	{
 		/* Crear una nueva cadena en memoria y asignarle el valor */
-		char *new_var = malloc(strlen(name) + strlen(value) + 2); /* +2 para el igual y el terminador nulo */
+		char *new_var = (char *)malloc(strlen(name) + strlen(value) + 2); /* +2 para el igual y el terminador nulo */
 		if (new_var == NULL)
 		{
 			perror("_setenv");
@@ -144,7 +144,7 @@ int _setenv(const char *name, const char *value)
 	else
 	{
 		/* Crear una nueva cadena en memoria y asignarle el nombre y el valor */
-		char *new_var = malloc(strlen(name) + strlen(value) + 2); /* +2 para el igual y el terminador nulo */
+		char *new_var = (char *)malloc(strlen(name) + strlen(value) + 2); /* +2 para el igual y el terminador nulo */
 		if (new_var == NULL)
 		{
 			perror("_setenv");
