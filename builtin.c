@@ -3,21 +3,67 @@
 
 #define UNUSED(x) (void)(x)
 
-/* Cambiar el directorio actual */
 int shell_cd(char *args[])
 {
+	char *old_pwd = _getenv("PWD"); /* Obtener el valor actual de PWD */
+
+	/* Si no se proporciona ningún argumento, cambia al directorio HOME */
 	if (args[1] == NULL)
 	{
-		chdir(_getenv("HOME")); /* Cambiar al directorio HOME si no se proporciona argumento */
-	}
-	else
-	{
-		if (chdir(args[1]) != 0) /* Cambiar al directorio especificado por el argumento */
+		char *home_dir = _getenv("HOME");
+		if (chdir(home_dir) == 0)
 		{
-			perror("cd"); /* Mostrar mensaje de error si chdir falla */
+			/* Actualizar las variables de entorno */
+			setenv("OLDPWD", old_pwd, 1);
+			setenv("PWD", home_dir, 1);
+			return 0;
+		}
+		else
+		{
+			perror("cd");
+			return -1;
 		}
 	}
-	return (1); /* Indicar que el comando se ejecutó correctamente */
+	/* Si el argumento comienza con "-", muestra el directorio actual o el valor de OLDPWD */
+	else if (args[1][0] == '-')
+	{
+		char *prev_dir = _getenv("OLDPWD");
+		if (prev_dir == NULL)
+		{
+			fprintf(stderr, "No se ha establecido OLDPWD\n");
+			return -1;
+		}
+		if (chdir(prev_dir) == 0)
+		{
+			/* Actualizar las variables de entorno */
+			setenv("OLDPWD", old_pwd, 1);
+			setenv("PWD", prev_dir, 1);
+			return 0;
+		}
+		else
+		{
+			perror("cd");
+			return -1;
+		}
+	}
+	/* En otros casos, cambia al directorio especificado en args[1] */
+	else
+	{
+		if (chdir(args[1]) == 0)
+		{
+			/* Actualizar las variables de entorno */
+			setenv("OLDPWD", old_pwd, 1);
+			char new_pwd[MAX_INPUT_LENGTH];
+			getcwd(new_pwd, sizeof(new_pwd));
+			setenv("PWD", new_pwd, 1);
+			return 0;
+		}
+		else
+		{
+			fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", args[1]);
+			return -1;
+		}
+	}
 }
 
 /* Salir de la shell */
