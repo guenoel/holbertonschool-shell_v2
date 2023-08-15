@@ -5,6 +5,7 @@
 
 int shell_cd(char *args[])
 {
+	char new_pwd[MAX_INPUT_LENGTH];
 	char *old_pwd = _getenv("PWD"); /* Obtener el valor actual de PWD */
 
 	/* Si no se proporciona ningún argumento, cambia al directorio HOME */
@@ -53,7 +54,6 @@ int shell_cd(char *args[])
 		{
 			/* Actualizar las variables de entorno */
 			setenv("OLDPWD", old_pwd, 1);
-			char new_pwd[MAX_INPUT_LENGTH];
 			getcwd(new_pwd, sizeof(new_pwd));
 			setenv("PWD", new_pwd, 1);
 			return 0;
