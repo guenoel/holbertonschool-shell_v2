@@ -122,3 +122,4 @@ void free_args(char *args[])
 		free(args[i]); /* Liberar la memoria de cada argumento */
 	}
 }
+
