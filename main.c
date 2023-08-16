@@ -2,10 +2,8 @@
 
 int main(int argc, char *argv[])
 {
-	setlocale(LC_ALL, "");
-
 	char *args[MAX_ARGS]; /* Arreglo de punteros a caracteres para almacenar los tokens */
-	/* printf("argc: %d\n", argc); */
+
 	if (argc == 1)
 	{
 		/* Modo interactivo */

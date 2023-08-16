@@ -57,7 +57,6 @@ void run_shell_loop(void)
 	char *args[MAX_ARGS];
 	int num_args = 0;
 	int line_number = 0;
-	char *options = NULL;
 
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */
 	{
@@ -83,8 +82,6 @@ void run_shell_loop(void)
 		}
 
 		num_args = tokenize_input(input, args); /* Tokenizar la línea de entrada */
-
-		options = getoptions(num_args, args);
 
 		if (num_args == 0)
 		{
@@ -117,7 +114,7 @@ void run_shell_loop(void)
 		}
 		else
 		{
-			execute_command(args, options, line_number); /* Ejecutar un comando externo */
+			execute_command(args, line_number); /* Ejecutar un comando externo */
 		}
 		free(input); /* Liberar la memoria de la línea de entrada */
 		free_args(args); /* Liberar la memoria de los argumentos tokenizados */

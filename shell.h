@@ -17,7 +17,7 @@
 extern char **environ;
 
 int tokenize_input(char *input, char *args[]);
-void execute_command(char *args[], char *options, int line_number);
+void execute_command(char *args[], int line_number);
 void run_shell_loop(void);
 
 int shell_cd(char *args[]);
@@ -38,10 +38,8 @@ int _setenv(const char *name, const char *value);
 
 char *read_input();
 void free_args(char *args[]);
-int print_sorted_output(char *executable_path, char *options, char *args[], char **env);
-int compare_strings(const void *a, const void *b);
 char *path_remover(char *arg);
 char *getoptions(int argc, char *argv[]);
-int is_char_in_str(const char *str, char c);
+char **copy_environ();
 
 #endif /* SHELL_H */
