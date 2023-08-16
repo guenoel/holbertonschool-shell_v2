@@ -8,12 +8,13 @@ char *path_remover(char *arg)
 	char *prog = NULL;
 	char *arg_copy = _strdup(arg);
 	char *token = strtok(arg_copy, "/");
+
 	while (token != NULL)
 	{
 		token = strtok(NULL, "/");
 		if (token)
 		{
-			free(arg_copy);
+			free(prog);
 			prog = _strdup(token);
 		}
 	}
@@ -21,7 +22,7 @@ char *path_remover(char *arg)
 	return prog;
 }
 
-void execute_command(char *args[], int line_number)
+void execute_command(char *args[], char *options, int line_number)
 {
 	char *dir = NULL;
 	char *path = NULL;
@@ -29,26 +30,26 @@ void execute_command(char *args[], int line_number)
 	char *prog = NULL;
 	pid_t pid = 0;
 
+	/* command without path*/
+	prog = path_remover(args[0]);
+
 	/* Obtener el valor de la variable de entorno PATH */
 	path = _getenv("PATH");
 
 	/* Duplicar la cadena de PATH para evitar modificaciones */
 	path_copy = _strdup(path);
-	printf("path_copy: %s\n", path_copy);
+
 	/* Dividir la cadena PATH en directorios usando ":" como delimitador */
 	dir = strtok(path_copy, ":");
-	printf("dir: %s\n", dir);
+
 	/* Crear un nuevo proceso hijo */
 	pid = fork();
-
-	/* command without path*/
-	prog = path_remover(args[0]);
 
 	/* Código dentro del proceso hijo */
 	if (pid == 0)
 	{
 		/* Arreglo de variables de entorno para execve */
-		/*char *env[] = {NULL};*/
+		char *env[] = {NULL};
 
 		/* Verificar si el comando es ejecutable en la ubicación actual */
 		if (access(args[0], X_OK) == 0)
@@ -56,10 +57,10 @@ void execute_command(char *args[], int line_number)
 			if (_sstrcmp(prog, "ls") != 0)
 			{
 				/* Ejecutar el comando */
-				execve(args[0], args, environ);
+				execve(args[0], args, env);
 			}
 			else {
-				print_sorted_output(args, environ);
+				exit(print_sorted_output(args[0], options, args, env));
 			}
 			/* Mostrar mensaje de error si execve falla */
 			perror("Error executing command");
@@ -77,13 +78,13 @@ void execute_command(char *args[], int line_number)
 			/* Verificar si el comando es ejecutable en la nueva ruta */
 			if (access(executable_path, X_OK) == 0)
 			{
-				/* if (_sstrcmp(args[0], "ls") != 0)
-				{*/
+				if (_sstrcmp(args[0], "ls") != 0)
+				{
 					/* Ejecutar el comando desde la nueva ruta */
-				execve(executable_path, args, environ);
-				/* } else {
-					print_sorted_output(args, environ);
-				} */
+					execve(executable_path, args, env);
+				} else {
+					exit(print_sorted_output(executable_path, options, args, env));
+				}
 				/* Mostrar mensaje de error si execve falla */
 				perror("Error executing command");
 				/* Salir del proceso hijo con un código de error */
@@ -92,7 +93,6 @@ void execute_command(char *args[], int line_number)
 
 			/* Obtener el siguiente directorio en PATH */
 			dir = strtok(NULL, ":");
-			printf("dir: %s\n", dir);
 		}
 
 		/* Liberar la memoria de la copia de la cadena PATH */
