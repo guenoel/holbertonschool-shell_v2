@@ -21,7 +21,7 @@ void execute_command(char *args[], int line_number)
 	if (pid == 0)
 	{
 		/* Arreglo de variables de entorno para execve */
-		char *env[] = {NULL};
+		char *env[] = {"LC_ALL=en_US.UTF-8", NULL};
 
 		/* Verificar si el comando es ejecutable en la ubicación actual */
 		if (access(args[0], X_OK) == 0)
