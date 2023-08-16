@@ -1,10 +1,8 @@
 #include "shell.h"
 #include <stdlib.h>
+#include <string.h>
 
 #define UNUSED(x) (void)(x)
-
-#include "shell.h"
-#include <string.h>
 
 /*Estructura para almacenar variables de entorno*/
 typedef struct
@@ -22,12 +20,12 @@ static int num_env_vars;
 int shell_setenv(char *args[])
 {
 	int i;
-	if (args[1] != NULL && args[2] != NULL)
+		if (args[1] != NULL && args[2] != NULL)
 	{
 		if (num_env_vars < MAX_ARGS - 1)
 		{
 			/* Buscar si la variable ya existe en el arreglo*/
-			for (i= 0; i < num_env_vars; i++)
+			for (i = 0; i < num_env_vars; i++)
 			{
 				if (_sstrcmp(env_vars[i].name, args[1]) == 0)
 				{
@@ -87,19 +85,18 @@ int shell_cd(char *args[])
 {
 	char current_directory[MAX_INPUT_LENGTH]; /* Almacenar el directorio actual */
 	char old_directory[MAX_INPUT_LENGTH]; /* Almacenar el directorio anterior */
-	char *setenv_args_oldpwd[] = {"setenv", "OLDPWD", current_directory, NULL};
-	char *setenv_args_pwd[] = {"setenv", "PWD", old_directory, NULL};
+	char *setenv_args1[4];
+	char *setenv_args2[4];
 
-	if (getcwd(current_directory, sizeof(current_directory)) == NULL)
+		if (getcwd(current_directory, sizeof(current_directory)) == NULL)
 	{
 		perror("getcwd");
 		return (-1);
 	}
-
 	if (args[1] == NULL)
 	{
 		char *home_directory = _getenv("HOME");
-		if (home_directory == NULL)
+			if (home_directory == NULL)
 		{
 			fprintf(stderr, "cd: HOME variable not set\n");
 			return (-1);
@@ -132,23 +129,29 @@ int shell_cd(char *args[])
 			return (-1);
 		}
 	}
-
 	if (getcwd(old_directory, sizeof(old_directory)) == NULL)
 	{
 		perror("getcwd");
 		return (-1);
 	}
-
 	/* Actualizar las variables de entorno PWD y OLDPWD */
-	if (shell_setenv(setenv_args_oldpwd) != 1 || shell_setenv(setenv_args_pwd) != 1)
-	{
-		fprintf (stderr, "cd: error updating environment variables\n");
-		return (-1);
+		setenv_args1[0] = "setenv";
+		setenv_args1[1] = "OLDPWD";
+		setenv_args1[2] = current_directory;
+		setenv_args1[3] = NULL;
+
+		setenv_args2[0] = "setenv";
+		setenv_args2[1] = "PWD";
+		setenv_args2[2] = old_directory;
+		setenv_args2[3] = NULL;
+
+		if (shell_setenv(setenv_args1) != 1 || shell_setenv(setenv_args2) != 1)
+		{
+			fprintf(stderr, "cd: error updating environment variables\n");
+			return (-1);
+		}
+		return (0);
 	}
-
-
-	return (0);
-}
 
 /* Salir de la shell */
 int shell_exit(char *args[])
@@ -161,6 +164,7 @@ int shell_exit(char *args[])
 int shell_env(char *args[])
 {
 	char **env = environ; /* Obtener el arreglo de variables de entorno */
+
 	UNUSED(args);
 
 	while (*env)
