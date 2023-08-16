@@ -142,7 +142,7 @@ int shell_cd(char *args[])
 	/* Actualizar las variables de entorno PWD y OLDPWD */
 	if (shell_setenv(setenv_args_oldpwd) != 1 || shell_setenv(setenv_args_pwd) != 1)
 	{
-		fprintf(stderr, "cd: error updating environment variables\n");
+		fprintf (stderr, "cd: error updating environment variables\n");
 		return (-1);
 	}
 
