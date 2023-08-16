@@ -21,12 +21,13 @@ static int num_env_vars;
 
 int shell_setenv(char *args[])
 {
+	int i;
 	if (args[1] != NULL && args[2] != NULL)
 	{
 		if (num_env_vars < MAX_ARGS - 1)
 		{
 			/* Buscar si la variable ya existe en el arreglo*/
-			for (int i = 0; i < num_env_vars; i++)
+			for (i= 0; i < num_env_vars; i++)
 			{
 				if (_sstrcmp(env_vars[i].name, args[1]) == 0)
 				{
@@ -86,6 +87,9 @@ int shell_cd(char *args[])
 {
 	char current_directory[MAX_INPUT_LENGTH]; /* Almacenar el directorio actual */
 	char old_directory[MAX_INPUT_LENGTH]; /* Almacenar el directorio anterior */
+	char *setenv_args_oldpwd[] = {"setenv", "OLDPWD", current_directory, NULL};
+	char *setenv_args_pwd[] = {"setenv", "PWD", old_directory, NULL};
+
 	if (getcwd(current_directory, sizeof(current_directory)) == NULL)
 	{
 		perror("getcwd");
@@ -136,14 +140,12 @@ int shell_cd(char *args[])
 	}
 
 	/* Actualizar las variables de entorno PWD y OLDPWD */
-	if (shell_setenv((char *[])
-		{"setenv", "OLDPWD", current_directory, NULL}) != 1 ||
-		shell_setenv((char *[])
-		{"setenv", "PWD", old_directory, NULL}) != 1)
+	if (shell_setenv(setenv_args_oldpwd) != 1 || shell_setenv(setenv_args_pwd) != 1)
 	{
 		fprintf(stderr, "cd: error updating environment variables\n");
 		return (-1);
 	}
+
 
 	return (0);
 }
