@@ -31,7 +31,6 @@ size_t _strlen(const char *str);
 char *_strcpy(char *dest, const char *src);
 int _strncmp(const char *s1, const char *s2, size_t n);
 int _sstrcmp(const char *s1, const char *s2);
-int _setenv(const char *name, const char *value);
 
 char *read_input();
 void free_args(char *args[]);
