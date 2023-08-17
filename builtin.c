@@ -148,45 +148,55 @@ int shell_unsetenv(char *args[])
 /* Establecer una nueva variable de entorno o modificar una existente */
 int shell_setenv(char *args[])
 {
-	char **env = environ;
-	int num_vars = env - environ;
-
-	if (args[1] != NULL && args[2] != NULL)
+	if (args[1] != NULL && args[2] != NULL) /* Verificar si se proporcionan suficientes argumentos */
 	{
+		// Crear una nueva cadena que contendrá la nueva variable de entorno en el formato "NOMBRE=VALOR"
 		char *new_env_var = malloc(_strlen(args[1]) + _strlen(args[2]) + 2);
 		if (new_env_var == NULL)
 		{
-			perror("malloc");
-			return (1); /* Retorna 1 para indicar éxito en este caso */
+			perror("malloc"); /* Mostrar error si la asignación de memoria falla */
+			return (1);
 		}
-		sprintf(new_env_var, "%s=%s", args[1], args[2]);
+		sprintf(new_env_var, "%s=%s", args[1], args[2]); /* Construir la cadena de variable de entorno */
 
-		/* char **env = environ; */
+		char **env = environ; /* Obtener el arreglo de variables de entorno existentes */
+		int num_vars = 0;
 		while (*env)
 		{
-			if (_sstrcmp(*env, args[1]) == 0)
-			{
-				/* Reemplazar la variable de entorno existente */
-				free(*env);
-				*env = new_env_var;
-				return (1); /* Retorna 1 para indicar éxito */
-			}
+			num_vars++; /* Contar el número de variables de entorno existentes */
 			env++;
 		}
-		/* Si la variable de entorno no existe, agregamos una nueva */
-		/* int num_vars = env - environ; */
-		environ = realloc(environ, (num_vars + 2) * sizeof(char *));
-		if (environ == NULL)
+
+		// Crear un nuevo arreglo de variables de entorno con espacio para la nueva variable y NULL adicional
+		char **new_environ = malloc((num_vars + 2) * sizeof(char *));
+		if (new_environ == NULL)
 		{
-			perror("realloc");
+			perror("malloc"); /* Mostrar error si la asignación de memoria falla */
 			free(new_env_var);
-			return (1); /* Retorna 1 para indicar éxito en este caso */
+			return (1);
 		}
-		environ[num_vars] = new_env_var;
-		environ[num_vars + 1] = NULL;
-		return (1); /* Retorna 1 para indicar éxito */
+
+		env = environ; /* Reiniciar el puntero al arreglo de variables de entorno */
+		int i = 0;
+		while (*env)
+		{
+			new_environ[i] = *env; /* Copiar variables de entorno existentes al nuevo arreglo */
+			i++;
+			env++;
+		}
+
+		new_environ[i++] = new_env_var; /* Agregar la nueva variable de entorno al arreglo */
+		new_environ[i] = NULL; /* Marcar el final del arreglo con NULL */
+
+		environ = new_environ; /* Actualizar la variable global 'environ' para reflejar el nuevo arreglo */
 	}
-	return (1); /* Retorna 1 para indicar éxito por defecto */
+	else
+	{
+		fprintf(stderr, "Uso: setenv NOMBRE_VARIABLE VALOR\n"); /* Imprimir mensaje de error si no se proporcionan suficientes argumentos */
+		return (1);
+	}
+
+	return (1); /* Indicar que el comando se ejecutó correctamente */
 }
 
 /* Liberar la memoria ocupada por el arreglo de argumentos */
