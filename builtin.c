@@ -153,7 +153,7 @@ int shell_setenv(char *args[])
 
 	if (args[1] != NULL && args[2] != NULL)
 	{
-		char *new_env_var = malloc(strlen(args[1]) + strlen(args[2]) + 2);
+		char *new_env_var = malloc(_strlen(args[1]) + _strlen(args[2]) + 2);
 		if (new_env_var == NULL)
 		{
 			perror("malloc");
@@ -164,7 +164,7 @@ int shell_setenv(char *args[])
 		/* char **env = environ; */
 		while (*env)
 		{
-			if (strncmp(*env, args[1], strlen(args[1])) == 0)
+			if (_sstrcmp(*env, args[1]) == 0)
 			{
 				/* Reemplazar la variable de entorno existente */
 				free(*env);
