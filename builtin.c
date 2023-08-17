@@ -40,7 +40,7 @@ int shell_cd(char *args[])
 		char *home_directory = get_env_var("HOME");
 			if (home_directory == NULL)
 		{
-			fprintf(stderr, "cd: No HOME variable set\n");
+			/*fprintf(stderr, "cd: No HOME variable set\n");*/
 			return (-1);
 		}
 		if (chdir(home_directory) != 0)
