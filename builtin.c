@@ -20,10 +20,10 @@ char *get_env_var(const char *name)
 /* Cambiar el directorio actual */
 int shell_cd(char *args[])
 {
-	char current_directory[MAX_INPUT_LENGTH];
-	char *old_pwd = get_env_var("PWD");
+	static char previous_directory[MAX_INPUT_LENGTH] = "";
+	char oldpwd_variable[MAX_INPUT_LENGTH + 7];  /* // +7 for "OLDPWD=" */
 	char **env = environ;
-	char *tmp = NULL;
+	char current_directory[MAX_INPUT_LENGTH];
 	if (getcwd(current_directory, sizeof(current_directory)) == NULL)
 	{
 		perror("getcwd");
@@ -32,9 +32,8 @@ int shell_cd(char *args[])
 	if (args[1] == NULL || _sstrcmp(args[1], "~") == 0)
 	{
 		char *home_directory = get_env_var("HOME");
-			if (home_directory == NULL)
+		if (home_directory == NULL)
 		{
-			fprintf(stderr, "cd: No HOME variable set\n");
 			return (-1);
 		}
 		if (chdir(home_directory) != 0)
@@ -45,17 +44,18 @@ int shell_cd(char *args[])
 	}
 	else if (args[1][0] == '-' && args[1][1] == '\0')
 	{
-		if (old_pwd == NULL)
+		char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
+		if (oldpwd == NULL)
 		{
-			fprintf(stderr, "cd: No OLDPWD variable set\n");
+			fprintf(stderr, "cd: No se ha definido la variable OLDPWD\n");
 			return (-1);
 		}
-		if (chdir(old_pwd) != 0)
+		printf("%s\n", oldpwd);
+		if (chdir(oldpwd) != 0)
 		{
 			perror("cd");
 			return (-1);
 		}
-		printf("%s\n", old_pwd);
 	}
 	else
 	{
@@ -65,43 +65,19 @@ int shell_cd(char *args[])
 			return (-1);
 		}
 	}
-	if (old_pwd)
-	{
-	/* Buscar la variable OLDPWD en el arreglo de variables de entorno */
-		while (*env)
-		{
-			if (_strncmp(*env, "OLDPWD=", 7) == 0)
-			{
-				/* Reemplazar el valor de OLDPWD con el valor almacenado en old_pwd */
-				*env = (char *)malloc(_strlen(old_pwd) + 9);  /* 7 (OLDPWD=) + 2 (NULL terminador y '=') */
-				if (*env)
-				{
-					sprintf(*env, "OLDPWD=%s", old_pwd);
-				}
-				break; /* Salir del ciclo al encontrar OLDPWD */
-			}
-			env++;
-		}
-	}
-	/* Buscar la variable PWD en el arreglo de variables de entorno */
-	env = environ;
+	/* Actualizar OLDPWD al valor del directorio actual */
+	snprintf(oldpwd_variable, sizeof(oldpwd_variable), "OLDPWD=%s", current_directory);
 	while (*env)
 	{
-		if (_strncmp(*env, "PWD=", 4) == 0)
+		if (_strncmp(*env, "OLDPWD=", 7) == 0)
 		{
-			if (tmp != NULL)
-				free(env);
-			/* Reemplazar el valor de PWD con el valor almacenado en current_directory */
-			tmp = (char *)malloc(_strlen(current_directory) + 6); /* 4 (PWD=) + 2 (NULL terminador y '=') */
-			*env = tmp;
-			if (*env)
-			{
-				sprintf(*env, "PWD=%s", current_directory);
-			}
-			break; /* Salir del ciclo al encontrar PWD */
+			/* Replace the existing OLDPWD entry */
+			*env = oldpwd_variable;
+			break;
 		}
 		env++;
 	}
+	_strcpy(previous_directory, current_directory);
 	return (0);
 }
 /* Salir de la shell */
