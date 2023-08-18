@@ -71,7 +71,7 @@ int shell_cd(char *args[])
 	{
 		if (_strncmp(*env, "OLDPWD=", 7) == 0)
 		{
-			// Replace the existing OLDPWD entry
+			/* Replace the existing OLDPWD entry */
 			*env = oldpwd_variable;
 			break;
 		}
@@ -115,17 +115,19 @@ int shell_setenv(char *args[])
 	char **new_environ = NULL;
 	int flag_var_env_found = 0;
 	char **env = environ; /* Obtener el arreglo de variables de entorno existentes */
+	char *new_env_var = NULL;
 	int num_vars = 0;
 	int size_malloc = 0;
 	char *tmp = NULL;
 	char *tmp2 = NULL;
+	int i = 0;
 
 	if (args[1] != NULL && args[2] != NULL) /* Verificar si se proporcionan suficientes argumentos */
 	{
 /* STEP 1 - PREPARACION DEL DATA, DE num_vars Y DEL FLAG*/
 		/* Crear una nueva cadena que contendrá la nueva variable de entorno en el formato "NOMBRE=VALOR" */
 		size_malloc = _strlen(args[1]) + _strlen(args[2]) + 2;
-		char *new_env_var = (char *)malloc(size_malloc); /* 2: "=" + "\0" */
+		new_env_var = (char *)malloc(size_malloc); /* 2: "=" + "\0" */
 		init_string(new_env_var, size_malloc);
 		size_malloc = 0;
 		if (new_env_var == NULL)
@@ -160,7 +162,7 @@ int shell_setenv(char *args[])
 			return (1);
 		}
 /* STEP 3 COPY FROM OLD TO NEW ENV*/
-		int i = 0;
+
 		while (*env)
 		{
 			tmp = _strdup(*env);
@@ -208,6 +210,7 @@ void free_args(char *args[])
 void malloc_environ() {
 	char **new_env;
 	int num_vars = 0;
+	int i = 0;
 
 	/* Count the number of variables in environ */
 	while (environ[num_vars] != NULL) {
@@ -222,7 +225,7 @@ void malloc_environ() {
 	}
 
 	/* Copy each string from environ to the new array using strdup */
-	for (int i = 0; i < num_vars; i++) {
+	for (i = 0; i < num_vars; i++) {
 		new_env[i] = _strdup(environ[i]);
 		if (new_env[i] == NULL) {
 			perror("strdup");

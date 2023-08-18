@@ -26,6 +26,7 @@ char *path_remover(char *arg)
 char **copy_environ() {
     char **new_env;
     int num_vars = 0;
+	int i = 0;
 
     /* Count the number of variables in environ */
     while (environ[num_vars] != NULL) {
@@ -40,7 +41,7 @@ char **copy_environ() {
     }
 
     /* Copy each string from environ to the new array using strdup */
-    for (int i = 0; i < num_vars; i++) {
+    for (i = 0; i < num_vars; i++) {
         new_env[i] = strdup(environ[i]);
         if (new_env[i] == NULL) {
             perror("strdup");
