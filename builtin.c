@@ -132,6 +132,8 @@ int shell_setenv(char *args[])
 	char **env = environ; /* Obtener el arreglo de variables de entorno existentes */
 	int i = 0;
 	int j;
+	int num_vars = 0;
+	char **new_environ = {NULL};
 
 	if (args[1] != NULL && args[2] != NULL) /* Verificar si se proporcionan suficientes argumentos */
 	{
@@ -145,14 +147,14 @@ int shell_setenv(char *args[])
 		sprintf(new_env_var, "%s=%s", args[1], args[2]); /* Construir la cadena de variable de entorno */
 
 
-		int num_vars = 0;
+
 		while (*env)
 		{
 			num_vars++; /* Contar el número de variables de entorno existentes */
 			env++;
 		}
 	/*Crear un nuevo arreglo de variables de entorno con espacio para la nueva variable y NULL adicional*/
-		char **new_environ = malloc((num_vars + 2) * sizeof(char *));
+		new_environ = malloc((num_vars + 2) * sizeof(char *));
 		if (new_environ == NULL)
 		{
 			perror("malloc"); /* Mostrar error si la asignación de memoria falla */
