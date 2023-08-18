@@ -26,6 +26,8 @@ char *get_env_var(const char *name)
 int shell_cd(char *args[])
 {
 	static char previous_directory[MAX_INPUT_LENGTH] = "";
+	char oldpwd_variable[MAX_INPUT_LENGTH + 7];  /* // +7 for "OLDPWD=" */
+	char **env = environ;
 
 	char current_directory[MAX_INPUT_LENGTH];
 	if (getcwd(current_directory, sizeof(current_directory)) == NULL)
@@ -72,11 +74,9 @@ int shell_cd(char *args[])
 		}
 	}
 	/* Actualizar OLDPWD al valor del directorio actual */
-	char oldpwd_variable[MAX_INPUT_LENGTH + 7];  /* // +7 for "OLDPWD=" */
 
 	snprintf(oldpwd_variable, sizeof(oldpwd_variable), "OLDPWD=%s", current_directory);
 
-	char **env = environ;
 	while (*env)
 	{
 		if (_strncmp(*env, "OLDPWD=", 7) == 0)
@@ -129,6 +129,10 @@ int shell_unsetenv(char *args[])
 
 int shell_setenv(char *args[])
 {
+	char **env = environ; /* Obtener el arreglo de variables de entorno existentes */
+	int i = 0;
+	int j;
+
 	if (args[1] != NULL && args[2] != NULL) /* Verificar si se proporcionan suficientes argumentos */
 	{
 		/* Crear una nueva cadena que contendrá la nueva variable de entorno en el formato "NOMBRE=VALOR" */
@@ -140,7 +144,7 @@ int shell_setenv(char *args[])
 		}
 		sprintf(new_env_var, "%s=%s", args[1], args[2]); /* Construir la cadena de variable de entorno */
 
-		char **env = environ; /* Obtener el arreglo de variables de entorno existentes */
+
 		int num_vars = 0;
 		while (*env)
 		{
@@ -157,7 +161,7 @@ int shell_setenv(char *args[])
 		}
 
 		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
-		int i = 0;
+
 		while (*env)
 		{
 			new_environ[i] = _strdup(*env);
@@ -173,7 +177,7 @@ int shell_setenv(char *args[])
 		printf("Variable set: %s\n", new_env_var);
 
 		free(new_env_var); /* Liberar new_env_var después de agregarlo a new_environ */
-		for (int j = 0; j < num_vars; j++)
+		for (j = 0; j < num_vars; j++)
 		{
 			free(new_environ[j]); /* Liberar las variables existentes copiadas */
 		}
