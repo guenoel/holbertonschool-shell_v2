@@ -40,6 +40,8 @@ char *read_input();
 void free_args(char *args[]);
 char *path_remover(char *arg);
 char *getoptions(int argc, char *argv[]);
-char **copy_environ();
+void malloc_environ();
+int init_array_of_strings(char **array_of_strings, int size);
+int init_string(char *string, int size);
 
 #endif /* SHELL_H */
