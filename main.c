@@ -2,6 +2,7 @@
 
 int main(int argc, char *argv[])
 {
+	malloc_environ();
 	char *args[MAX_ARGS]; /* Arreglo de punteros a caracteres para almacenar los tokens */
 
 	if (argc == 1)
@@ -11,6 +12,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
+		/* printf("modo no interactivo main\n"); */
 		/* Modo no interactivo */
 		FILE *input_file = fopen(argv[1], "r"); /* Abrir el archivo de entrada en modo lectura */
 
@@ -32,6 +34,7 @@ int main(int argc, char *argv[])
 			return (1); /* Salir con código de error */
 		}
 	}
-
+	free_args(environ);
+	free(environ);
 	return (0); /* Salir con éxito */
 }

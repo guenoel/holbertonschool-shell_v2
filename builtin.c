@@ -2,12 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-
 #define UNUSED(x) (void)(x)
-
 #define MAX_INPUT_LENGTH 1024
-
-
 char *get_env_var(const char *name)
 {
 	char **env = environ;
@@ -21,21 +17,18 @@ char *get_env_var(const char *name)
 	}
 	return (NULL); /* Variable de entorno no encontrada */
 }
-
 /* Cambiar el directorio actual */
 int shell_cd(char *args[])
 {
 	static char previous_directory[MAX_INPUT_LENGTH] = "";
 	char oldpwd_variable[MAX_INPUT_LENGTH + 7];  /* // +7 for "OLDPWD=" */
 	char **env = environ;
-
 	char current_directory[MAX_INPUT_LENGTH];
 	if (getcwd(current_directory, sizeof(current_directory)) == NULL)
 	{
 		perror("getcwd");
 		return (-1);
 	}
-
 	if (args[1] == NULL || _sstrcmp(args[1], "~") == 0)
 	{
 		char *home_directory = get_env_var("HOME");
@@ -58,7 +51,6 @@ int shell_cd(char *args[])
 			return (-1);
 		}
 		printf("%s\n", oldpwd);
-
 		if (chdir(oldpwd) != 0)
 		{
 			perror("cd");
@@ -74,38 +66,31 @@ int shell_cd(char *args[])
 		}
 	}
 	/* Actualizar OLDPWD al valor del directorio actual */
-
-	snprintf(oldpwd_variable, sizeof(oldpwd_variable), "OLDPWD=%s", current_directory);
-
+	sprintf(oldpwd_variable, "OLDPWD=%s", current_directory);
 	while (*env)
 	{
 		if (_strncmp(*env, "OLDPWD=", 7) == 0)
 		{
-			/* Replace the existing OLDPWD entry */
+			// Replace the existing OLDPWD entry
 			*env = oldpwd_variable;
 			break;
 		}
 		env++;
 	}
-
 	_strcpy(previous_directory, current_directory);
-
 	return (0);
 }
-
 /* Salir de la shell */
 int shell_exit(char *args[])
 {
 	UNUSED(args);
 	exit(0); /* Salir del programa con éxito */
 }
-
 /* Mostrar las variables de entorno */
 int shell_env(char *args[])
 {
 	char **env = environ; /* Obtener el arreglo de variables de entorno */
 	UNUSED(args);
-
 	while (*env)
 	{
 		printf("%s\n", *env); /* Imprimir cada variable de entorno */
@@ -113,7 +98,6 @@ int shell_env(char *args[])
 	}
 	return (1); /* Indicar que el comando se ejecutó correctamente */
 }
-
 /* Eliminar una variable de entorno */
 int shell_unsetenv(char *args[])
 {
@@ -126,19 +110,24 @@ int shell_unsetenv(char *args[])
 	}
 	return (1); /* Indicar que el comando se ejecutó correctamente */
 }
-
 int shell_setenv(char *args[])
 {
+	char **new_environ = NULL;
+	int flag_var_env_found = 0;
 	char **env = environ; /* Obtener el arreglo de variables de entorno existentes */
-	int i = 0;
-	int j;
 	int num_vars = 0;
-	char **new_environ = {NULL};
+	int size_malloc = 0;
+	char *tmp = NULL;
+	char *tmp2 = NULL;
 
 	if (args[1] != NULL && args[2] != NULL) /* Verificar si se proporcionan suficientes argumentos */
 	{
+/* STEP 1 - PREPARACION DEL DATA, DE num_vars Y DEL FLAG*/
 		/* Crear una nueva cadena que contendrá la nueva variable de entorno en el formato "NOMBRE=VALOR" */
-		char *new_env_var = malloc(_strlen(args[1]) + _strlen(args[2]) + 2);
+		size_malloc = _strlen(args[1]) + _strlen(args[2]) + 2;
+		char *new_env_var = (char *)malloc(size_malloc); /* 2: "=" + "\0" */
+		init_string(new_env_var, size_malloc);
+		size_malloc = 0;
 		if (new_env_var == NULL)
 		{
 			perror("malloc");/* Mostrar error si la asignación de memoria falla */
@@ -146,52 +135,62 @@ int shell_setenv(char *args[])
 		}
 		sprintf(new_env_var, "%s=%s", args[1], args[2]); /* Construir la cadena de variable de entorno */
 
-
-
 		while (*env)
 		{
+			tmp = _strdup(*env);
+			tmp2 = strtok(tmp, "=");
+			if (_sstrcmp(tmp2, args[1]) == 0)
+				flag_var_env_found = 1;
+			free(tmp);
 			num_vars++; /* Contar el número de variables de entorno existentes */
 			env++;
 		}
-	/*Crear un nuevo arreglo de variables de entorno con espacio para la nueva variable y NULL adicional*/
-		new_environ = malloc((num_vars + 2) * sizeof(char *));
+		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
+/* STEP 2 CREACION DEL NEW ENV*/
+		/*Crear un nuevo arreglo de variables de entorno con espacio para la nueva variable (si no existe) y NULL adicional*/
+		if (flag_var_env_found)
+			size_malloc = num_vars + 1;
+		else
+			size_malloc = num_vars + 2;
+		new_environ = (char **)malloc((size_malloc) * sizeof(char *));
+		init_array_of_strings(new_environ, (size_malloc));
 		if (new_environ == NULL)
 		{
 			perror("malloc"); /* Mostrar error si la asignación de memoria falla */
-			free(new_env_var);
 			return (1);
 		}
-
-		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
-
+/* STEP 3 COPY FROM OLD TO NEW ENV*/
+		int i = 0;
 		while (*env)
 		{
-			new_environ[i] = _strdup(*env);
+			tmp = _strdup(*env);
+			tmp2 = strtok(tmp, "=");
+			if (_sstrcmp(tmp2, args[1]) == 0)
+				new_environ[i] = new_env_var;
+			else
+				new_environ[i] = _strdup(*env);
+			free(tmp);
 			i++;
 			env++;
 		}
-
-		new_environ[i++] = new_env_var;/* Agregar la nueva variable de entorno al arreglo */
-		new_environ[i] = NULL; /* Marcar el final del arreglo con NULL */
-
-		environ = new_environ;/* Actualizar la variable global 'environ' para reflejar el nuevo arreglo */
-
-		printf("Variable set: %s\n", new_env_var);
-
-		free(new_env_var); /* Liberar new_env_var después de agregarlo a new_environ */
-		for (j = 0; j < num_vars; j++)
+		if (!flag_var_env_found)
 		{
-			free(new_environ[j]); /* Liberar las variables existentes copiadas */
+			new_environ[i] = new_env_var;/* Agregar la nueva variable de entorno al arreglo */
+			i++;
 		}
-		free(new_environ); /* Liberar new_environ */
 
+/* STEP 4 FREE OLD ENV*/
+		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
+		free_args(env);
+		free(env);
+/* ASIGNACION DE NUEVO ENVIRON */
+		environ = new_environ;/* Actualizar la variable global 'environ' para reflejar el nuevo arreglo */
 	}
 	else
 	{
 		fprintf(stderr, "Usage: setenv VARIABLE_NAME VALUE\n");
 		return (1);
 	}
-
 	return (0);
 }
 
@@ -203,4 +202,56 @@ void free_args(char *args[])
 	{
 		free(args[i]); /* Liberar la memoria de cada argumento */
 	}
+}
+
+/* Function to copy the environ array into a new variable */
+void malloc_environ() {
+	char **new_env;
+	int num_vars = 0;
+
+	/* Count the number of variables in environ */
+	while (environ[num_vars] != NULL) {
+		num_vars++;
+	}
+
+	/* Allocate memory for the new array of pointers */
+	new_env = (char **)malloc((num_vars + 1) * sizeof(char *));
+	if (new_env == NULL) {
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
+
+	/* Copy each string from environ to the new array using strdup */
+	for (int i = 0; i < num_vars; i++) {
+		new_env[i] = _strdup(environ[i]);
+		if (new_env[i] == NULL) {
+			perror("strdup");
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	/* Terminate the new array with a NULL pointer */
+	new_env[num_vars] = NULL;
+
+	environ = new_env;
+}
+
+int init_array_of_strings(char **array_of_strings, int size)
+{
+	int i = 0;
+	for (i = 0; i < size; i++)
+	{
+		array_of_strings[i] = NULL;
+	}
+	return (0);
+}
+
+int init_string(char *string, int size)
+{
+	int i = 0;
+	for (i = 0; i < size; i++)
+	{
+		string[i] = '\0';
+	}
+	return (0);
 }

@@ -1,5 +1,37 @@
 #include "shell.h"
 
+/**
+ * getoptions - function that store option letters
+ * @argv: all arguments
+ *
+ * Return: string with all option letters
+ */
+
+char *getoptions(int argc, char *argv[])
+{
+	int i;
+	char *options = (char *)malloc(1024);
+
+	if (options == NULL) {
+		fprintf(stderr, "Memory allocation error\n");
+		exit(1);
+	}
+
+	options[0] = '\0';
+
+	for(i = 1; i < argc; i++)
+	{
+		if(argv[i][0] == '-')
+		{
+			char *opt = argv[i] + 1;
+			char *opts = options;
+			strcat(opts, opt);
+		}
+	}
+
+	return (options);
+}
+
 /* Leer una línea de entrada desde el usuario */
 char *read_input()
 {
@@ -21,9 +53,9 @@ char *read_input()
 /* Ejecutar el bucle principal de la shell */
 void run_shell_loop(void)
 {
-	char *input;
+	char *input = NULL;
 	char *args[MAX_ARGS];
-	int num_args;
+	int num_args = 0;
 	int line_number = 0;
 
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */

@@ -116,22 +116,52 @@ char *_getenv(const char *name)
 	return (NULL);
 }
 
-char *_strcat(char *dest, const char *src)
+int _setenv(const char *name, const char *value)
 {
-	char *dest_end = dest;
-	while (*dest_end)
+	char *new_var = NULL;
+	int result = 0;
+	/* Verificar si la variable de entorno ya existe */
+	if (_getenv(name) != NULL)
 	{
-		dest_end++;
+		/* Crear una nueva cadena en memoria y asignarle el valor */
+		new_var = (char *)malloc(strlen(name) + strlen(value) + 2); /* +2 para el igual y el terminador nulo */
+		if (new_var == NULL)
+		{
+			perror("_setenv");
+			return -1;
+		}
+
+		sprintf(new_var, "%s=%s", name, value);
+
+		/* Reemplazar la variable de entorno */
+		result = putenv(new_var);
+		if (result != 0)
+		{
+			perror("_setenv");
+			free(new_var); /* Liberar la memoria si no se pudo establecer la variable */
+			return -1;
+		}
+	}
+	else
+	{
+		/* Crear una nueva cadena en memoria y asignarle el nombre y el valor */
+		new_var = (char *)malloc(strlen(name) + strlen(value) + 2); /* +2 para el igual y el terminador nulo */
+		if (new_var == NULL)
+		{
+			perror("_setenv");
+			return -1;
+		}
+
+		sprintf(new_var, "%s=%s", name, value);
+
+		/* Agregar la nueva variable al arreglo de variables de entorno */
+		if (putenv(new_var) != 0)
+		{
+			perror("_setenv");
+			free(new_var); /* Liberar la memoria si no se pudo establecer la variable */
+			return -1;
+		}
 	}
 
-	while (*src)
-	{
-		*dest_end = *src;
-		dest_end++;
-		src++;
-	}
-
-	*dest_end = '\0';
-
-	return dest;
+	return 0; /* Liberar la memoria si no se pudo establecer la variable */
 }
