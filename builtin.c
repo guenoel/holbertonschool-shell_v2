@@ -25,10 +25,11 @@ char *get_env_var(const char *name)
 /* Cambiar el directorio actual */
 int shell_cd(char *args[])
 {
-	char current_directory[MAX_INPUT_LENGTH];
-	char *old_pwd = get_env_var("PWD");
+	static char previous_directory[MAX_INPUT_LENGTH] = "";
+	char oldpwd_variable[MAX_INPUT_LENGTH + 7];  /* // +7 for "OLDPWD=" */
 	char **env = environ;
 
+	char current_directory[MAX_INPUT_LENGTH];
 	if (getcwd(current_directory, sizeof(current_directory)) == NULL)
 	{
 		perror("getcwd");
@@ -38,9 +39,8 @@ int shell_cd(char *args[])
 	if (args[1] == NULL || _sstrcmp(args[1], "~") == 0)
 	{
 		char *home_directory = get_env_var("HOME");
-			if (home_directory == NULL)
+		if (home_directory == NULL)
 		{
-			/*fprintf(stderr, "cd: No HOME variable set\n");*/
 			return (-1);
 		}
 		if (chdir(home_directory) != 0)
@@ -51,17 +51,19 @@ int shell_cd(char *args[])
 	}
 	else if (args[1][0] == '-' && args[1][1] == '\0')
 	{
-		if (old_pwd == NULL)
+		char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
+		if (oldpwd == NULL)
 		{
-			fprintf(stderr, "cd: No OLDPWD variable set\n");
+			fprintf(stderr, "cd: No se ha definido la variable OLDPWD\n");
 			return (-1);
 		}
-		if (chdir(old_pwd) != 0)
+		printf("%s\n", oldpwd);
+
+		if (chdir(oldpwd) != 0)
 		{
 			perror("cd");
 			return (-1);
 		}
-		printf("%s\n", old_pwd);
 	}
 	else
 	{
@@ -71,45 +73,25 @@ int shell_cd(char *args[])
 			return (-1);
 		}
 	}
+	/* Actualizar OLDPWD al valor del directorio actual */
 
-	if (old_pwd)
-	{
-	/* Buscar la variable OLDPWD en el arreglo de variables de entorno */
-	/* char **env = environ; */
+	snprintf(oldpwd_variable, sizeof(oldpwd_variable), "OLDPWD=%s", current_directory);
+
 	while (*env)
 	{
 		if (_strncmp(*env, "OLDPWD=", 7) == 0)
 		{
-			/* Reemplazar el valor de OLDPWD con el valor almacenado en old_pwd */
-			*env = malloc(_strlen(old_pwd) + 9);  /* 7 (OLDPWD=) + 2 (NULL terminador y '=') */
-			if (*env)
-			{
-				sprintf(*env, "OLDPWD=%s", old_pwd);
-			}
-			break; /* Salir del ciclo al encontrar OLDPWD */
+			/* Replace the existing OLDPWD entry */
+			*env = oldpwd_variable;
+			break;
 		}
 		env++;
 	}
-}
-	/* Buscar la variable PWD en el arreglo de variables de entorno */
-	/* char **env = environ; */
-	while (*env)
-	{
-		if (_strncmp(*env, "PWD=", 4) == 0)
-		{
-			/* Reemplazar el valor de PWD con el valor almacenado en current_directory */
-			*env = malloc(_strlen(current_directory) + 6); /* 4 (PWD=) + 2 (NULL terminador y '=') */
-			if (*env)
-			{
-				sprintf(*env, "PWD=%s", current_directory);
-			}
-			break; /* Salir del ciclo al encontrar PWD */
-		}
-		env++;
-	}
+
+	_strcpy(previous_directory, current_directory);
+
 	return (0);
 }
-
 
 /* Salir de la shell */
 int shell_exit(char *args[])
@@ -145,48 +127,72 @@ int shell_unsetenv(char *args[])
 	return (1); /* Indicar que el comando se ejecutó correctamente */
 }
 
-/* Establecer una nueva variable de entorno o modificar una existente */
 int shell_setenv(char *args[])
 {
-	char **env = environ;
-	int num_vars = env - environ;
+	char **env = environ; /* Obtener el arreglo de variables de entorno existentes */
+	int i = 0;
+	int j;
+	int num_vars = 0;
+	char **new_environ = {NULL};
 
-	if (args[1] != NULL && args[2] != NULL)
+	if (args[1] != NULL && args[2] != NULL) /* Verificar si se proporcionan suficientes argumentos */
 	{
+		/* Crear una nueva cadena que contendrá la nueva variable de entorno en el formato "NOMBRE=VALOR" */
 		char *new_env_var = malloc(_strlen(args[1]) + _strlen(args[2]) + 2);
 		if (new_env_var == NULL)
 		{
-			perror("malloc");
-			return (1); /* Retorna 1 para indicar éxito en este caso */
+			perror("malloc");/* Mostrar error si la asignación de memoria falla */
+			return (1);
 		}
-		sprintf(new_env_var, "%s=%s", args[1], args[2]);
+		sprintf(new_env_var, "%s=%s", args[1], args[2]); /* Construir la cadena de variable de entorno */
 
-		/* char **env = environ; */
+
+
 		while (*env)
 		{
-			if (_sstrcmp(*env, args[1]) == 0)
-			{
-				/* Reemplazar la variable de entorno existente */
-				free(*env);
-				*env = new_env_var;
-				return (1); /* Retorna 1 para indicar éxito */
-			}
+			num_vars++; /* Contar el número de variables de entorno existentes */
 			env++;
 		}
-		/* Si la variable de entorno no existe, agregamos una nueva */
-		/* int num_vars = env - environ; */
-		environ = realloc(environ, (num_vars + 2) * sizeof(char *));
-		if (environ == NULL)
+	/*Crear un nuevo arreglo de variables de entorno con espacio para la nueva variable y NULL adicional*/
+		new_environ = malloc((num_vars + 2) * sizeof(char *));
+		if (new_environ == NULL)
 		{
-			perror("realloc");
+			perror("malloc"); /* Mostrar error si la asignación de memoria falla */
 			free(new_env_var);
-			return (1); /* Retorna 1 para indicar éxito en este caso */
+			return (1);
 		}
-		environ[num_vars] = new_env_var;
-		environ[num_vars + 1] = NULL;
-		return (1); /* Retorna 1 para indicar éxito */
+
+		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
+
+		while (*env)
+		{
+			new_environ[i] = _strdup(*env);
+			i++;
+			env++;
+		}
+
+		new_environ[i++] = new_env_var;/* Agregar la nueva variable de entorno al arreglo */
+		new_environ[i] = NULL; /* Marcar el final del arreglo con NULL */
+
+		environ = new_environ;/* Actualizar la variable global 'environ' para reflejar el nuevo arreglo */
+
+		printf("Variable set: %s\n", new_env_var);
+
+		free(new_env_var); /* Liberar new_env_var después de agregarlo a new_environ */
+		for (j = 0; j < num_vars; j++)
+		{
+			free(new_environ[j]); /* Liberar las variables existentes copiadas */
+		}
+		free(new_environ); /* Liberar new_environ */
+
 	}
-	return (1); /* Retorna 1 para indicar éxito por defecto */
+	else
+	{
+		fprintf(stderr, "Usage: setenv VARIABLE_NAME VALUE\n");
+		return (1);
+	}
+
+	return (0);
 }
 
 /* Liberar la memoria ocupada por el arreglo de argumentos */
