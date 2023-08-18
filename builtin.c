@@ -66,12 +66,12 @@ int shell_cd(char *args[])
 		}
 	}
 	/* Actualizar OLDPWD al valor del directorio actual */
-	snprintf(oldpwd_variable, sizeof(oldpwd_variable), "OLDPWD=%s", current_directory);
+	sprintf(oldpwd_variable, "OLDPWD=%s", current_directory);
 	while (*env)
 	{
 		if (_strncmp(*env, "OLDPWD=", 7) == 0)
 		{
-			/* Replace the existing OLDPWD entry */
+			// Replace the existing OLDPWD entry
 			*env = oldpwd_variable;
 			break;
 		}
