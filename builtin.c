@@ -21,7 +21,7 @@ char *get_env_var(const char *name)
 int shell_cd(char *args[])
 {
 	static char previous_directory[MAX_INPUT_LENGTH] = "";
-	char *oldpwd_variable= (char *)malloc((MAX_INPUT_LENGTH + 7) * sizeof(char *));  /* // +7 for "OLDPWD=" */
+	char *oldpwd_variable= (char *)malloc(MAX_INPUT_LENGTH + 7);  /* // +7 for "OLDPWD=" */
 	char **env = environ;
 	char current_directory[MAX_INPUT_LENGTH] = "";
 	int flag_found_OLDPWD = 0;
@@ -43,37 +43,31 @@ int shell_cd(char *args[])
 			perror("cd");
 			return (-1);
 		}
-	}
-	else if (args[1][0] == '-' && args[1][1] == '\0')
-{
-	char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
-	if (oldpwd == NULL)
-	{
-		char *pwd = get_env_var("PWD"); /* Obtener el valor actual de PWD */
-		if (pwd == NULL)
+	} else if (args[1][0] == '-' && args[1][1] == '\0') {
+		char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
+		if (oldpwd == NULL)
 		{
-			fprintf(stderr, "cd: No se ha definido la variable OLDPWD ni PWD\n");
-			return (-1);
+			char *pwd = get_env_var("PWD"); /* Obtener el valor actual de PWD */
+			if (pwd == NULL)
+			{
+				fprintf(stderr, "cd: No se ha definido la variable OLDPWD ni PWD\n");
+				return (-1);
+			}
+			printf("%s\n", pwd);
+			if (chdir(pwd) != 0)
+			{
+				perror("cd");
+				return (-1);
+			}
+		} else {
+			printf("%s\n", oldpwd);
+			if (chdir(oldpwd) != 0)
+			{
+				perror("cd");
+				return (-1);
+			}
 		}
-		printf("%s\n", pwd);
-		if (chdir(pwd) != 0)
-		{
-			perror("cd");
-			return (-1);
-		}
-	}
-	else
-	{
-		printf("%s\n", oldpwd);
-		if (chdir(oldpwd) != 0)
-		{
-			perror("cd");
-			return (-1);
-		}
-	}
-}
-	else
-	{
+	} else {
 		if (chdir(args[1]) != 0)
 		{
 			fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", args[1]);

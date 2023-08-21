@@ -42,7 +42,7 @@ char **copy_environ() {
 
     /* Copy each string from environ to the new array using strdup */
     for (i = 0; i < num_vars; i++) {
-        new_env[i] = strdup(environ[i]);
+        new_env[i] = _strdup(environ[i]);
         if (new_env[i] == NULL) {
             perror("strdup");
             exit(EXIT_FAILURE);
@@ -78,7 +78,7 @@ void execute_command(char *args[], int line_number)
 	if (pid == 0)
 	{
 		/* Arreglo de variables de entorno para execve */
-		char **env = copy_environ();
+		char **env = environ;
 
 		/* Verificar si el comando es ejecutable en la ubicación actual */
 		if (access(args[0], X_OK) == 0)
