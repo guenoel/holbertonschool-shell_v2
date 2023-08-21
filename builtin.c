@@ -74,7 +74,7 @@ int shell_cd(char *args[])
 	{
 		if (strncmp(*env, "OLDPWD=", 7) == 0)
 		{
-
+			free(*env);
 			*env = oldpwd_variable;
 		}
 		env++;
