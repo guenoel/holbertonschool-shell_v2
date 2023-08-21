@@ -101,12 +101,41 @@ int shell_env(char *args[])
 /* Eliminar una variable de entorno */
 int shell_unsetenv(char *args[])
 {
+	char **env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
+	char *tmp = NULL;
+	char *tmp2 = NULL;
+	int i = 0;
+	int j = 0;
+	int flag_var_env_found = 0;
+
 	if (args[1] != NULL)
 	{
-		if (unsetenv(args[1]) != 0) /* Eliminar la variable de entorno especificada */
+		while (*env)
 		{
-			perror("unsetenv"); /* Mostrar mensaje de error si unsetenv falla */
+			tmp = _strdup(*env);
+			tmp2 = strtok(tmp, "=");
+			if (_sstrcmp(tmp2, args[1]) == 0)
+			{
+				free(*env);
+				flag_var_env_found = 1;
+			}
+			free(tmp);
+			i++;
+			env++;
 		}
+		env = environ;
+		printf("i: %d\n", i);
+		printf("*env: %s\n", env[i]);
+		printf("flag: %d\n", flag_var_env_found);
+		env = environ;
+		for (j = 0; j < i; j++)
+		{
+			if (flag_var_env_found)
+			{
+				env[i] = env[i + 1];
+			}
+		}
+		env[i] = NULL;
 	}
 	return (1); /* Indicar que el comando se ejecutó correctamente */
 }
