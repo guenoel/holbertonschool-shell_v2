@@ -50,7 +50,6 @@ int shell_cd(char *args[])
 		char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
 		if (oldpwd == NULL)
 		{
-			fprintf(stderr, "cd: OLDPWD variable not set\n");
 			return (-1);
 		}
 		printf("%s\n", oldpwd); /* Imprime el valor de OLDPWD */
