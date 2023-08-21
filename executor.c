@@ -86,6 +86,18 @@ void execute_command(char *args[], int line_number)
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 
+	/* Arreglo de variables de entorno para execve */
+	char **env = environ;
+
+	/* Verificar si hay redirección de entrada o salida */
+	int input_redirect = 0;
+	int output_redirect = 0;
+	int double_output_redirect = 0;
+	char *input_file = NULL;
+	char *output_file = NULL;
+	int i=0;
+
+
 	/* Obtener el valor de la variable de entorno PATH */
 	path = _getenv("PATH");
 
@@ -100,17 +112,8 @@ void execute_command(char *args[], int line_number)
 
 	/* Código dentro del proceso hijo */
 	if (pid == 0) {
-		/* Arreglo de variables de entorno para execve */
-		char **env = environ;
 
-		/* Verificar si hay redirección de entrada o salida */
-		int input_redirect = 0;
-		int output_redirect = 0;
-		int double_output_redirect = 0;
-		char *input_file = NULL;
-		char *output_file = NULL;
-
-		for (int i = 0; args[i] != NULL; i++)
+		for (i = 0; args[i] != NULL; i++)
 		{
 			if (_sstrcmp(args[i], "<") == 0)
 			{
