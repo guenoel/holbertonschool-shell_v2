@@ -21,7 +21,7 @@ char *get_env_var(const char *name)
 int shell_cd(char *args[])
 {
 	static char previous_directory[MAX_INPUT_LENGTH] = "";
-	char *oldpwd_variable = (char *)malloc(MAX_INPUT_LENGTH + 7); // +7 for "OLDPWD="
+	char *oldpwd_variable = (char *)malloc(MAX_INPUT_LENGTH + 7);
 
 	char **env = environ;
 	char current_directory[MAX_INPUT_LENGTH] = "";
