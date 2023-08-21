@@ -2,8 +2,9 @@
 
 int main(int argc, char *argv[])
 {
-	malloc_environ();
 	char *args[MAX_ARGS]; /* Arreglo de punteros a caracteres para almacenar los tokens */
+
+	malloc_environ();
 
 	if (argc == 1)
 	{
