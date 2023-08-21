@@ -21,10 +21,20 @@ char *get_env_var(const char *name)
 int shell_cd(char *args[])
 {
 	static char previous_directory[MAX_INPUT_LENGTH] = "";
-	char *oldpwd_variable= (char *)malloc(MAX_INPUT_LENGTH + 7);  /* // +7 for "OLDPWD=" */
-	char **env = environ;
+	//char *oldpwd_variable = (char *)malloc(MAX_INPUT_LENGTH + 7);  /* // +7 for "OLDPWD=" */
+	//char **env = environ;
 	char current_directory[MAX_INPUT_LENGTH] = "";
-	int flag_found_OLDPWD = 0;
+	//int flag_found_OLDPWD = 0;
+	int i = 0;
+	char *argsetenv[3] = {NULL};
+
+	/* for(i = 0; i < (MAX_INPUT_LENGTH + 7); i++)
+		oldpwd_variable[i] = '\0'; */
+	for(i = 0; i < (MAX_INPUT_LENGTH); i++)
+	{
+		current_directory[i] = '\0';
+		previous_directory[i] = '\0';
+	}
 
 	if (getcwd(current_directory, sizeof(current_directory)) == NULL)
 	{
@@ -74,23 +84,28 @@ int shell_cd(char *args[])
 			return (-1);
 		}
 	}
-	/* Actualizar OLDPWD al valor del directorio actual */
-	sprintf(oldpwd_variable, "OLDPWD=%s", current_directory);
-	while (*env)
-	{
-		/* printf("*env: %s\n", *env);
-		printf("condition: %d\n", _strncmp(*env, "OLDPWD=", 7)); */
-		if (_strncmp(*env, "OLDPWD=", 7) == 0)
-		{
-			/* Replace the existing OLDPWD entry */
-			flag_found_OLDPWD = 1;
-			free(*env);
-			*env = oldpwd_variable;
-		}
-		env++;
-	}
-	if(!flag_found_OLDPWD)
-		*env = oldpwd_variable;
+
+	argsetenv[0] = "setenv";
+	argsetenv[1] = "OLDPWD";
+	argsetenv[2] = current_directory;
+	shell_setenv(argsetenv);
+	// /* Actualizar OLDPWD al valor del directorio actual */
+	// sprintf(oldpwd_variable, "OLDPWD=%s", current_directory);
+	// while (*env)
+	// {
+	// 	/* printf("*env: %s\n", *env);
+	// 	printf("condition: %d\n", _strncmp(*env, "OLDPWD=", 7)); */
+	// 	if (_strncmp(*env, "OLDPWD=", 7) == 0)
+	// 	{
+	// 		/* Replace the existing OLDPWD entry */
+	// 		flag_found_OLDPWD = 1;
+	// 		free(*env);
+	// 		*env = oldpwd_variable;
+	// 	}
+	// 	env++;
+	// }
+	// if(!flag_found_OLDPWD)
+	// 	*env = oldpwd_variable;
 	_strcpy(previous_directory, current_directory);
 	return (0);
 }

@@ -22,39 +22,6 @@ char *path_remover(char *arg)
 	return prog;
 }
 
-/* Function to copy the environ array into a new variable */
-char **copy_environ() {
-    char **new_env;
-    int num_vars = 0;
-	int i = 0;
-
-    /* Count the number of variables in environ */
-    while (environ[num_vars] != NULL) {
-        num_vars++;
-    }
-
-    /* Allocate memory for the new array of pointers */
-    new_env = (char **)malloc((num_vars + 1) * sizeof(char *));
-    if (new_env == NULL) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-
-    /* Copy each string from environ to the new array using strdup */
-    for (i = 0; i < num_vars; i++) {
-        new_env[i] = _strdup(environ[i]);
-        if (new_env[i] == NULL) {
-            perror("strdup");
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    /* Terminate the new array with a NULL pointer */
-    new_env[num_vars] = NULL;
-
-    return new_env;
-}
-
 void execute_command(char *args[], int line_number)
 {
 	char *dir = NULL;
