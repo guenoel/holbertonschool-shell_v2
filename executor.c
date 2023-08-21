@@ -2,6 +2,58 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <fcntl.h>
+
+
+/* Función para manejar la redirección de entrada */
+void handle_input_redirection(char *input_file)
+{
+	int fd = open(input_file, O_RDONLY);
+	if (fd == -1)
+	{
+		perror("Error opening input file");
+		exit(EXIT_FAILURE);
+	}
+	if (dup2(fd, STDIN_FILENO) == -1)
+	{
+		perror("Error redirecting input");
+		exit(EXIT_FAILURE);
+	}
+	close(fd);
+}
+
+/* Función para manejar la redirección de salida */
+void handle_output_redirection(char *output_file)
+{
+	int fd = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (fd == -1)
+	{
+		perror("Error opening output file");
+		exit(EXIT_FAILURE);
+	}
+	if (dup2(fd, STDOUT_FILENO) == -1)
+	{
+		perror("Error redirecting output");
+		exit(EXIT_FAILURE);
+	}
+	close(fd);
+}
+
+void handle_double_output_redirection(char *output_file)
+{
+	int fd = open(output_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+	if (fd == -1)
+	{
+		perror("Error opening output file");
+		exit(EXIT_FAILURE);
+	}
+	if (dup2(fd, STDOUT_FILENO) == -1)
+	{
+		perror("Error redirecting output");
+		exit(EXIT_FAILURE);
+	}
+	close(fd);
+}
 
 char *path_remover(char *arg)
 {
@@ -22,45 +74,17 @@ char *path_remover(char *arg)
 	return prog;
 }
 
-/* Function to copy the environ array into a new variable */
-char **copy_environ() {
-    char **new_env;
-    int num_vars = 0;
-	int i = 0;
-
-    /* Count the number of variables in environ */
-    while (environ[num_vars] != NULL) {
-        num_vars++;
-    }
-
-    /* Allocate memory for the new array of pointers */
-    new_env = (char **)malloc((num_vars + 1) * sizeof(char *));
-    if (new_env == NULL) {
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-
-    /* Copy each string from environ to the new array using strdup */
-    for (i = 0; i < num_vars; i++) {
-        new_env[i] = strdup(environ[i]);
-        if (new_env[i] == NULL) {
-            perror("strdup");
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    /* Terminate the new array with a NULL pointer */
-    new_env[num_vars] = NULL;
-
-    return new_env;
-}
-
 void execute_command(char *args[], int line_number)
 {
+	pid_t pid = 0;
 	char *dir = NULL;
 	char *path = NULL;
 	char *path_copy = NULL;
-	pid_t pid = 0;
+	int saved_stdin, saved_stdout;
+
+	/* Obtener el valor de los descriptores de archivo de entrada y salida estándar */
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
 
 	/* Obtener el valor de la variable de entorno PATH */
 	path = _getenv("PATH");
@@ -75,10 +99,49 @@ void execute_command(char *args[], int line_number)
 	pid = fork();
 
 	/* Código dentro del proceso hijo */
-	if (pid == 0)
-	{
+	if (pid == 0) {
 		/* Arreglo de variables de entorno para execve */
-		char **env = copy_environ();
+		char **env = environ;
+
+		/* Verificar si hay redirección de entrada o salida */
+		int input_redirect = 0;
+		int output_redirect = 0;
+		int double_output_redirect = 0;
+		char *input_file = NULL;
+		char *output_file = NULL;
+
+		for (int i = 0; args[i] != NULL; i++)
+		{
+			if (strcmp(args[i], "<") == 0)
+			{
+				input_redirect = 1;
+				input_file = args[i + 1];
+				args[i] = NULL;
+			} else if (strcmp(args[i], ">") == 0)
+			{
+				output_redirect = 1;
+				output_file = args[i + 1];
+				args[i] = NULL;
+			} else if (strcmp(args[i], ">>") == 0)
+			{
+				double_output_redirect = 1;
+				output_file = args[i + 1];
+				args[i] = NULL;
+			}
+		}
+
+		/* Antes de ejecutar el comando, manejar la redirección de entrada y salida si es necesario */
+		if (input_redirect) {
+			handle_input_redirection(input_file);
+		}
+
+		if (output_redirect) {
+			handle_output_redirection(output_file);
+		}
+
+		if (double_output_redirect) {
+			handle_double_output_redirection(output_file);
+		}
 
 		/* Verificar si el comando es ejecutable en la ubicación actual */
 		if (access(args[0], X_OK) == 0)
@@ -102,21 +165,8 @@ void execute_command(char *args[], int line_number)
 			/* Verificar si el comando es ejecutable en la nueva ruta */
 			if (access(executable_path, X_OK) == 0)
 			{
-/* 				if (_sstrcmp(args[0], "ls") == 0)
-				{
-					char executable_ls[MAX_INPUT_LENGTH * 2];
-					snprintf(executable_ls, sizeof(executable_ls), "%s%s", "LC_ALL=en_US.UTF-8 ", executable_path);
-					printf("executable_ls: %s\n", executable_ls);
-					execve(executable_ls, args, environ);
-				} else
-				{ */
-					/* Ejecutar el comando desde la nueva ruta */
+				/* Ejecutar el comando desde la nueva ruta */
 				execve(executable_path, args, env);
-				/* } */
-				/* Mostrar mensaje de error si execve falla */
-				perror("Error executing command");
-				/* Salir del proceso hijo con un código de error */
-				exit(EXIT_FAILURE);
 			}
 
 			/* Obtener el siguiente directorio en PATH */
@@ -131,18 +181,19 @@ void execute_command(char *args[], int line_number)
 		/* Salir del proceso hijo con un código de error */
 		exit(127);
 	}
-	/* Código en caso de fallo de fork */
 	else if (pid < 0)
 	{
-		/* Mostrar mensaje de error de fork */
 		print_error("Error forking");
 	}
-	/* Código dentro del proceso padre */
 	else
 	{
-		/* Liberar la memoria de la copia de la cadena PATH */
 		free(path_copy);
-		/* Esperar a que el proceso hijo termine */
 		wait(NULL);
+
+		/* Restaurar la entrada y salida estándar después de ejecutar el comando */
+		dup2(saved_stdin, STDIN_FILENO);
+		dup2(saved_stdout, STDOUT_FILENO);
+		close(saved_stdin);
+		close(saved_stdout);
 	}
 }
