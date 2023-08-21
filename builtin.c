@@ -31,7 +31,8 @@ int shell_cd(char *args[])
 		perror("getcwd");
 		return (-1);
 	}
-	if (args[1] == NULL || _sstrcmp(args[1], "~") == 0)
+
+	if (args[1] == NULL || strcmp(args[1], "~") == 0)
 	{
 		char *home_directory = get_env_var("HOME");
 		if (home_directory == NULL)
@@ -45,33 +46,20 @@ int shell_cd(char *args[])
 		}
 	}
 	else if (args[1][0] == '-' && args[1][1] == '\0')
-{
-	char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
-	if (oldpwd == NULL)
 	{
-		char *pwd = get_env_var("PWD"); /* Obtener el valor actual de PWD */
-		if (pwd == NULL)
+		char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
+		if (oldpwd == NULL)
 		{
-			fprintf(stderr, "cd: No se ha definido la variable OLDPWD ni PWD\n");
+			fprintf(stderr, "cd: OLDPWD variable not set\n");
 			return (-1);
 		}
-		printf("%s\n", pwd);
-		if (chdir(pwd) != 0)
-		{
-			perror("cd");
-			return (-1);
-		}
-	}
-	else
-	{
-		printf("%s\n", oldpwd);
+		printf("%s\n", oldpwd); /* Imprime el valor de OLDPWD */
 		if (chdir(oldpwd) != 0)
 		{
 			perror("cd");
 			return (-1);
 		}
 	}
-}
 	else
 	{
 		if (chdir(args[1]) != 0)
@@ -84,16 +72,17 @@ int shell_cd(char *args[])
 	sprintf(oldpwd_variable, "OLDPWD=%s", current_directory);
 	while (*env)
 	{
-		if (_strncmp(*env, "OLDPWD=", 7) == 0)
+		if (strncmp(*env, "OLDPWD=", 7) == 0)
 		{
-			free(*env);
+
 			*env = oldpwd_variable;
 		}
 		env++;
 	}
-	_strcpy(previous_directory, current_directory);
+	strcpy(previous_directory, current_directory);
 	return (0);
 }
+
 /* Salir de la shell */
 int shell_exit(char *args[])
 {
