@@ -21,7 +21,7 @@ char *get_env_var(const char *name)
 int shell_cd(char *args[])
 {
 	static char previous_directory[MAX_INPUT_LENGTH] = "";
-	char oldpwd_variable[MAX_INPUT_LENGTH + 7];  /* // +7 for "OLDPWD=" */
+	char *oldpwd_variable= (char *)malloc((MAX_INPUT_LENGTH + 7) * sizeof(char *));  /* // +7 for "OLDPWD=" */
 	char **env = environ;
 	char current_directory[MAX_INPUT_LENGTH];
 	if (getcwd(current_directory, sizeof(current_directory)) == NULL)
@@ -85,6 +85,7 @@ int shell_cd(char *args[])
 		if (_strncmp(*env, "OLDPWD=", 7) == 0)
 		{
 			/* Replace the existing OLDPWD entry */
+			free(*env);
 			*env = oldpwd_variable;
 			break;
 		}
