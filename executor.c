@@ -112,17 +112,17 @@ void execute_command(char *args[], int line_number)
 
 		for (int i = 0; args[i] != NULL; i++)
 		{
-			if (strcmp(args[i], "<") == 0)
+			if (_sstrcmp(args[i], "<") == 0)
 			{
 				input_redirect = 1;
 				input_file = args[i + 1];
 				args[i] = NULL;
-			} else if (strcmp(args[i], ">") == 0)
+			} else if (_sstrcmp(args[i], ">") == 0)
 			{
 				output_redirect = 1;
 				output_file = args[i + 1];
 				args[i] = NULL;
-			} else if (strcmp(args[i], ">>") == 0)
+			} else if (_sstrcmp(args[i], ">>") == 0)
 			{
 				double_output_redirect = 1;
 				output_file = args[i + 1];
