@@ -115,14 +115,72 @@ int shell_env(char *args[])
 /* Eliminar una variable de entorno */
 int shell_unsetenv(char *args[])
 {
-	if (args[1] != NULL)
+	int flag_var_env_found = 0;
+	char **new_environ = NULL;
+	char **env = environ;
+	char *tmp = NULL;
+	char *tmp2 = NULL;
+	int i = 0;
+	int num_vars = 0;
+
+	/* Count var env without final NULL */
+	while (*env)
 	{
-		if (unsetenv(args[1]) != 0) /* Eliminar la variable de entorno especificada */
-		{
-			perror("unsetenv"); /* Mostrar mensaje de error si unsetenv falla */
-		}
+		tmp = _strdup(*env);
+		tmp2 = strtok(tmp, "=");
+		if (_sstrcmp(tmp2, args[1]) == 0)
+			flag_var_env_found = 1;
+		free(tmp);
+		num_vars++;
+		env++;
 	}
-	return (1); /* Indicar que el comando se ejecutó correctamente */
+/* 	printf("size: %d\n", num_vars);
+	printf("env_end: %s\n", *env);
+	printf("flag: %d\n", flag_var_env_found); */
+	if (flag_var_env_found)
+	{
+		/* re-init env to the start */
+		char **env = environ;
+		/* create new env with a variable less */
+		new_environ = (char **)malloc((num_vars) * sizeof(char *));
+		while (*env)
+		{
+			tmp = _strdup(*env);
+			tmp2 = strtok(tmp, "=");
+			
+			if (_sstrcmp(tmp2, args[1]) != 0)
+			{
+				/* printf("copié: %s i: %d\n", tmp2, i); */
+				new_environ[i] = _strdup(*env);
+				i++;
+			} /* else {
+				printf("pas copié: %s\n", *env);
+			} */
+			free(tmp);
+			env++;
+		}
+		/* printf("i null: %d\n", i); */
+		new_environ[i] = NULL;
+ 		env = environ;
+/*		while(*env)
+		{
+			printf("env_avant_free: %s\n", *env);
+			env++;
+		} */
+		free_args(env);
+		free(env);
+		environ = new_environ;
+/* 		env = environ;
+		while(*env)
+		{
+			printf("env_final: %s\n", *env);
+			env++;
+		} */
+	} else {
+		print_error("variable does not exist in env");
+		return(-1);
+	}
+	return(0);
 }
 int shell_setenv(char *args[])
 {
