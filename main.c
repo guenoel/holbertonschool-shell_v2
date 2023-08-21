@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 			return (1); /* Salir con código de error */
 		}
 	}
-	/* free_args(environ); */
+	free_args(environ);
 	free(environ);
 	return (0); /* Salir con éxito */
 }
