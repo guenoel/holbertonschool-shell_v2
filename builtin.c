@@ -91,6 +91,7 @@ int shell_cd(char *args[])
 		}
 		env++;
 	}
+	free(oldpwd_variable);
 	_strcpy(previous_directory, current_directory);
 	return (0);
 }
