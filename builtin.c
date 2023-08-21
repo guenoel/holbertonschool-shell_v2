@@ -104,6 +104,7 @@ int shell_env(char *args[])
 /* Eliminar una variable de entorno */
 int shell_unsetenv(char *args[])
 {
+	int num_args = 0;
 	int flag_var_env_found = 0;
 	char **new_environ = NULL;
 	char **env = environ;
@@ -111,6 +112,11 @@ int shell_unsetenv(char *args[])
 	char *tmp2 = NULL;
 	int i = 0;
 	int num_vars = 0;
+
+	while (args[num_args] != NULL)
+		num_args++;
+	if (num_args == 1)
+		return(0);
 
 /* STEP 1 - PREPARACION DEL DATA, DE num_vars Y DEL FLAG*/
 	while (*env)
