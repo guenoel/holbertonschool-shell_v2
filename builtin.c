@@ -156,6 +156,7 @@ int shell_unsetenv(char *args[])
 		}
 		new_environ[i] = NULL;
 /* STEP 4 FREE OLD ENV*/
+		/* re-init env to the start */
  		env = environ;
 		free_args(env);
 		free(env);
