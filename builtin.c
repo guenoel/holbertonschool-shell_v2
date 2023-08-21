@@ -89,7 +89,7 @@ int shell_cd(char *args[])
 		if (_strncmp(*env, "OLDPWD=", 7) == 0)
 		{
 			/* Replace the existing OLDPWD entry */
-			flag_found_OLDPWD = 1;
+			/* flag_found_OLDPWD = 1; */
 			free(*env);
 			*env = oldpwd_variable;
 		}
