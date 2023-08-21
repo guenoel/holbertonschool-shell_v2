@@ -104,14 +104,58 @@ int shell_env(char *args[])
 /* Eliminar una variable de entorno */
 int shell_unsetenv(char *args[])
 {
-	if (args[1] != NULL)
+	int flag_var_env_found = 0;
+	char **new_environ = NULL;
+	char **env = environ;
+	char *tmp = NULL;
+	char *tmp2 = NULL;
+	int i = 0;
+	int num_vars = 0;
+
+/* STEP 1 - PREPARACION DEL DATA, DE num_vars Y DEL FLAG*/
+	while (*env)
 	{
-		if (unsetenv(args[1]) != 0) /* Eliminar la variable de entorno especificada */
-		{
-			perror("unsetenv"); /* Mostrar mensaje de error si unsetenv falla */
-		}
+		tmp = _strdup(*env);
+		tmp2 = strtok(tmp, "=");
+		if (_sstrcmp(tmp2, args[1]) == 0)
+			flag_var_env_found = 1;
+		free(tmp);
+		num_vars++;
+		env++;
 	}
-	return (1); /* Indicar que el comando se ejecutó correctamente */
+	if (flag_var_env_found)
+	{
+		/* re-init env to the start */
+		char **env = environ;
+/* STEP 2 CREACION DEL NEW ENV WITH A VARIABLE LESS */
+		new_environ = (char **)malloc((num_vars) * sizeof(char *));
+/* STEP 3 COPY FROM OLD TO NEW ENV*/
+		while (*env)
+		{
+			tmp = _strdup(*env);
+			tmp2 = strtok(tmp, "=");
+
+			if (_sstrcmp(tmp2, args[1]) != 0)
+			{
+				new_environ[i] = _strdup(*env);
+				i++;
+			}
+			free(tmp);
+			env++;
+		}
+		new_environ[i] = NULL;
+/* STEP 4 FREE OLD ENV*/
+		/* re-init env to the start */
+ 		env = environ;
+		free_args(env);
+		free(env);
+/* STEP 5 ASIGNACION DE NUEVO ENVIRON */
+		environ = new_environ;
+	} else {
+		print_error("variable does not exist in env");
+		return(-1);
+	}
+	return(0);
 }
 int shell_setenv(char *args[])
 {
