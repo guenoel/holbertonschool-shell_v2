@@ -24,6 +24,8 @@ int shell_cd(char *args[])
 	char *oldpwd_variable= (char *)malloc((MAX_INPUT_LENGTH + 7) * sizeof(char *));  /* // +7 for "OLDPWD=" */
 	char **env = environ;
 	char current_directory[MAX_INPUT_LENGTH] = "";
+	int flag_found_OLDPWD = 0;
+
 	if (getcwd(current_directory, sizeof(current_directory)) == NULL)
 	{
 		perror("getcwd");
@@ -87,12 +89,14 @@ int shell_cd(char *args[])
 		if (_strncmp(*env, "OLDPWD=", 7) == 0)
 		{
 			/* Replace the existing OLDPWD entry */
+			flag_found_OLDPWD = 1;
 			free(*env);
 			*env = oldpwd_variable;
-			break;
 		}
 		env++;
 	}
+	if (!flag_found_OLDPWD)
+		*env = oldpwd_variable;
 	_strcpy(previous_directory, current_directory);
 	return (0);
 }
