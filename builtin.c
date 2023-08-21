@@ -21,18 +21,23 @@ char *get_env_var(const char *name)
 int shell_cd(char *args[])
 {
 	static char previous_directory[MAX_INPUT_LENGTH] = "";
-	char *oldpwd_variable = (char *)malloc(MAX_INPUT_LENGTH + 7);
-
-	char **env = environ;
 	char current_directory[MAX_INPUT_LENGTH] = "";
+
+	int i = 0;
+	char *argsetenv[3] = {NULL};
+
+	for(i = 0; i < (MAX_INPUT_LENGTH); i++)
+	{
+		current_directory[i] = '\0';
+		previous_directory[i] = '\0';
+	}
 
 	if (getcwd(current_directory, sizeof(current_directory)) == NULL)
 	{
 		perror("getcwd");
 		return (-1);
 	}
-
-	if (args[1] == NULL || strcmp(args[1], "~") == 0)
+	if (args[1] == NULL || _sstrcmp(args[1], "~") == 0)
 	{
 		char *home_directory = get_env_var("HOME");
 		if (home_directory == NULL)
@@ -44,45 +49,46 @@ int shell_cd(char *args[])
 			perror("cd");
 			return (-1);
 		}
-	}
-	else if (args[1][0] == '-' && args[1][1] == '\0')
-	{
+	} else if (args[1][0] == '-' && args[1][1] == '\0') {
 		char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
 		if (oldpwd == NULL)
 		{
-			/* jjj */
-			return (-1);
+			char *pwd = get_env_var("PWD"); /* Obtener el valor actual de PWD */
+			if (pwd == NULL)
+			{
+				fprintf(stderr, "cd: No se ha definido la variable OLDPWD ni PWD\n");
+				return (-1);
+			}
+			printf("%s\n", pwd);
+			if (chdir(pwd) != 0)
+			{
+				perror("cd");
+				return (-1);
+			}
+		} else {
+			printf("%s\n", oldpwd);
+			if (chdir(oldpwd) != 0)
+			{
+				perror("cd");
+				return (-1);
+			}
 		}
-		printf("%s\n", oldpwd); /* Imprime el valor de OLDPWD */
-		if (chdir(oldpwd) != 0)
-		{
-			perror("cd");
-			return (-1);
-		}
-	}
-	else
-	{
+	} else {
 		if (chdir(args[1]) != 0)
 		{
 			fprintf(stderr, "./hsh: 1: cd: can't cd to %s\n", args[1]);
 			return (-1);
 		}
 	}
-	/* Actualizar OLDPWD al valor del directorio actual */
-	sprintf(oldpwd_variable, "OLDPWD=%s", current_directory);
-	while (*env)
-	{
-		if (strncmp(*env, "OLDPWD=", 7) == 0)
-		{
-			free(*env);
-			*env = oldpwd_variable;
-		}
-		env++;
-	}
-	strcpy(previous_directory, current_directory);
+
+	argsetenv[0] = "setenv";
+	argsetenv[1] = "OLDPWD";
+	argsetenv[2] = current_directory;
+	shell_setenv(argsetenv);
+
+	_strcpy(previous_directory, current_directory);
 	return (0);
 }
-
 /* Salir de la shell */
 int shell_exit(char *args[])
 {
@@ -104,7 +110,6 @@ int shell_env(char *args[])
 /* Eliminar una variable de entorno */
 int shell_unsetenv(char *args[])
 {
-	int num_args = 0;
 	int flag_var_env_found = 0;
 	char **new_environ = NULL;
 	char **env = environ;
@@ -112,6 +117,7 @@ int shell_unsetenv(char *args[])
 	char *tmp2 = NULL;
 	int i = 0;
 	int num_vars = 0;
+	int num_args = 0;
 
 	while (args[num_args] != NULL)
 		num_args++;
@@ -238,7 +244,7 @@ int shell_setenv(char *args[])
 		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
 		free_args(env);
 		free(env);
-/* ASIGNACION DE NUEVO ENVIRON */
+/* STEP 5 ASIGNACION DE NUEVO ENVIRON */
 		environ = new_environ;/* Actualizar la variable global 'environ' para reflejar el nuevo arreglo */
 	}
 	else
