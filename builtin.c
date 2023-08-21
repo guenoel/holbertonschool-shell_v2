@@ -43,13 +43,25 @@ int shell_cd(char *args[])
 		}
 	}
 	else if (args[1][0] == '-' && args[1][1] == '\0')
+{
+	char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
+	if (oldpwd == NULL)
 	{
-		char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
-		if (oldpwd == NULL)
+		char *pwd = get_env_var("PWD"); /* Obtener el valor actual de PWD */
+		if (pwd == NULL)
 		{
-			fprintf(stderr, "cd: No se ha definido la variable OLDPWD\n");
+			fprintf(stderr, "cd: No se ha definido la variable OLDPWD ni PWD\n");
 			return (-1);
 		}
+		printf("%s\n", pwd);
+		if (chdir(pwd) != 0)
+		{
+			perror("cd");
+			return (-1);
+		}
+	}
+	else
+	{
 		printf("%s\n", oldpwd);
 		if (chdir(oldpwd) != 0)
 		{
@@ -57,6 +69,7 @@ int shell_cd(char *args[])
 			return (-1);
 		}
 	}
+}
 	else
 	{
 		if (chdir(args[1]) != 0)
