@@ -122,6 +122,12 @@ int shell_unsetenv(char *args[])
 	char *tmp2 = NULL;
 	int i = 0;
 	int num_vars = 0;
+	int num_args = 0;
+
+	while (args[num_args] != NULL)
+		num_args++;
+	if (num_args == 1)
+		return(0);
 
 /* STEP 1 - PREPARACION DEL DATA, DE num_vars Y DEL FLAG*/
 	while (*env)
