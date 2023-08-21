@@ -85,13 +85,25 @@ int shell_cd(char *args[])
 		if (_strncmp(*env, "OLDPWD=", 7) == 0)
 		{
 			/* Replace the existing OLDPWD entry */
-			printf("cuu");
 			free(*env);
 			*env = oldpwd_variable;
 			break;
 		}
 		env++;
 	}
+
+	if (!*env)
+{
+	char pwd_variable[MAX_INPUT_LENGTH + 4];
+	sprintf(pwd_variable, "PWD=%s", current_directory);
+
+	while (*env)
+	{
+		env++;
+	}
+
+	*env = _strdup(pwd_variable);
+}
 	_strcpy(previous_directory, current_directory);
 	return (0);
 }
