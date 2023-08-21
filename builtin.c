@@ -123,7 +123,7 @@ int shell_unsetenv(char *args[])
 	int i = 0;
 	int num_vars = 0;
 
-	/* Count var env without final NULL */
+/* STEP 1 - PREPARACION DEL DATA, DE num_vars Y DEL FLAG*/
 	while (*env)
 	{
 		tmp = _strdup(*env);
@@ -134,15 +134,13 @@ int shell_unsetenv(char *args[])
 		num_vars++;
 		env++;
 	}
-/* 	printf("size: %d\n", num_vars);
-	printf("env_end: %s\n", *env);
-	printf("flag: %d\n", flag_var_env_found); */
 	if (flag_var_env_found)
 	{
 		/* re-init env to the start */
 		char **env = environ;
-		/* create new env with a variable less */
+/* STEP 2 CREACION DEL NEW ENV WITH A VARIABLE LESS */
 		new_environ = (char **)malloc((num_vars) * sizeof(char *));
+/* STEP 3 COPY FROM OLD TO NEW ENV*/
 		while (*env)
 		{
 			tmp = _strdup(*env);
@@ -150,32 +148,19 @@ int shell_unsetenv(char *args[])
 			
 			if (_sstrcmp(tmp2, args[1]) != 0)
 			{
-				/* printf("copié: %s i: %d\n", tmp2, i); */
 				new_environ[i] = _strdup(*env);
 				i++;
-			} /* else {
-				printf("pas copié: %s\n", *env);
-			} */
+			}
 			free(tmp);
 			env++;
 		}
-		/* printf("i null: %d\n", i); */
 		new_environ[i] = NULL;
+/* STEP 4 FREE OLD ENV*/
  		env = environ;
-/*		while(*env)
-		{
-			printf("env_avant_free: %s\n", *env);
-			env++;
-		} */
 		free_args(env);
 		free(env);
+/* STEP 5 ASIGNACION DE NUEVO ENVIRON */
 		environ = new_environ;
-/* 		env = environ;
-		while(*env)
-		{
-			printf("env_final: %s\n", *env);
-			env++;
-		} */
 	} else {
 		print_error("variable does not exist in env");
 		return(-1);
@@ -257,7 +242,7 @@ int shell_setenv(char *args[])
 		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
 		free_args(env);
 		free(env);
-/* ASIGNACION DE NUEVO ENVIRON */
+/* STEP 5 ASIGNACION DE NUEVO ENVIRON */
 		environ = new_environ;/* Actualizar la variable global 'environ' para reflejar el nuevo arreglo */
 	}
 	else
