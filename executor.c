@@ -82,10 +82,6 @@ void execute_command(char *args[], int line_number)
 	char *path_copy = NULL;
 	int saved_stdin, saved_stdout;
 
-	/* Obtener el valor de los descriptores de archivo de entrada y salida estándar */
-	saved_stdin = dup(STDIN_FILENO);
-	saved_stdout = dup(STDOUT_FILENO);
-
 	/* Arreglo de variables de entorno para execve */
 	char **env = environ;
 
@@ -97,6 +93,9 @@ void execute_command(char *args[], int line_number)
 	char *output_file = NULL;
 	int i=0;
 
+	/* Obtener el valor de los descriptores de archivo de entrada y salida estándar */
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
 
 	/* Obtener el valor de la variable de entorno PATH */
 	path = _getenv("PATH");
