@@ -80,9 +80,11 @@ int shell_cd(char *args[])
 	}
 	/* Actualizar OLDPWD al valor del directorio actual */
 	sprintf(oldpwd_variable, "OLDPWD=%s", current_directory);
+	printf("*env: %s\n", *env);
+	printf("condition: %d\n", _strncmp(*env, "OLDPWD=", 7));
 	while (*env)
 	{
-		printf("condition: %d\n", _strncmp(*env, "OLDPWD=", 7));
+		
 		if (_strncmp(*env, "OLDPWD=", 7) == 0)
 		{
 			/* Replace the existing OLDPWD entry */
