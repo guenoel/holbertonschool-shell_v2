@@ -60,13 +60,18 @@ char *_strcpy(char *dest, const char *src)
 /* Duplicar una cadena */
 char *_strdup(const char *str)
 {
-	size_t len = _strlen(str);
-	char *copy = (char *)malloc(len + 1);
-	if (copy)
+	if (str == NULL)
+		return (NULL);
+	else
 	{
-		_strcpy(copy, str);
+		size_t len = _strlen(str);
+		char *copy = (char *)malloc(len + 1);
+			if (copy)
+			{
+				_strcpy(copy, str);
+			}
+		return (copy);
 	}
-	return (copy);
 }
 
 /* Comparar dos cadenas */
