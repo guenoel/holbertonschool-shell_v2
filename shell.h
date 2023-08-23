@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdbool.h>
+#include <stdbool.h>
 
 #define MAX_INPUT_LENGTH 1024
 #define MAX_ARGS 64
