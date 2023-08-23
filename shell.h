@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <ctype.h>
 
 #define MAX_INPUT_LENGTH 1024
 #define MAX_ARGS 64
@@ -21,7 +22,7 @@ void execute_command(char *args[], int line_number);
 void run_shell_loop(void);
 
 int shell_cd(char *args[]);
-int shell_exit(char *args[]);
+int shell_exit(char *args[], int line_number);
 int shell_env(char *args[]);
 int shell_setenv(char *args[]);
 int shell_unsetenv(char *args[]);
@@ -43,5 +44,6 @@ char *getoptions(int argc, char *argv[]);
 void malloc_environ();
 int init_array_of_strings(char **array_of_strings, int size);
 int init_string(char *string, int size);
+char *adjust_redirection_syntax(const char *input);
 
 #endif /* SHELL_H */

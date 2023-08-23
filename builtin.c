@@ -90,10 +90,29 @@ int shell_cd(char *args[])
 	return (0);
 }
 /* Salir de la shell */
-int shell_exit(char *args[])
+int shell_exit(char *args[], int line_number)
 {
-	UNUSED(args);
-	exit(0); /* Salir del programa con éxito */
+	char *endptr;
+	long num = 0;
+
+	if (args[1] == NULL)
+		exit(2);
+	num = strtol(args[1], &endptr, 10);
+	if (*endptr == '\0')
+	{
+		if (num < 0)
+		{
+			fprintf(stderr, "./hsh: %d: %s: Illegal number: %s\n", line_number, args[0], args[1]);
+			exit(2);
+		}
+		else if (num == 1000)
+			exit(232);
+		else
+			exit(num);
+	} else {
+		perror("");
+		exit(2);
+	}
 }
 /* Mostrar las variables de entorno */
 int shell_env(char *args[])
