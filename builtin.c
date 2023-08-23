@@ -118,6 +118,7 @@ int shell_exit(char *args[], int line_number)
 		}
 	} else {
 		perror("");
+		free_args(args);
 		exit(2);
 	}
 }
