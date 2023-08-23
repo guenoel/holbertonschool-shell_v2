@@ -74,6 +74,48 @@ char *path_remover(char *arg)
 	return prog;
 }
 
+/* Función para ajustar la sintaxis de redirección */
+char *adjust_redirection_syntax(const char *input)
+{
+	char *adjusted = malloc(strlen(input) * 3 + 1); /* Espacio suficiente para la cadena ajustada */
+	int adjusted_index = 0;
+	int last_char_was_space = 0;
+
+	for (int i = 0; input[i] != '\0'; i++)
+	{
+		if (input[i] == '<' || input[i] == '>' || (input[i] == '&' && input[i + 1] == '>'))
+		{
+			if (i > 0 && !last_char_was_space)
+			{
+				adjusted[adjusted_index++] = ' '; /* Añadir espacio antes del operador si no hay uno */
+			}
+
+			adjusted[adjusted_index++] = input[i];
+
+			if (input[i + 1] != ' ')
+			{
+				adjusted[adjusted_index++] = ' '; /* Añadir espacio después del operador si no hay uno */
+			}
+			else
+			{
+				i++; /* Avanzar un carácter extra para evitar duplicar espacios */
+			}
+
+			last_char_was_space = 1; /* Establecer que el último carácter fue un espacio */
+		}
+		else
+		{
+			adjusted[adjusted_index++] = input[i];
+			last_char_was_space = (input[i] == ' '); /* Actualizar si el último carácter fue un espacio */
+		}
+	}
+
+	adjusted[adjusted_index] = '\0'; /* Terminar la cadena */
+
+	return adjusted;
+}
+
+
 void execute_command(char *args[], int line_number)
 {
 	pid_t pid = 0;
@@ -119,12 +161,14 @@ void execute_command(char *args[], int line_number)
 				input_redirect = 1;
 				input_file = args[i + 1];
 				args[i] = NULL;
-			} else if (_sstrcmp(args[i], ">") == 0)
+			}
+			else if (_sstrcmp(args[i], ">") == 0)
 			{
 				output_redirect = 1;
 				output_file = args[i + 1];
 				args[i] = NULL;
-			} else if (_sstrcmp(args[i], ">>") == 0)
+			}
+			else if (_sstrcmp(args[i], ">>") == 0)
 			{
 				double_output_redirect = 1;
 				output_file = args[i + 1];
@@ -145,15 +189,15 @@ void execute_command(char *args[], int line_number)
 			handle_double_output_redirection(output_file);
 		}
 
-		/* Verificar si el comando es ejecutable en la ubicación actual */
-		if (access(args[0], X_OK) == 0)
-		{
-			/* Ejecutar el comando */
-			execve(args[0], args, env);
+		char *adjusted_command = adjust_redirection_syntax(args[0]);
+		printf("Comando ajustado: %s\n", adjusted_command);
+		
 
-			/* Mostrar mensaje de error si execve falla */
+		/* Verificar si el comando es ejecutable en la ubicación actual */
+		if (access(adjusted_command, X_OK) == 0)
+		{
+			execve(adjusted_command, args, env);
 			perror("Error executing command");
-			/* Salir del proceso hijo con un código de error */
 			exit(EXIT_FAILURE);
 		}
 
@@ -162,7 +206,9 @@ void execute_command(char *args[], int line_number)
 		{
 			/* Almacenar la ruta completa del ejecutable */
 			char executable_path[MAX_INPUT_LENGTH];
-			snprintf(executable_path, sizeof(executable_path), "%s/%s", dir, args[0]);
+			snprintf(executable_path, sizeof(executable_path), "%s/%s", dir, adjusted_command);
+			printf("Intentando ejecutar desde: %s\n", executable_path);
+
 
 			/* Verificar si el comando es ejecutable en la nueva ruta */
 			if (access(executable_path, X_OK) == 0)
@@ -179,7 +225,7 @@ void execute_command(char *args[], int line_number)
 		free(path_copy);
 
 		/* Mostrar mensaje de comando no encontrado */
-		fprintf(stderr, "./hsh: %d: %s: not found\n", line_number, args[0]);
+		fprintf(stderr, "./hsh: %d: %s: not found\n", line_number, adjusted_command);
 		/* Salir del proceso hijo con un código de error */
 		exit(127);
 	}
