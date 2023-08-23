@@ -171,7 +171,7 @@ int _setenv(const char *name, const char *value)
 	return 0; /* Liberar la memoria si no se pudo establecer la variable */
 }
 
-long my_strtol(const char *str, char **endptr, int base) {
+long _strtol(const char *str, char **endptr, int base) {
     long result = 0;
     bool is_negative = false;
 
