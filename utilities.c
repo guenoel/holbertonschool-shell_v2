@@ -165,3 +165,64 @@ int _setenv(const char *name, const char *value)
 
 	return 0; /* Liberar la memoria si no se pudo establecer la variable */
 }
+
+long _strtol(const char *str, char **endptr, int base) {
+    long result = 0;
+    bool is_negative = false;
+
+    // Skip leading white spaces
+    while (*str == ' ' || *str == '\t') {
+        str++;
+    }
+
+    // Handle sign
+    if (*str == '-') {
+        is_negative = true;
+        str++;
+    } else if (*str == '+') {
+        str++;
+    }
+
+    // Handle base prefix (0x for hexadecimal, 0 for octal)
+    if (base == 0) {
+        if (*str == '0') {
+            str++;
+            if (*str == 'x' || *str == 'X') {
+                base = 16;
+                str++;
+            } else {
+                base = 8;
+            }
+        } else {
+            base = 10;
+        }
+    }
+
+    // Conversion loop
+    while (*str != '\0') {
+        char c = *str;
+        int digit_value = -1;
+
+        if ('0' <= c && c <= '9') {
+            digit_value = c - '0';
+        } else if (base == 16 && ('a' <= c && c <= 'f')) {
+            digit_value = c - 'a' + 10;
+        } else if (base == 16 && ('A' <= c && c <= 'F')) {
+            digit_value = c - 'A' + 10;
+        }
+
+        if (digit_value == -1) {
+            break; // Invalid character
+        }
+
+        result = result * base + digit_value;
+        str++;
+    }
+
+    // Set endptr to point to the first non-convertible character
+    if (endptr != NULL) {
+        *endptr = (char *)str;
+    }
+
+    return is_negative ? -result : result;
+}
