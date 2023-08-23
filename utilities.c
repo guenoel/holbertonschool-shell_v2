@@ -171,16 +171,16 @@ int _setenv(const char *name, const char *value)
 	return 0; /* Liberar la memoria si no se pudo establecer la variable */
 }
 
-long _strtol(const char *str, char **endptr, int base) {
+long my_strtol(const char *str, char **endptr, int base) {
     long result = 0;
     bool is_negative = false;
 
-    // Skip leading white spaces
+    /* Skip leading white spaces */
     while (*str == ' ' || *str == '\t') {
         str++;
     }
 
-    // Handle sign
+    /* Handle sign */
     if (*str == '-') {
         is_negative = true;
         str++;
@@ -188,7 +188,7 @@ long _strtol(const char *str, char **endptr, int base) {
         str++;
     }
 
-    // Handle base prefix (0x for hexadecimal, 0 for octal)
+    /* Handle base prefix (0x for hexadecimal, 0 for octal) */
     if (base == 0) {
         if (*str == '0') {
             str++;
@@ -203,7 +203,7 @@ long _strtol(const char *str, char **endptr, int base) {
         }
     }
 
-    // Conversion loop
+    /* Conversion loop */
     while (*str != '\0') {
         char c = *str;
         int digit_value = -1;
@@ -217,14 +217,14 @@ long _strtol(const char *str, char **endptr, int base) {
         }
 
         if (digit_value == -1) {
-            break; // Invalid character
+            break; /* Invalid character */
         }
 
         result = result * base + digit_value;
         str++;
     }
 
-    // Set endptr to point to the first non-convertible character
+    /* Set endptr to point to the first non-convertible character */
     if (endptr != NULL) {
         *endptr = (char *)str;
     }
