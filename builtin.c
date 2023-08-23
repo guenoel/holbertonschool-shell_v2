@@ -95,9 +95,11 @@ int shell_exit(char *args[], int line_number)
 	char *endptr;
 	long num = 0;
 	
+	free_args(environ);
+	free(environ);
 	if (args[1] == NULL)
 		exit(2);
-	num = strtol(args[1], &endptr, 10);
+	num = _strtol(args[1], &endptr, 10);
 	if (*endptr == '\0')
 	{
 		if (num < 0)
