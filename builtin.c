@@ -94,23 +94,33 @@ int shell_exit(char *args[], int line_number)
 {
 	char *endptr;
 	long num = 0;
-
+	
+	free_args(environ);
+	free(environ);
 	if (args[1] == NULL)
 		exit(2);
-	num = strtol(args[1], &endptr, 10);
+	num = _strtol(args[1], &endptr, 10);
 	if (*endptr == '\0')
 	{
 		if (num < 0)
 		{
 			fprintf(stderr, "./hsh: %d: %s: Illegal number: %s\n", line_number, args[0], args[1]);
+			free_args(args);
 			exit(2);
 		}
 		else if (num == 1000)
+		{
+			free_args(args);
 			exit(232);
+		}
 		else
+		{
+			free_args(args);
 			exit(num);
+		}
 	} else {
 		perror("");
+		free_args(args);
 		exit(2);
 	}
 }
