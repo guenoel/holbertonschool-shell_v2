@@ -21,7 +21,7 @@ void execute_command(char *args[], int line_number);
 void run_shell_loop(void);
 
 int shell_cd(char *args[]);
-int shell_exit(char *args[]);
+int shell_exit(char *args[], int line_number);
 int shell_env(char *args[]);
 int shell_setenv(char *args[]);
 int shell_unsetenv(char *args[]);
