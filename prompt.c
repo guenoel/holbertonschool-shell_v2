@@ -92,10 +92,8 @@ void run_shell_loop(void)
 
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
-			shell_exit(args, line_number);
 			free(input);
-			free_args(args);
-			break; /* Salir de la shell si el comando es "exit" */
+			shell_exit(args, line_number);
 		}
 		else if (_sstrcmp(args[0], "cd") == 0)
 		{
