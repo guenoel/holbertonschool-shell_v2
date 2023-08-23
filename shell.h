@@ -9,8 +9,8 @@
 #include <stddef.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <ctype.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #define MAX_INPUT_LENGTH 1024
 #define MAX_ARGS 64
@@ -45,7 +45,6 @@ char *getoptions(int argc, char *argv[]);
 void malloc_environ();
 int init_array_of_strings(char **array_of_strings, int size);
 int init_string(char *string, int size);
-char *adjust_redirection_syntax(const char *input);
 long _strtol(const char *str, char **endptr, int base);
 
 #endif /* SHELL_H */
