@@ -96,6 +96,8 @@ int shell_exit(char *args[], int line_number, int child_status)
 	char *endptr = NULL;
 	long num = 0;
 
+	free_args(environ);
+	free(environ);
 	if (args[1] == NULL)
 	{
 		exit(child_status);

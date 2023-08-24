@@ -94,8 +94,6 @@ int run_shell_loop(void)
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
 			free(input);
-			free_args(environ);
-			free(environ);
 			shell_exit(args, line_number, status);
 		}
 		else if (_sstrcmp(args[0], "cd") == 0)
