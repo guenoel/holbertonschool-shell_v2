@@ -94,13 +94,17 @@ int shell_exit(char *args[], int line_number)
 {
 	char *endptr = NULL;
 	long num = 0;
-	
+
 	free_args(environ);
 	free(environ);
 	if (args[1] == NULL)
 	{
 		if (line_number > 1)
+		{
+			free_args(args);
 			exit(2);
+		}
+		free_args(args);
 		exit(0);
 	}
 	num = _strtol(args[1], &endptr, 10);
