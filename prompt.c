@@ -93,7 +93,6 @@ void run_shell_loop(void)
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
 			free(input);
-			free_args(args);
 			shell_exit(args, line_number);
 		}
 		else if (_sstrcmp(args[0], "cd") == 0)
