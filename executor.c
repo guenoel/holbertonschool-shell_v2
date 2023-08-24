@@ -134,7 +134,7 @@ int execute_command(char *args[], int line_number)
 			return(127);
 		}
 	} else {
-		strcpy(executable_path, args[0]);
+		_strcpy(executable_path, args[0]);
 	}
 
 	pid = fork();
