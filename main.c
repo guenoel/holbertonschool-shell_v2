@@ -3,13 +3,14 @@
 int main(int argc, char *argv[])
 {
 	char *args[MAX_ARGS]; /* Arreglo de punteros a caracteres para almacenar los tokens */
+	int status = 0;
 
 	malloc_environ();
 
 	if (argc == 1)
 	{
 		/* Modo interactivo */
-		run_shell_loop(); /* Llamar a la función para ejecutar el bucle de la shell */
+		status = run_shell_loop(); /* Llamar a la función para ejecutar el bucle de la shell */
 	}
 	else
 	{
@@ -37,5 +38,5 @@ int main(int argc, char *argv[])
 	}
 	free_args(environ);
 	free(environ);
-	return (0); /* Salir con éxito */
+	return (status); /* Salir con éxito */
 }

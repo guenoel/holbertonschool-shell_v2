@@ -74,7 +74,7 @@ char *path_remover(char *arg)
 	return prog;
 }
 
-void execute_command(char *args[], int line_number)
+int execute_command(char *args[], int line_number)
 {
 	pid_t pid = 0;
 	char *dir = NULL;
@@ -192,11 +192,10 @@ void execute_command(char *args[], int line_number)
 	{
 		free(path_copy);
 		waitpid(pid, &status, 0);
-
         if (WIFEXITED(status))
 		{
             int exit_status = WEXITSTATUS(status);
-            exit(exit_status);
+            return(exit_status);
         } else
 		{
             printf("Child process did not exit normally\n");
@@ -208,4 +207,5 @@ void execute_command(char *args[], int line_number)
 		close(saved_stdin);
 		close(saved_stdout);
 	}
+	return(0);
 }

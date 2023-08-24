@@ -89,8 +89,9 @@ int shell_cd(char *args[])
 	_strcpy(previous_directory, current_directory);
 	return (0);
 }
+
 /* Salir de la shell */
-int shell_exit(char *args[], int line_number)
+int shell_exit(char *args[], int line_number, int child_status)
 {
 	char *endptr = NULL;
 	long num = 0;
@@ -99,13 +100,7 @@ int shell_exit(char *args[], int line_number)
 	free(environ);
 	if (args[1] == NULL)
 	{
-		if (line_number > 1)
-		{
-			free_args(args);
-			exit(2);
-		}
-		free_args(args);
-		exit(0);
+		exit(child_status);
 	}
 	num = _strtol(args[1], &endptr, 10);
 	if (*endptr == '\0')

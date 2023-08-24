@@ -51,12 +51,13 @@ char *read_input()
 
 
 /* Ejecutar el bucle principal de la shell */
-void run_shell_loop(void)
+int run_shell_loop(void)
 {
 	char *input = NULL;
 	char *args[MAX_ARGS];
 	int num_args = 0;
 	int line_number = 0;
+	int status = 0;
 
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */
 	{
@@ -93,7 +94,7 @@ void run_shell_loop(void)
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
 			free(input);
-			shell_exit(args, line_number);
+			shell_exit(args, line_number, status);
 		}
 		else if (_sstrcmp(args[0], "cd") == 0)
 		{
@@ -113,9 +114,10 @@ void run_shell_loop(void)
 		}
 		else
 		{
-			execute_command(args, line_number); /* Ejecutar un comando externo */
+			status = execute_command(args, line_number); /* Ejecutar un comando externo */
 		}
 		free(input); /* Liberar la memoria de la línea de entrada */
 		free_args(args); /* Liberar la memoria de los argumentos tokenizados */
 	}
+	return (status);
 }
