@@ -231,3 +231,18 @@ long _strtol(const char *str, char **endptr, int base) {
 
     return is_negative ? -result : result;
 }
+
+char *_strchr(const char *str, int c) {
+    while (*str != '\0') {
+        if (*str == c) {
+            return (char *)str;
+        }
+        str++;
+    }
+    
+    if (c == '\0') {
+        return (char *)str;
+    }
+
+    return NULL;
+}
