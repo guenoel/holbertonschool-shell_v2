@@ -115,7 +115,8 @@ int execute_command(char *args[], int line_number)
 		while (dir != NULL)
 		{
 			/* Almacenar la ruta completa del ejecutable */
-			snprintf(executable_path, sizeof(executable_path), "%s/%s", dir, args[0]);
+			sprintf(executable_path, "%s/%s", dir, args[0]);
+
 			/* Verificar si el comando es ejecutable en la nueva ruta */
 			if (access(executable_path, X_OK) == 0)
 			{
