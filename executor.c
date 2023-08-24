@@ -108,12 +108,12 @@ int execute_command(char *args[], int line_number)
 	dir = strtok(path_copy, ":");
 
 	/* Verificar if the command exists before forking */
-	if (access(args[0], X_OK) == -1)
+	/* if (access(args[0], X_OK) == 0)
 	{
 		fprintf(stderr, "./hsh: %d: %s: not found\n", line_number, args[0]);
 		free(path_copy);
 		return (127);
-	}
+	} */
 
 	/* Crear un nuevo proceso hijo */
 	pid = fork();
@@ -200,14 +200,14 @@ int execute_command(char *args[], int line_number)
 	{
 		free(path_copy);
 		waitpid(pid, &status, 0);
-        if (WIFEXITED(status))
+		if (WIFEXITED(status))
 		{
-            int exit_status = WEXITSTATUS(status);
-            return(exit_status);
-        } else
+			int exit_status = WEXITSTATUS(status);
+			return(exit_status);
+		} else
 		{
-            printf("Child process did not exit normally\n");
-        }
+			printf("Child process did not exit normally\n");
+		}
 
 		/* Restaurar la entrada y salida estándar después de ejecutar el comando */
 		dup2(saved_stdin, STDIN_FILENO);
