@@ -107,6 +107,14 @@ int execute_command(char *args[], int line_number)
 	/* Dividir la cadena PATH en directorios usando ":" como delimitador */
 	dir = strtok(path_copy, ":");
 
+	/* Verificar if the command exists before forking */
+	if (access(args[0], X_OK) == -1)
+	{
+		fprintf(stderr, "./hsh: %d: %s: not found\n", line_number, args[0]);
+		free(path_copy);
+		return (127);
+	}
+
 	/* Crear un nuevo proceso hijo */
 	pid = fork();
 
