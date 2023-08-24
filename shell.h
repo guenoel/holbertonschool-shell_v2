@@ -46,5 +46,6 @@ void malloc_environ();
 int init_array_of_strings(char **array_of_strings, int size);
 int init_string(char *string, int size);
 long _strtol(const char *str, char **endptr, int base);
+char *_strchr(const char *str, int c);
 
 #endif /* SHELL_H */
