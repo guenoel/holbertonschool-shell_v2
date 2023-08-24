@@ -1,4 +1,3 @@
-
 #include "shell.h"
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -92,6 +91,7 @@ int execute_command(char *args[], int line_number)
 	int double_output_redirect = 0;
 	char *input_file = NULL;
 	char *output_file = NULL;
+	char executable_path[MAX_INPUT_LENGTH];
 	int i = 0;
 	int status;
 
@@ -108,12 +108,39 @@ int execute_command(char *args[], int line_number)
 	/* Dividir la cadena PATH en directorios usando ":" como delimitador */
 	dir = strtok(path_copy, ":");
 
-	/* Crear un nuevo proceso hijo */
+	/* Verificar si el comando es ejecutable en la ubicación actual */
+	if (access(args[0], X_OK) == -1)
+	{
+		/* Recorrer los directorios en PATH */
+		while (dir != NULL)
+		{
+			/* Almacenar la ruta completa del ejecutable */
+			sprintf(executable_path, "%s/%s", dir, args[0]);
+
+			/* Verificar si el comando es ejecutable en la nueva ruta */
+			if (access(executable_path, X_OK) == 0)
+			{
+				break;
+			}
+			/* Obtener el siguiente directorio en PATH */
+			dir = strtok(NULL, ":");
+		}
+
+		if (dir == NULL)
+		{
+			/* Mostrar mensaje de comando no encontrado */
+			fprintf(stderr, "./hsh: %d: %s: not found\n", line_number, args[0]);
+			free(path_copy);
+			/* Salir del proceso hijo con un código de error */
+			return(127);
+		}
+	} else {
+		_strcpy(executable_path, args[0]);
+	}
+
 	pid = fork();
-
-	/* Código dentro del proceso hijo */
-	if (pid == 0) {
-
+	if (pid == 0)
+	{
 		for (i = 0; args[i] != NULL; i++)
 		{
 			if (_sstrcmp(args[i], "<") == 0)
@@ -146,44 +173,12 @@ int execute_command(char *args[], int line_number)
 		if (double_output_redirect) {
 			handle_double_output_redirection(output_file);
 		}
-
-		/* Verificar si el comando es ejecutable en la ubicación actual */
-		if (access(args[0], X_OK) == 0)
-		{
-			/* Ejecutar el comando */
-			execve(args[0], args, env);
-
-			/* Mostrar mensaje de error si execve falla */
-			perror("Error executing command");
-			/* Salir del proceso hijo con un código de error */
-			exit(127);
-		}
-
-		/* Recorrer los directorios en PATH */
-		while (dir != NULL)
-		{
-			/* Almacenar la ruta completa del ejecutable */
-			char executable_path[MAX_INPUT_LENGTH];
-			snprintf(executable_path, sizeof(executable_path), "%s/%s", dir, args[0]);
-
-			/* Verificar si el comando es ejecutable en la nueva ruta */
-			if (access(executable_path, X_OK) == 0)
-			{
-				/* Ejecutar el comando desde la nueva ruta */
-				execve(executable_path, args, env);
-			}
-
-			/* Obtener el siguiente directorio en PATH */
-			dir = strtok(NULL, ":");
-		}
-
-		/* Liberar la memoria de la copia de la cadena PATH */
 		free(path_copy);
-
-		/* Mostrar mensaje de comando no encontrado */
-		fprintf(stderr, "./hsh: %d: %s: not found\n", line_number, args[0]);
+		execve(executable_path, args, env);
+		/* Mostrar mensaje de error si execve falla */
+		perror("Error executing command");
 		/* Salir del proceso hijo con un código de error */
-		exit(127);
+		exit(EXIT_FAILURE);
 	}
 	else if (pid < 0)
 	{
