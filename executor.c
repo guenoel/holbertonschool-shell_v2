@@ -109,7 +109,7 @@ int execute_command(char *args[], int line_number)
 	dir = strtok(path_copy, ":");
 
 	/* Verificar si el comando es ejecutable en la ubicación actual */
-	if (access(args[0], X_OK) == -1)
+	if (access(args[0], X_OK) == -1 || !strchr((args[0]), '/'))
 	{
 		/* Recorrer los directorios en PATH */
 		while (dir != NULL)
