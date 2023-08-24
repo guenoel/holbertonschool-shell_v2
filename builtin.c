@@ -100,6 +100,7 @@ int shell_exit(char *args[], int line_number, int child_status)
 	free(environ);
 	if (args[1] == NULL)
 	{
+		free_args(args);
 		exit(child_status);
 	}
 	num = _strtol(args[1], &endptr, 10);
