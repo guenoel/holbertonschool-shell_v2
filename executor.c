@@ -91,7 +91,8 @@ void execute_command(char *args[], int line_number)
 	int double_output_redirect = 0;
 	char *input_file = NULL;
 	char *output_file = NULL;
-	int i=0;
+	int i = 0;
+	int status;
 
 	/* Obtener el valor de los descriptores de archivo de entrada y salida estándar */
 	saved_stdin = dup(STDIN_FILENO);
@@ -190,7 +191,16 @@ void execute_command(char *args[], int line_number)
 	else
 	{
 		free(path_copy);
-		wait(NULL);
+		waitpid(pid, &status, 0);
+
+        if (WIFEXITED(status))
+		{
+            int exit_status = WEXITSTATUS(status);
+            exit(exit_status);
+        } else
+		{
+            printf("Child process did not exit normally\n");
+        }
 
 		/* Restaurar la entrada y salida estándar después de ejecutar el comando */
 		dup2(saved_stdin, STDIN_FILENO);
