@@ -108,7 +108,7 @@ int execute_command(char *args[], int line_number)
 	dir = strtok(path_copy, ":");
 
 	/* Verificar if the command exists before forking */
-	if (access(args[0], X_OK) == -1)
+	if (access(args[0], X_OK) == 0)
 	{
 		fprintf(stderr, "./hsh: %d: %s: not found\n", line_number, args[0]);
 		free(path_copy);
