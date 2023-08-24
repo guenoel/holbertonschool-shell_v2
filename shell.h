@@ -19,11 +19,11 @@
 extern char **environ;
 
 int tokenize_input(char *input, char *args[]);
-void execute_command(char *args[], int line_number);
-void run_shell_loop(void);
+int execute_command(char *args[], int line_number);
+int run_shell_loop(void);
 
 int shell_cd(char *args[]);
-int shell_exit(char *args[], int line_number);
+int shell_exit(char *args[], int line_number, int child_status);
 int shell_env(char *args[]);
 int shell_setenv(char *args[]);
 int shell_unsetenv(char *args[]);
