@@ -20,13 +20,13 @@ int tokenize_input(char *input, char *args[])
 				i++;
 			}
 
-			if (redir_token[1] == '>') // Es '>>'
+			if (redir_token[1] == '>') /* Es '>>' */
 			{
 				args[i] = _strdup(">>");
 				i++;
 				redir_token += 2; /* Avanza el puntero después de '>>' */
 			}
-			else // Es '>'
+			else /* Es '>' */
 			{
 				args[i] = _strdup(">");
 				i++;
@@ -55,7 +55,7 @@ int tokenize_input(char *input, char *args[])
 
 				args[i] = _strdup("<");
 				i++;
-				redir_token++; // Avanza el puntero después de '<'
+				redir_token++; /* Avanza el puntero después de '<' */
 
 				if (*redir_token != '\0')
 				{
