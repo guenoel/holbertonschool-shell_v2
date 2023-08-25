@@ -3,16 +3,16 @@
 int tokenize_input(char *input, char *args[])
 {
 	int i = 0;
-	char *token = strtok(input, " \t\n"); /* Obtén el 1 token de cadena input */
+	char *token = strtok(input, " \t\n"); /* Obtén el primer token de la cadena input */
 	char *redir_token;
 
 	while (token != NULL)
 	{
-		/* Verifica si el token contiene un signo de redirección */
+		/* Verifica si el token contiene un signo de redirección salida*/
 		redir_token = _strchr(token, '>');
 		if (redir_token != NULL)
 		{
-			/* Si contiene '>', verifica si es '>>' o solo '>', y divide */
+			/* Si contiene '>', verifica si es '>>' o solo '>', y divide en consecuencia */
 			if (redir_token != token)
 			{
 				*redir_token = '\0'; /* Coloca '\0' en lugar de '>' */
@@ -20,13 +20,13 @@ int tokenize_input(char *input, char *args[])
 				i++;
 			}
 
-			if (redir_token[1] == '>') /* Es '>>' */
+			if (redir_token[1] == '>') // Es '>>'
 			{
 				args[i] = _strdup(">>");
 				i++;
 				redir_token += 2; /* Avanza el puntero después de '>>' */
 			}
-			else /* Es '>' */
+			else // Es '>'
 			{
 				args[i] = _strdup(">");
 				i++;
@@ -41,9 +41,34 @@ int tokenize_input(char *input, char *args[])
 		}
 		else
 		{
-			/* Duplica el token actual y almacénalo en el arreglo args */
-			args[i] = _strdup(token);
-			i++;
+			/* Verifica si el token contiene un signo de redirección de entrada '<' */
+			redir_token = _strchr(token, '<');
+			if (redir_token != NULL)
+			{
+				/* Si contiene '<', verifica si es solo '<', y divide en consecuencia */
+				if (redir_token != token)
+				{
+					*redir_token = '\0'; /* Coloca '\0' en lugar de '<' */
+					args[i] = _strdup(token);
+					i++;
+				}
+
+				args[i] = _strdup("<");
+				i++;
+				redir_token++; // Avanza el puntero después de '<'
+
+				if (*redir_token != '\0')
+				{
+					args[i] = _strdup(redir_token);
+					i++;
+				}
+			}
+			else
+			{
+				/* Duplica el token actual y almacénalo en el arreglo args */
+				args[i] = _strdup(token);
+				i++;
+			}
 		}
 
 		token = strtok(NULL, " \t\n"); /* Obtén el siguiente token */
