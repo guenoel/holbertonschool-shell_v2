@@ -6,13 +6,13 @@
 
 
 /* Función para manejar la redirección de entrada */
-void handle_input_redirection(char *input_file)
+void handle_input_redirection(char *input_file, int line_number)
 {
 	int fd = open(input_file, O_RDONLY);
 	if (fd == -1)
 	{
-		perror("Error opening input file");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, input_file);
+		exit(2);
 	}
 	if (dup2(fd, STDIN_FILENO) == -1)
 	{
@@ -21,6 +21,7 @@ void handle_input_redirection(char *input_file)
 	}
 	close(fd);
 }
+
 
 /* Función para manejar la redirección de salida */
 void handle_output_redirection(char *output_file)
@@ -163,7 +164,7 @@ int execute_command(char *args[], int line_number)
 
 		/* Antes de ejecutar el comando, manejar la redirección de entrada y salida si es necesario */
 		if (input_redirect) {
-			handle_input_redirection(input_file);
+			handle_input_redirection(input_file, line_number);
 		}
 
 		if (output_redirect) {
