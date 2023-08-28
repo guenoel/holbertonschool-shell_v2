@@ -12,6 +12,10 @@ void handle_input_redirection(char *input_file, int line_number)
 	if (fd == -1)
 	{
 		fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, input_file);
+		free(input_file);
+/* 		free_args(args); */
+		free_args(environ);
+		free(environ);
 		exit(2);
 	}
 	if (dup2(fd, STDIN_FILENO) == -1)
@@ -75,7 +79,7 @@ char *path_remover(char *arg)
 	return prog;
 }
 
-int execute_command(char *args[], int line_number, char *input)
+int execute_command(char *args[], int line_number)
 {
 	pid_t pid = 0;
 	char *dir = NULL;
@@ -159,41 +163,32 @@ int execute_command(char *args[], int line_number, char *input)
 			} else if (_sstrcmp(args[i], ">>") == 0)
 			{
 				double_output_redirect = 1;
-				output_file = args[i + 1];
 				free(args[i]);
+				output_file = args[i + 1];
 				args[i] = NULL;
 			}
 		}
 
 		/* Antes de ejecutar el comando, manejar la redirección de entrada y salida si es necesario */
 		if (input_redirect) {
-			int fd = open(input_file, O_RDONLY);
-			if (fd == -1) {
-				fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, input_file);
-				free(path_copy);
-				free(input_file);
-				free(input);
-				free_args(args);
-				free_args(environ);
-				free(environ);
-				exit(2);
-			}
-			close(fd);
+			handle_input_redirection(input_file, line_number);
+			free(input_file);
 		}
 
 		if (output_redirect) {
 			handle_output_redirection(output_file);
+			free(output_file);
 		}
 
 		if (double_output_redirect) {
 			handle_double_output_redirection(output_file);
+			free(output_file);
 		}
 		free(path_copy);
 		execve(executable_path, args, env);
 		/* Mostrar mensaje de error si execve falla */
 		perror("Error executing command");
 		/* Salir del proceso hijo con un código de error */
-		free(path_copy);
 		exit(EXIT_FAILURE);
 	}
 	else if (pid < 0)
