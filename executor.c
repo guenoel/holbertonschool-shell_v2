@@ -75,7 +75,7 @@ char *path_remover(char *arg)
 	return prog;
 }
 
-int execute_command(char *args[], int line_number)
+int execute_command(char *args[], int line_number, char *input)
 {
 	pid_t pid = 0;
 	char *dir = NULL;
@@ -148,23 +148,37 @@ int execute_command(char *args[], int line_number)
 			{
 				input_redirect = 1;
 				input_file = args[i + 1];
+				free(args[i]);
 				args[i] = NULL;
 			} else if (_sstrcmp(args[i], ">") == 0)
 			{
 				output_redirect = 1;
 				output_file = args[i + 1];
+				free(args[i]);
 				args[i] = NULL;
 			} else if (_sstrcmp(args[i], ">>") == 0)
 			{
 				double_output_redirect = 1;
 				output_file = args[i + 1];
+				free(args[i]);
 				args[i] = NULL;
 			}
 		}
 
 		/* Antes de ejecutar el comando, manejar la redirección de entrada y salida si es necesario */
 		if (input_redirect) {
-			handle_input_redirection(input_file, line_number);
+			int fd = open(input_file, O_RDONLY);
+			if (fd == -1) {
+				fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, input_file);
+				free(path_copy);
+				free(input_file);
+				free(input);
+				free_args(args);
+				free_args(environ);
+				free(environ);
+				exit(2);
+			}
+			close(fd);
 		}
 
 		if (output_redirect) {
@@ -179,6 +193,7 @@ int execute_command(char *args[], int line_number)
 		/* Mostrar mensaje de error si execve falla */
 		perror("Error executing command");
 		/* Salir del proceso hijo con un código de error */
+		free(path_copy);
 		exit(EXIT_FAILURE);
 	}
 	else if (pid < 0)
