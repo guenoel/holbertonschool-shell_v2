@@ -121,7 +121,7 @@ int run_shell_loop(void)
 				free_args(args);
 				free_args(environ);
 				free(environ);
-				exit(2);
+				exit(0);
 			}
 		}
 		free(input); /* Liberar la memoria de la línea de entrada */
