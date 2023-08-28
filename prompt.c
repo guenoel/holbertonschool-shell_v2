@@ -114,7 +114,6 @@ int run_shell_loop(void)
 		}
 		else
 		{
-			status = execute_command(args, line_number); /* Ejecutar un comando externo */
 			if (status == 127)
 			{
 				free(input);
@@ -123,6 +122,8 @@ int run_shell_loop(void)
 				free(environ);
 				exit(0);
 			}
+			status = execute_command(args, line_number); /* Ejecutar un comando externo */
+
 		}
 		free(input); /* Liberar la memoria de la línea de entrada */
 		free_args(args); /* Liberar la memoria de los argumentos tokenizados */
