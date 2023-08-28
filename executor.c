@@ -75,7 +75,7 @@ char *path_remover(char *arg)
 	return prog;
 }
 
-int execute_command(char *args[], int line_number)
+int execute_command(char *args[], int line_number, char *input)
 {
 	pid_t pid = 0;
 	char *dir = NULL;
@@ -148,16 +148,19 @@ int execute_command(char *args[], int line_number)
 			{
 				input_redirect = 1;
 				input_file = args[i + 1];
+				free(args[i]);
 				args[i] = NULL;
 			} else if (_sstrcmp(args[i], ">") == 0)
 			{
 				output_redirect = 1;
 				output_file = args[i + 1];
+				free(args[i]);
 				args[i] = NULL;
 			} else if (_sstrcmp(args[i], ">>") == 0)
 			{
 				double_output_redirect = 1;
 				output_file = args[i + 1];
+				free(args[i]);
 				args[i] = NULL;
 			}
 		}
@@ -169,7 +172,11 @@ int execute_command(char *args[], int line_number)
 				fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, input_file);
 				free(path_copy);
 				free(input_file);
-				return (2);
+				free(input);
+				free_args(args);
+				free_args(environ);
+				free(environ);
+				exit(2);
 			}
 			close(fd);
 		}
