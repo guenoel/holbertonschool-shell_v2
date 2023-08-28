@@ -4,6 +4,26 @@
 #include <errno.h>
 #include <fcntl.h>
 
+int separate_exec_from_redir(char *args[], char *str_redir[], char **file_name)
+{
+	int num_case;
+	int i = 0;
+
+	for (num_case = 0; str_redir[num_case] != NULL; num_case++)
+	{
+		for (i = 0; args[i] != NULL; i++)
+		{
+			if (_sstrcmp(args[i], str_redir[num_case]) == 0)
+			{
+				*file_name = args[i + 1];
+				free(args[i]);
+				args[i] = NULL;
+				return num_case;
+			}
+		}
+	}
+	return(0);
+}
 
 /* Función para manejar la redirección de entrada */
 void handle_input_redirection(char *input_file, int line_number)
@@ -87,13 +107,8 @@ int execute_command(char *args[], int line_number)
 	char **env = environ;
 
 	/* Verificar si hay redirección de entrada o salida */
-	int input_redirect = 0;
-	int output_redirect = 0;
-	int double_output_redirect = 0;
-	char *input_file = NULL;
-	char *output_file = NULL;
+	char *file_name = NULL;
 	char executable_path[MAX_INPUT_LENGTH];
-	int i = 0;
 	int status;
 
 	/* Obtener el valor de los descriptores de archivo de entrada y salida estándar */
@@ -142,44 +157,28 @@ int execute_command(char *args[], int line_number)
 	pid = fork();
 	if (pid == 0)
 	{
-		for (i = 0; args[i] != NULL; i++)
-		{
-			if (_sstrcmp(args[i], "<") == 0)
-			{
-				input_redirect = 1;
-				input_file = args[i + 1];
-				args[i] = NULL;
-			} else if (_sstrcmp(args[i], ">") == 0)
-			{
-				output_redirect = 1;
-				output_file = args[i + 1];
-				args[i] = NULL;
-			} else if (_sstrcmp(args[i], ">>") == 0)
-			{
-				double_output_redirect = 1;
-				output_file = args[i + 1];
-				args[i] = NULL;
-			}
-		}
+		int redir_case = 0;
+		char *redirections[] = {"<", ">", ">>"};
+		redir_case = separate_exec_from_redir(args, redirections, &file_name);
 
 		/* Antes de ejecutar el comando, manejar la redirección de entrada y salida si es necesario */
-		if (input_redirect) {
-			int fd = open(input_file, O_RDONLY);
+		if (redir_case == 0) {
+			int fd = open(file_name, O_RDONLY);
 			if (fd == -1) {
-				fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, input_file);
+				fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, file_name);
 				free(path_copy);
-				free(input_file);
+				free(file_name);
 				return (2);
 			}
 			close(fd);
 		}
 
-		if (output_redirect) {
-			handle_output_redirection(output_file);
+		if (redir_case == 1) {
+			handle_output_redirection(file_name);
 		}
 
-		if (double_output_redirect) {
-			handle_double_output_redirection(output_file);
+		if (redir_case == 2) {
+			handle_double_output_redirection(file_name);
 		}
 		free(path_copy);
 		execve(executable_path, args, env);
@@ -200,6 +199,10 @@ int execute_command(char *args[], int line_number)
 		if (WIFEXITED(status))
 		{
 			int exit_status = WEXITSTATUS(status);
+			dup2(saved_stdin, STDIN_FILENO);
+			dup2(saved_stdout, STDOUT_FILENO);
+			close(saved_stdin);
+			close(saved_stdout);
 			return(exit_status);
 		} else
 		{
