@@ -32,6 +32,10 @@ void handle_input_redirection(char *input_file, int line_number)
 	if (fd == -1)
 	{
 		fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, input_file);
+		free(input_file);
+/* 		free_args(args); */
+		free_args(environ);
+		free(environ);
 		exit(2);
 	}
 	if (dup2(fd, STDIN_FILENO) == -1)
@@ -157,35 +161,49 @@ int execute_command(char *args[], int line_number)
 	pid = fork();
 	if (pid == 0)
 	{
-		int redir_case = 0;
-		char *redirections[] = {"<", ">", ">>"};
-		redir_case = separate_exec_from_redir(args, redirections, &file_name);
+		for (i = 0; args[i] != NULL; i++)
+		{
+			if (_sstrcmp(args[i], "<") == 0)
+			{
+				input_redirect = 1;
+				input_file = args[i + 1];
+				free(args[i]);
+				args[i] = NULL;
+			} else if (_sstrcmp(args[i], ">") == 0)
+			{
+				output_redirect = 1;
+				output_file = args[i + 1];
+				free(args[i]);
+				args[i] = NULL;
+			} else if (_sstrcmp(args[i], ">>") == 0)
+			{
+				double_output_redirect = 1;
+				free(args[i]);
+				output_file = args[i + 1];
+				args[i] = NULL;
+			}
+		}
 
 		/* Antes de ejecutar el comando, manejar la redirección de entrada y salida si es necesario */
-		if (redir_case == 0) {
-			int fd = open(file_name, O_RDONLY);
-			if (fd == -1) {
-				fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, file_name);
-				free(path_copy);
-				free(file_name);
-				return (2);
-			}
-			close(fd);
+		if (input_redirect) {
+			handle_input_redirection(input_file, line_number);
+			free(input_file);
 		}
 
-		if (redir_case == 1) {
-			handle_output_redirection(file_name);
+		if (output_redirect) {
+			handle_output_redirection(output_file);
+			free(output_file);
 		}
 
-		if (redir_case == 2) {
-			handle_double_output_redirection(file_name);
+		if (double_output_redirect) {
+			handle_double_output_redirection(output_file);
+			free(output_file);
 		}
 		free(path_copy);
 		execve(executable_path, args, env);
 		/* Mostrar mensaje de error si execve falla */
 		perror("Error executing command");
 		/* Salir del proceso hijo con un código de error */
-		free(path_copy);
 		exit(EXIT_FAILURE);
 	}
 	else if (pid < 0)
