@@ -8,7 +8,7 @@ int tokenize_input(char *input, char *args[])
 
 	while (token != NULL)
 	{
-		/* Verifica si el token contiene un signo de redirección salida*/
+		/* Verifica si el token contiene un signo de redirección de salida '>' o '>>' */
 		redir_token = _strchr(token, '>');
 		if (redir_token != NULL)
 		{
@@ -36,6 +36,18 @@ int tokenize_input(char *input, char *args[])
 			if (*redir_token != '\0')
 			{
 				args[i] = _strdup(redir_token);
+				i++;
+			}
+		}
+		else if (strcmp(token, "<<") == 0)
+		{
+			/* Si contiene '<<', es una redirección de heredoc */
+			args[i] = _strdup("<<");
+			i++;
+			token = strtok(NULL, " \t\n"); /* Obtén el delimitador del heredoc */
+			if (token != NULL)
+			{
+				args[i] = _strdup(token);
 				i++;
 			}
 		}

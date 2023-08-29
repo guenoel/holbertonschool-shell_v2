@@ -80,23 +80,46 @@ void handle_double_output_redirection(char *output_file)
 	close(fd);
 }
 
-char *path_remover(char *arg)
+void handle_heredoc(char *delimiter)
 {
-	char *prog = NULL;
-	char *arg_copy = _strdup(arg);
-	char *token = strtok(arg_copy, "/");
-
-	while (token != NULL)
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	int pipe_fd[2];
+	/* Crear una tubería para redirigir las líneas al proceso hijo */
+	if (pipe(pipe_fd) == -1)
 	{
-		token = strtok(NULL, "/");
-		if (token)
-		{
-			free(prog);
-			prog = _strdup(token);
-		}
+		perror("Pipe creation failed");
+		exit(EXIT_FAILURE);
 	}
-	free(arg_copy);
-	return prog;
+	pid_t pid = fork();
+	if (pid == -1)
+	{
+		perror("Fork failed");
+		exit(EXIT_FAILURE);
+	}
+	else if (pid == 0) /* Proceso hijo */
+	{
+		close(pipe_fd[0]);/* Cerramos el extremo de lectura de la tubería */
+		while ((read = getline(&line, &len, stdin)) != -1)
+{
+		if (strncmp(line, delimiter, strlen(delimiter)) == 0)
+		{
+			break;
+		}
+		write(pipe_fd[1], line, read);
+	}
+		close(pipe_fd[1]); /* Cerramos el extremo de escritura de la tubería */
+		exit(EXIT_SUCCESS);
+	}
+	else
+	{
+		close(pipe_fd[1]);
+		dup2(pipe_fd[0], STDIN_FILENO);
+		close(pipe_fd[0]);
+		waitpid(pid, NULL, 0);
+		free(line);
+	}
 }
 
 int execute_command(char *args[], int line_number)
@@ -114,6 +137,9 @@ int execute_command(char *args[], int line_number)
 	char *file_name = NULL;
 	char executable_path[MAX_INPUT_LENGTH];
 	int status;
+
+	int heredoc_redirect = 0;
+	char *heredoc_delimiter = NULL;
 
 	/* Obtener el valor de los descriptores de archivo de entrada y salida estándar */
 	saved_stdin = dup(STDIN_FILENO);
@@ -169,18 +195,33 @@ int execute_command(char *args[], int line_number)
 				input_file = args[i + 1];
 				free(args[i]);
 				args[i] = NULL;
+				/* printf("Input redirection detected: %s\n", input_file); */
 			} else if (_sstrcmp(args[i], ">") == 0)
 			{
 				output_redirect = 1;
 				output_file = args[i + 1];
 				free(args[i]);
 				args[i] = NULL;
+				/* printf("Output redirection detected: %s\n", output_file); */
 			} else if (_sstrcmp(args[i], ">>") == 0)
 			{
 				double_output_redirect = 1;
 				free(args[i]);
 				output_file = args[i + 1];
 				args[i] = NULL;
+				/* printf("Double output redirection detected: %s\n", output_file); */
+			}
+			else if (_sstrcmp(args[i], "<<") == 0)
+				{
+					heredoc_redirect = 1;
+					heredoc_delimiter = args[i + 1];
+					free(args[i]);
+					args[i] = NULL;
+					/* printf("heredoc detected: %s\n", heredoc_delimiter); */
+				}
+			else
+			{
+				/* printf("Argumento args: %s\n", args[i]); */
 			}
 		}
 
@@ -199,6 +240,13 @@ int execute_command(char *args[], int line_number)
 			handle_double_output_redirection(output_file);
 			free(output_file);
 		}
+
+		if (heredoc_redirect)
+		{
+			handle_heredoc(heredoc_delimiter);
+			free(heredoc_delimiter);
+		}
+
 		free(path_copy);
 		execve(executable_path, args, env);
 		/* Mostrar mensaje de error si execve falla */
