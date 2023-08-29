@@ -4,26 +4,6 @@
 #include <errno.h>
 #include <fcntl.h>
 
-int separate_exec_from_redir(char *args[], char *str_redir[], char **file_name)
-{
-	int num_case;
-	int i = 0;
-
-	for (num_case = 0; str_redir[num_case] != NULL; num_case++)
-	{
-		for (i = 0; args[i] != NULL; i++)
-		{
-			if (_sstrcmp(args[i], str_redir[num_case]) == 0)
-			{
-				*file_name = args[i + 1];
-				free(args[i]);
-				args[i] = NULL;
-				return num_case;
-			}
-		}
-	}
-	return(0);
-}
 
 /* Función para manejar la redirección de entrada */
 void handle_input_redirection(char *input_file, int line_number)
@@ -102,13 +82,13 @@ void handle_heredoc(char *delimiter)
 	{
 		close(pipe_fd[0]);/* Cerramos el extremo de lectura de la tubería */
 		while ((read = getline(&line, &len, stdin)) != -1)
-{
-		if (strncmp(line, delimiter, strlen(delimiter)) == 0)
 		{
-			break;
+			if (strncmp(line, delimiter, strlen(delimiter)) == 0)
+			{
+				break;
+			}
+			write(pipe_fd[1], line, read);
 		}
-		write(pipe_fd[1], line, read);
-	}
 		close(pipe_fd[1]); /* Cerramos el extremo de escritura de la tubería */
 		exit(EXIT_SUCCESS);
 	}
@@ -134,8 +114,13 @@ int execute_command(char *args[], int line_number)
 	char **env = environ;
 
 	/* Verificar si hay redirección de entrada o salida */
-	char *file_name = NULL;
+	int input_redirect = 0;
+	int output_redirect = 0;
+	int double_output_redirect = 0;
+	char *input_file = NULL;
+	char *output_file = NULL;
 	char executable_path[MAX_INPUT_LENGTH];
+	int i = 0;
 	int status;
 
 	int heredoc_redirect = 0;
@@ -265,10 +250,6 @@ int execute_command(char *args[], int line_number)
 		if (WIFEXITED(status))
 		{
 			int exit_status = WEXITSTATUS(status);
-			dup2(saved_stdin, STDIN_FILENO);
-			dup2(saved_stdout, STDOUT_FILENO);
-			close(saved_stdin);
-			close(saved_stdout);
 			return(exit_status);
 		} else
 		{

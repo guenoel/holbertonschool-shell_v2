@@ -58,6 +58,11 @@ int run_shell_loop(void)
 	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
+	int is_heredoc = 0;
+	char *ptr_found = NULL;
+	char *delim = "random string";
+	char *dup_input = NULL;
+	char *cropped_input = NULL;
 
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */
 	{
@@ -66,6 +71,18 @@ int run_shell_loop(void)
 			printf("$ "); /* Mostrar el indicador de línea ($) solo en modo interactivo */
 		}
 		input = read_input(); /* Leer la línea de entrada */
+		printf("--------ici-------\n");
+		ptr_found = _strchr(input, '<');
+		if (ptr_found != NULL)
+			if (ptr_found[1] == '<')
+			{
+				is_heredoc = 1;
+			}
+		dup_input = _strdup(input);
+		cropped_input = strtok(dup_input, "\n");
+		
+		if (_sstrcmp(cropped_input, delim) == 0)
+			is_heredoc = 0;
 
 		if (input == NULL)
 		{
@@ -83,6 +100,12 @@ int run_shell_loop(void)
 		}
 
 		num_args = tokenize_input(input, args); /* Tokenizar la línea de entrada */
+
+
+		if (is_heredoc == 1 && line_number == 1)
+		{
+			delim = _strdup(args[2]);
+		}
 
 		if (num_args == 0)
 		{
@@ -122,7 +145,10 @@ int run_shell_loop(void)
 				free(environ);
 				exit(0);
 			}
-			status = execute_command(args, line_number); /* Ejecutar un comando externo */
+
+			if ((is_heredoc == 0 || line_number == 1) && !(_sstrcmp(cropped_input, delim) == 0))
+				status = execute_command(args, line_number); /* Ejecutar un comando externo */
+
 
 		}
 		free(input); /* Liberar la memoria de la línea de entrada */
