@@ -71,7 +71,7 @@ int run_shell_loop(void)
 			printf("$ "); /* Mostrar el indicador de línea ($) solo en modo interactivo */
 		}
 		input = read_input(); /* Leer la línea de entrada */
-		printf("--------ici-------\n");
+
 		ptr_found = _strchr(input, '<');
 		if (ptr_found != NULL)
 			if (ptr_found[1] == '<')
