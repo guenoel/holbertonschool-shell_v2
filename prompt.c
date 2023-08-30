@@ -3,7 +3,7 @@
 /**
  * getoptions - function that store option letters
  * @argv: all arguments
- *
+ * @argc: number of command line arguments
  * Return: string with all option letters
  */
 
@@ -12,19 +12,21 @@ char *getoptions(int argc, char *argv[])
 	int i;
 	char *options = (char *)malloc(1024);
 
-	if (options == NULL) {
+	if (options == NULL)
+	{
 		fprintf(stderr, "Memory allocation error\n");
 		exit(1);
 	}
 
 	options[0] = '\0';
 
-	for(i = 1; i < argc; i++)
+	for (i = 1; i < argc; i++)
 	{
-		if(argv[i][0] == '-')
+		if (argv[i][0] == '-')
 		{
 			char *opt = argv[i] + 1;
 			char *opts = options;
+
 			strcat(opts, opt);
 		}
 	}
@@ -32,15 +34,20 @@ char *getoptions(int argc, char *argv[])
 	return (options);
 }
 
+/**
+ * read_input - Reads a line of input from the user.
+ *
+ * Return: A dynamically allocated string containing the user's input,
+ * or NULL in case of an error or end of file.
+ */
 /* Leer una línea de entrada desde el usuario */
 char *read_input()
 {
 	char *line = NULL;
-	ssize_t read_size = 0;
+	ssize_t read_size;
 	size_t bufsize = MAX_INPUT_LENGTH;
 
 	read_size = getline(&line, &bufsize, stdin);
-
 	if (read_size == -1)
 	{
 		free(line);
@@ -51,7 +58,11 @@ char *read_input()
 }
 
 
-/* Ejecutar el bucle principal de la shell */
+/**
+ * run_shell_loop - Executes the main loop of the shell.
+ *
+ * Return: The exit status of the shell program.
+ */
 int run_shell_loop(void)
 {
 	char *input = NULL;
@@ -59,49 +70,15 @@ int run_shell_loop(void)
 	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
-	int is_heredoc = 0;
-	char *ptr_found = NULL;
-	char *ptr_found2 = NULL;
-	char *delim = "random string";
-	char *dup_input = NULL;
-	char *cropped_input = NULL;
-	int num_line_heredoc = 0;
 
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */
 	{
 		line_number++; /* Incrementar el número de línea */
-		if (isatty(STDIN_FILENO)) {
-			printf("$ "); /* Mostrar el indicador de línea ($) solo en modo interactivo */
-		}
-
-		input = read_input(); /* Leer la línea de entrada */
-
-		ptr_found = _strchr(input, '<');
-		if (ptr_found != NULL)
-			if (ptr_found[1] == '<')
-			{
-				num_line_heredoc = line_number;
-				is_heredoc = 1;
-			}
-		if (input != NULL)
+		if (isatty(STDIN_FILENO))
 		{
-			dup_input = _strdup(input);
-			ptr_found2 = _strchr(dup_input, '\n');
-			
-			if (ptr_found2 != NULL)
-			{
-				cropped_input = strtok(dup_input, "\n");
-			}
-			if(cropped_input)
-			{
-				if (strcmp(cropped_input, delim) == 0)
-				{
-					is_heredoc = 0;
-					/* free(delim); */
-				}
-			}
-			free(dup_input);
+			printf("$ "); /* indicador de línea ($) solo en modo interactivo */
 		}
+		input = read_input(); /* Leer la línea de entrada */
 
 		if (input == NULL)
 		{
@@ -119,11 +96,6 @@ int run_shell_loop(void)
 		}
 
 		num_args = tokenize_input(input, args); /* Tokenizar la línea de entrada */
-
-		if (is_heredoc == 1 && line_number == num_line_heredoc)
-		{
-			delim = _strdup(args[2]);
-		}
 
 		if (num_args == 0)
 		{
@@ -163,16 +135,7 @@ int run_shell_loop(void)
 				free(environ);
 				exit(0);
 			}
-			if ((is_heredoc == 0 || line_number == num_line_heredoc))
-			{
-				if(cropped_input)
-				{
-					if(_sstrcmp(cropped_input, delim) != 0)
-					{
-						status = execute_command(args, line_number); /* Ejecutar un comando externo */
-					}
-				}
-			}
+			status = execute_command(args, line_number); /* Execute comand ext */
 
 		}
 		free(delim);
@@ -181,3 +144,4 @@ int run_shell_loop(void)
 	}
 	return (status);
 }
+

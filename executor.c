@@ -5,15 +5,22 @@
 #include <fcntl.h>
 
 
-/* Función para manejar la redirección de entrada */
+/**
+* handle_input_redirection - Handles input redirection by opening and
+* redirecting input from a file.
+* @input_file: The name of the input file.
+* @line_number: The line number in the shell script where redirection is being
+* handled.
+*/
 void handle_input_redirection(char *input_file, int line_number)
 {
 	int fd = open(input_file, O_RDONLY);
+
 	if (fd == -1)
 	{
-		fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, input_file);
+		fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n",
+				line_number, input_file);
 		free(input_file);
-/* 		free_args(args); */
 		free_args(environ);
 		free(environ);
 		exit(2);
@@ -27,10 +34,15 @@ void handle_input_redirection(char *input_file, int line_number)
 }
 
 
-/* Función para manejar la redirección de salida */
+/**
+* handle_output_redirection - Handles output redirection by opening and
+* redirecting output to a file.
+* @output_file: The name of the output file.
+*/
 void handle_output_redirection(char *output_file)
 {
 	int fd = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+
 	if (fd == -1)
 	{
 		perror("Error opening output file");
@@ -44,9 +56,15 @@ void handle_output_redirection(char *output_file)
 	close(fd);
 }
 
+/**
+* handle_double_output_redirection - Handles double output redirection (append)
+* by opening and redirecting output to a file in append mode.
+* @output_file: The name of the output file for appending.
+*/
 void handle_double_output_redirection(char *output_file)
 {
 	int fd = open(output_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+
 	if (fd == -1)
 	{
 		perror("Error opening output file");
@@ -60,6 +78,11 @@ void handle_double_output_redirection(char *output_file)
 	close(fd);
 }
 
+/**
+* handle_heredoc - Handles heredoc input redirection by reading lines until
+* a delimiter is encountered and redirecting input from a pipe.
+* @delimiter: The delimiter that marks the end of heredoc input.
+*/
 void handle_heredoc(char *delimiter)
 {
 	char *line = NULL;
@@ -103,6 +126,12 @@ void handle_heredoc(char *delimiter)
 	}
 }
 
+/**
+* execute_command - Executes command with optional input and output redirection
+* @args: An array of strings representing the command and its arguments
+* @line_number: Line number in the shell script where the command is executed
+* Return: The exit status of the executed command
+*/
 int execute_command(char *args[], int line_number)
 {
 	pid_t pid = 0;
@@ -127,7 +156,7 @@ int execute_command(char *args[], int line_number)
 	int heredoc_redirect = 0;
 	char *heredoc_delimiter = NULL;
 
-	/* Obtener el valor de los descriptores de archivo de entrada y salida estándar */
+	/* recuper valor los descriptores de archivo de entrada y salida estándar */
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 
@@ -164,9 +193,10 @@ int execute_command(char *args[], int line_number)
 			fprintf(stderr, "./hsh: %d: %s: not found\n", line_number, args[0]);
 			free(path_copy);
 			/* Salir del proceso hijo con un código de error */
-			return(127);
+			return (127);
 		}
-	} else {
+	} else
+	{
 		_strcpy(executable_path, args[0]);
 	}
 
@@ -196,37 +226,36 @@ int execute_command(char *args[], int line_number)
 				output_file = args[i + 1];
 				args[i] = NULL;
 				/* printf("Double output redirection detected: %s\n", output_file); */
+			} else if (_sstrcmp(args[i], "<<") == 0)
+			{
+				heredoc_redirect = 1;
+				heredoc_delimiter = args[i + 1];
+				free(args[i]);
+				args[i] = NULL;
+				/* printf("heredoc detected: %s\n", heredoc_delimiter); */
 			}
-			else if (_sstrcmp(args[i], "<<") == 0)
-				{
-					heredoc_redirect = 1;
-					heredoc_delimiter = args[i + 1];
-					free(args[i]);
-					args[i] = NULL;
-					/* printf("heredoc detected: %s\n", heredoc_delimiter); */
-				}
 			else
 			{
 				/* printf("Argumento args: %s\n", args[i]); */
 			}
 		}
 
-		/* Antes de ejecutar el comando, manejar la redirección de entrada y salida si es necesario */
-		if (input_redirect) {
+		/* Antes ejecutar comando, la redirección de entrada salida sinecesario */
+		if (input_redirect)
+		{
 			handle_input_redirection(input_file, line_number);
 			free(input_file);
 		}
-
-		if (output_redirect) {
+		if (output_redirect)
+		{
 			handle_output_redirection(output_file);
 			free(output_file);
 		}
-
-		if (double_output_redirect) {
+		if (double_output_redirect)
+		{
 			handle_double_output_redirection(output_file);
 			free(output_file);
 		}
-
 		if (heredoc_redirect)
 		{
 			handle_heredoc(heredoc_delimiter);
@@ -248,14 +277,14 @@ int execute_command(char *args[], int line_number)
 	{
 		free(path_copy);
 		waitpid(pid, &status, 0);
+
 		if (WIFEXITED(status))
 		{
 			int exit_status = WEXITSTATUS(status);
-			return(exit_status);
-		} else
-		{
-			printf("Child process did not exit normally\n");
+
+			return (exit_status);
 		}
+		printf("Child process did not exit normally\n");
 
 		/* Restaurar la entrada y salida estándar después de ejecutar el comando */
 		dup2(saved_stdin, STDIN_FILENO);
@@ -263,5 +292,5 @@ int execute_command(char *args[], int line_number)
 		close(saved_stdin);
 		close(saved_stdout);
 	}
-	return(0);
+	return (0);
 }
