@@ -84,11 +84,13 @@ char *_strcpy(char *dest, const char *src)
  */
 char *_strdup(const char *str)
 {
+	size_t len;
+	char *copy;
 	if (str == NULL)
 		return (NULL);
 
-	size_t len = _strlen(str);
-	char *copy = (char *)malloc(len + 1);
+	len = _strlen(str);
+	copy = (char *)malloc(len + 1);
 		if (copy)
 		{
 			_strcpy(copy, str);
@@ -115,7 +117,7 @@ int _sstrcmp(const char *s1, const char *s2)
 		s1++;
 		s2++;
 	}
-
+	
 	if (*s1)
 	{
 		return (1);
