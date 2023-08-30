@@ -84,10 +84,11 @@ char *_strcpy(char *dest, const char *src)
  */
 char *_strdup(const char *str)
 {
+	size_t len;
 	if (str == NULL)
 		return (NULL);
 
-	size_t len = _strlen(str);
+	len = _strlen(str);
 	char *copy = (char *)malloc(len + 1);
 		if (copy)
 		{
