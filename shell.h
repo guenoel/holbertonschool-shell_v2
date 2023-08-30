@@ -30,6 +30,7 @@ int shell_unsetenv(char *args[]);
 
 void print_error(const char *message);
 
+char *get_env_var(const char *name);
 char *_getenv(const char *name);
 char *_strdup(const char *str);
 size_t _strlen(const char *str);

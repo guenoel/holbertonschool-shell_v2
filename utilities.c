@@ -86,6 +86,7 @@ char *_strdup(const char *str)
 {
 	size_t len;
 	char *copy;
+
 	if (str == NULL)
 		return (NULL);
 
@@ -117,7 +118,7 @@ int _sstrcmp(const char *s1, const char *s2)
 		s1++;
 		s2++;
 	}
-	
+
 	if (*s1)
 	{
 		return (1);

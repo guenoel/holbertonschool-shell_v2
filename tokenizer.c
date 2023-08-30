@@ -1,5 +1,20 @@
 #include "shell.h"
 
+/**
+* tokenize_input - Tokenizes an input string into an array of arguments,
+* handling redirection.
+* @input: The input string to tokenize.
+* @args: An array to store the resulting arguments.
+*
+* Return: The number of arguments parsed.
+*
+* This function splits the input string into individual tokens, separating
+* them by spaces, tabs, and newlines.
+* It also handles input and output redirection tokens ("<", ">", ">>", "<<"),
+* splitting them as separate arguments.
+* The resulting tokens are stored in the 'args' array, and the function returns
+* the number of arguments parsed.
+*/
 int tokenize_input(char *input, char *args[])
 {
 	int i = 0;
