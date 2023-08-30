@@ -65,6 +65,7 @@ void handle_heredoc(char *delimiter)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t read;
+	pid_t pid;
 	int pipe_fd[2];
 	/* Crear una tubería para redirigir las líneas al proceso hijo */
 	if (pipe(pipe_fd) == -1)
@@ -72,7 +73,7 @@ void handle_heredoc(char *delimiter)
 		perror("Pipe creation failed");
 		exit(EXIT_FAILURE);
 	}
-	pid_t pid = fork();
+	pid = fork();
 	if (pid == -1)
 	{
 		perror("Fork failed");
@@ -82,13 +83,13 @@ void handle_heredoc(char *delimiter)
 	{
 		close(pipe_fd[0]);/* Cerramos el extremo de lectura de la tubería */
 		while ((read = getline(&line, &len, stdin)) != -1)
-{
-		if (strncmp(line, delimiter, strlen(delimiter)) == 0)
 		{
-			break;
+			if (_strncmp(line, delimiter, _strlen(delimiter)) == 0)
+			{
+				break;
+			}
+			write(pipe_fd[1], line, read);
 		}
-		write(pipe_fd[1], line, read);
-	}
 		close(pipe_fd[1]); /* Cerramos el extremo de escritura de la tubería */
 		exit(EXIT_SUCCESS);
 	}
