@@ -83,7 +83,7 @@ void handle_heredoc(char *delimiter)
 		close(pipe_fd[0]);/* Cerramos el extremo de lectura de la tubería */
 		while ((read = getline(&line, &len, stdin)) != -1)
 		{
-			if (strncmp(line, delimiter, strlen(delimiter)) == 0)
+			if (_strncmp(line, delimiter, _strlen(delimiter)) == 0)
 			{
 				break;
 			}
