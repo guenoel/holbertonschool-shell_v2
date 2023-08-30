@@ -86,7 +86,7 @@ int _sstrcmp(const char *s1, const char *s2)
 		s1++;
 		s2++;
 	}
-
+	
 	if (*s1)
 	{
 		return (1);
@@ -233,6 +233,8 @@ long _strtol(const char *str, char **endptr, int base) {
 }
 
 char *_strchr(const char *str, int c) {
+	if (str == NULL)
+		return NULL;
     while (*str != '\0') {
         if (*str == c) {
             return (char *)str;

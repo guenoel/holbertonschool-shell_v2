@@ -36,10 +36,11 @@ char *getoptions(int argc, char *argv[])
 char *read_input()
 {
 	char *line = NULL;
-	ssize_t read_size;
+	ssize_t read_size = 0;
 	size_t bufsize = MAX_INPUT_LENGTH;
 
 	read_size = getline(&line, &bufsize, stdin);
+
 	if (read_size == -1)
 	{
 		free(line);
@@ -58,6 +59,13 @@ int run_shell_loop(void)
 	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
+	int is_heredoc = 0;
+	char *ptr_found = NULL;
+	char *ptr_found2 = NULL;
+	char *delim = "random string";
+	char *dup_input = NULL;
+	char *cropped_input = NULL;
+	int num_line_heredoc = 0;
 
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */
 	{
@@ -65,7 +73,27 @@ int run_shell_loop(void)
 		if (isatty(STDIN_FILENO)) {
 			printf("$ "); /* Mostrar el indicador de línea ($) solo en modo interactivo */
 		}
+
 		input = read_input(); /* Leer la línea de entrada */
+
+		ptr_found = _strchr(input, '<');
+		if (ptr_found != NULL)
+			if (ptr_found[1] == '<')
+			{
+				num_line_heredoc = line_number;
+				is_heredoc = 1;
+			}
+		if (input != NULL)
+		{
+			dup_input = _strdup(input);
+			ptr_found2 = _strchr(dup_input, '\n');
+			
+			if (ptr_found2 != NULL)
+				cropped_input = strtok(dup_input, "\n");
+			if(cropped_input)
+				if (strcmp(cropped_input, delim) == 0)
+					is_heredoc = 0;
+		}
 
 		if (input == NULL)
 		{
@@ -83,6 +111,11 @@ int run_shell_loop(void)
 		}
 
 		num_args = tokenize_input(input, args); /* Tokenizar la línea de entrada */
+
+		if (is_heredoc == 1 && line_number == num_line_heredoc)
+		{
+			delim = _strdup(args[2]);
+		}
 
 		if (num_args == 0)
 		{
@@ -122,7 +155,8 @@ int run_shell_loop(void)
 				free(environ);
 				exit(0);
 			}
-			status = execute_command(args, line_number); /* Ejecutar un comando externo */
+			if ((is_heredoc == 0 || line_number == num_line_heredoc) && _sstrcmp(cropped_input, delim) != 0)
+				status = execute_command(args, line_number); /* Ejecutar un comando externo */
 
 		}
 		free(input); /* Liberar la memoria de la línea de entrada */
