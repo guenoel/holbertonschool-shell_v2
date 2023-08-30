@@ -20,12 +20,13 @@ char *getoptions(int argc, char *argv[])
 
 	options[0] = '\0';
 
-	for(i = 1; i < argc; i++)
+	for (i = 1; i < argc; i++)
 	{
-		if(argv[i][0] == '-')
+		if (argv[i][0] == '-')
 		{
 			char *opt = argv[i] + 1;
 			char *opts = options;
+
 			strcat(opts, opt);
 		}
 	}
@@ -73,8 +74,9 @@ int run_shell_loop(void)
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */
 	{
 		line_number++; /* Incrementar el número de línea */
-		if (isatty(STDIN_FILENO)) {
-			printf("$ "); /* Mostrar el indicador de línea ($) solo en modo interactivo */
+		if (isatty(STDIN_FILENO))
+		{
+			printf("$ "); /* indicador de línea ($) solo en modo interactivo */
 		}
 		input = read_input(); /* Leer la línea de entrada */
 
@@ -133,7 +135,7 @@ int run_shell_loop(void)
 				free(environ);
 				exit(0);
 			}
-			status = execute_command(args, line_number); /* Ejecutar un comando externo */
+			status = execute_command(args, line_number); /* Execute comand ext */
 
 		}
 		free(input); /* Liberar la memoria de la línea de entrada */
