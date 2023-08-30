@@ -90,9 +90,14 @@ int run_shell_loop(void)
 			
 			if (ptr_found2 != NULL)
 				cropped_input = strtok(dup_input, "\n");
+			free(dup_input);
 			if(cropped_input)
 				if (strcmp(cropped_input, delim) == 0)
+				{
 					is_heredoc = 0;
+					free(delim);
+				}
+
 		}
 
 		if (input == NULL)
