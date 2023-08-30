@@ -65,6 +65,7 @@ void handle_heredoc(char *delimiter)
 	char *line = NULL;
 	size_t len = 0;
 	ssize_t read;
+	pid_t pid;
 	int pipe_fd[2];
 	/* Crear una tubería para redirigir las líneas al proceso hijo */
 	if (pipe(pipe_fd) == -1)
@@ -72,7 +73,7 @@ void handle_heredoc(char *delimiter)
 		perror("Pipe creation failed");
 		exit(EXIT_FAILURE);
 	}
-	pid_t pid = fork();
+	pid = fork();
 	if (pid == -1)
 	{
 		perror("Fork failed");
