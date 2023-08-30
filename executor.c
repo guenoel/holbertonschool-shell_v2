@@ -5,7 +5,11 @@
 #include <fcntl.h>
 
 
-/* Función para manejar la redirección de entrada */
+/**
+ * handle_input_redirection - Handles input redirection by opening and redirecting input from a file.
+ * @input_file: The name of the input file.
+ * @line_number: The line number in the shell script where redirection is being handled.
+ */
 void handle_input_redirection(char *input_file, int line_number)
 {
 	int fd = open(input_file, O_RDONLY);
@@ -13,7 +17,6 @@ void handle_input_redirection(char *input_file, int line_number)
 	{
 		fprintf(stderr, "./hsh: %d: cannot open %s: No such file\n", line_number, input_file);
 		free(input_file);
-/* 		free_args(args); */
 		free_args(environ);
 		free(environ);
 		exit(2);
@@ -27,7 +30,10 @@ void handle_input_redirection(char *input_file, int line_number)
 }
 
 
-/* Función para manejar la redirección de salida */
+/**
+ * handle_output_redirection - Handles output redirection by opening and redirecting output to a file.
+ * @output_file: The name of the output file.
+ */
 void handle_output_redirection(char *output_file)
 {
 	int fd = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
@@ -44,6 +50,10 @@ void handle_output_redirection(char *output_file)
 	close(fd);
 }
 
+/**
+ * handle_double_output_redirection - Handles double output redirection (append) by opening and redirecting output to a file in append mode.
+ * @output_file: The name of the output file for appending.
+ */
 void handle_double_output_redirection(char *output_file)
 {
 	int fd = open(output_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
@@ -60,6 +70,10 @@ void handle_double_output_redirection(char *output_file)
 	close(fd);
 }
 
+/**
+ * handle_heredoc - Handles heredoc input redirection by reading lines until a delimiter is encountered and redirecting input from a pipe.
+ * @delimiter: The delimiter that marks the end of heredoc input.
+ */
 void handle_heredoc(char *delimiter)
 {
 	char *line = NULL;
@@ -103,6 +117,13 @@ void handle_heredoc(char *delimiter)
 	}
 }
 
+/**
+ * execute_command - Executes a command with optional input and output redirection.
+ * @args: An array of strings representing the command and its arguments.
+ * @line_number: The line number in the shell script where the command is executed.
+ *
+ * Return: The exit status of the executed command.
+ */
 int execute_command(char *args[], int line_number)
 {
 	pid_t pid = 0;
