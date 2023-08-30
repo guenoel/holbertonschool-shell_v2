@@ -89,15 +89,18 @@ int run_shell_loop(void)
 			ptr_found2 = _strchr(dup_input, '\n');
 			
 			if (ptr_found2 != NULL)
+			{
 				cropped_input = strtok(dup_input, "\n");
-			free(dup_input);
+			}
 			if(cropped_input)
+			{
 				if (strcmp(cropped_input, delim) == 0)
 				{
 					is_heredoc = 0;
-					free(delim);
+					/* free(delim); */
 				}
-
+			}
+			free(dup_input);
 		}
 
 		if (input == NULL)
@@ -160,10 +163,19 @@ int run_shell_loop(void)
 				free(environ);
 				exit(0);
 			}
-			if ((is_heredoc == 0 || line_number == num_line_heredoc) && _sstrcmp(cropped_input, delim) != 0)
-				status = execute_command(args, line_number); /* Ejecutar un comando externo */
+			if ((is_heredoc == 0 || line_number == num_line_heredoc))
+			{
+				if(cropped_input)
+				{
+					if(_sstrcmp(cropped_input, delim) != 0)
+					{
+						status = execute_command(args, line_number); /* Ejecutar un comando externo */
+					}
+				}
+			}
 
 		}
+		free(delim);
 		free(input); /* Liberar la memoria de la línea de entrada */
 		free_args(args); /* Liberar la memoria de los argumentos tokenizados */
 	}
