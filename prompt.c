@@ -3,7 +3,7 @@
 /**
  * getoptions - function that store option letters
  * @argv: all arguments
- *
+ * @argc: number of command line arguments
  * Return: string with all option letters
  */
 
@@ -12,7 +12,8 @@ char *getoptions(int argc, char *argv[])
 	int i;
 	char *options = (char *)malloc(1024);
 
-	if (options == NULL) {
+	if (options == NULL)
+	{
 		fprintf(stderr, "Memory allocation error\n");
 		exit(1);
 	}
@@ -32,6 +33,12 @@ char *getoptions(int argc, char *argv[])
 	return (options);
 }
 
+/**
+ * read_input - Reads a line of input from the user.
+ *
+ * Return: A dynamically allocated string containing the user's input,
+ * or NULL in case of an error or end of file.
+ */
 /* Leer una línea de entrada desde el usuario */
 char *read_input()
 {
@@ -50,7 +57,11 @@ char *read_input()
 }
 
 
-/* Ejecutar el bucle principal de la shell */
+/**
+ * run_shell_loop - Executes the main loop of the shell.
+ *
+ * Return: The exit status of the shell program.
+ */
 int run_shell_loop(void)
 {
 	char *input = NULL;

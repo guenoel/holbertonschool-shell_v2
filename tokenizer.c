@@ -3,23 +3,22 @@
 int tokenize_input(char *input, char *args[])
 {
 	int i = 0;
-	char *token = strtok(input, " \t\n"); /* Obtén el primer token de la cadena input */
+	char *token = strtok(input, " \t\n"); /* Obtén primer token cadena input */
 	char *redir_token;
 
 	while (token != NULL)
 	{
-		/* Verifica si el token contiene un signo de redirección de salida '>' o '>>' */
+		/* Verifica el token contiene signo redirección de salida '>' o '>>' */
 		redir_token = _strchr(token, '>');
 		if (redir_token != NULL)
 		{
-			/* Si contiene '>', verifica si es '>>' o solo '>', y divide en consecuencia */
+			/* contiene '>', verifica si '>>' o solo '>', y divide secuencia */
 			if (redir_token != token)
 			{
 				*redir_token = '\0'; /* Coloca '\0' en lugar de '>' */
 				args[i] = _strdup(token);
 				i++;
 			}
-
 			if (redir_token[1] == '>') /* Es '>>' */
 			{
 				args[i] = _strdup(">>");
@@ -32,14 +31,13 @@ int tokenize_input(char *input, char *args[])
 				i++;
 				redir_token++; /* Avanza el puntero después de '>' */
 			}
-
 			if (*redir_token != '\0')
 			{
 				args[i] = _strdup(redir_token);
 				i++;
 			}
 		}
-		else if (strcmp(token, "<<") == 0)
+		else if (_sstrcmp(token, "<<") == 0)
 		{
 			/* Si contiene '<<', es una redirección de heredoc */
 			args[i] = _strdup("<<");
@@ -64,11 +62,9 @@ int tokenize_input(char *input, char *args[])
 					args[i] = _strdup(token);
 					i++;
 				}
-
 				args[i] = _strdup("<");
 				i++;
 				redir_token++; /* Avanza el puntero después de '<' */
-
 				if (*redir_token != '\0')
 				{
 					args[i] = _strdup(redir_token);
@@ -82,10 +78,8 @@ int tokenize_input(char *input, char *args[])
 				i++;
 			}
 		}
-
 		token = strtok(NULL, " \t\n"); /* Obtén el siguiente token */
 	}
-
 	args[i] = NULL; /* Marca el final del arreglo args con un puntero nulo */
-	return i;
+	return (i);
 }
