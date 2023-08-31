@@ -191,9 +191,9 @@ int run_shell_loop(void)
 			status = execute_command(args, line_number); /* Execute comand ext */
 
 		}
-		free(delim);
 		free(input); /* Liberar la memoria de la línea de entrada */
 		free_args(args); /* Liberar la memoria de los argumentos tokenizados */
 	}
+	free(delim);
 	return (status);
 }
