@@ -83,7 +83,7 @@ void handle_double_output_redirection(char *output_file)
 * a delimiter is encountered and redirecting input from a pipe.
 * @delimiter: The delimiter that marks the end of heredoc input.
 */
-void handle_heredoc(char *delimiter, char *args[], char *input, char *path_copy)
+void handle_heredoc(char *delimiter)
 {
 	char *line = NULL;
 	size_t len = 0;
@@ -114,12 +114,6 @@ void handle_heredoc(char *delimiter, char *args[], char *input, char *path_copy)
 			write(pipe_fd[1], line, read);
 		}
 		close(pipe_fd[1]); /* Cerramos el extremo de escritura de la tubería */
-		free(path_copy);
-		free(input);
-		free(line);
-		free_args(args);
-		free_args(environ);
-		free(environ);
 		exit(EXIT_SUCCESS);
 	}
 	else
@@ -138,7 +132,7 @@ void handle_heredoc(char *delimiter, char *args[], char *input, char *path_copy)
 * @line_number: Line number in the shell script where the command is executed
 * Return: The exit status of the executed command
 */
-int execute_command(char *args[], int line_number, char *input)
+int execute_command(char *args[], int line_number)
 {
 	pid_t pid = 0;
 	char *dir = NULL;
@@ -264,9 +258,10 @@ int execute_command(char *args[], int line_number, char *input)
 		}
 		if (heredoc_redirect)
 		{
-			handle_heredoc(heredoc_delimiter, args, input, path_copy);
+			handle_heredoc(heredoc_delimiter);
 			free(heredoc_delimiter);
 		}
+
 		free(path_copy);
 		execve(executable_path, args, env);
 		/* Mostrar mensaje de error si execve falla */
