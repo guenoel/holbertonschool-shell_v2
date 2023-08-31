@@ -66,7 +66,7 @@ char *read_input()
 int run_shell_loop(void)
 {
 	char *input = NULL;
-	char *args[MAX_ARGS];
+	char *args[MAX_ARGS] = {NULL};
 	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
@@ -84,21 +84,23 @@ int run_shell_loop(void)
 		{
 			printf("$ "); /* indicador de línea ($) solo en modo interactivo */
 		}
-		/* printf("--- Line: %d ---\n", line_number); */
+		printf("--- Line: %d ---\n", line_number);
 
 		input = read_input(); /* Leer la línea de entrada */
 
-		/* printf("input: %s\n", input); */
+		printf("input: %s\n", input);
 		
 		/* condition d entrée heredoc */
-		ptr_found = _strchr(input, '<');
-		/* printf("-----ici-----\n"); */
-		if (ptr_found != NULL)
-			if (ptr_found[1] == '<')
-			{
-				num_line_heredoc = line_number;
-			}
-
+		if (!isatty(STDERR_FILENO))
+		{
+			ptr_found = _strchr(input, '<');
+			/* printf("-----ici-----\n"); */
+			if (ptr_found != NULL)
+				if (ptr_found[1] == '<')
+				{
+					num_line_heredoc = line_number;
+				}
+		}
 		if (input == NULL)
 		{
 			if (isatty(STDIN_FILENO))
@@ -127,16 +129,17 @@ int run_shell_loop(void)
 			
 			if(cropped_input)
 			{
-				/* printf("cropped:%s delim:%s\n", cropped_input, delim); */
+				printf("cropped:%s delim:%s\n", cropped_input, delim);
 				if (_sstrcmp(cropped_input, delim) == 0)
 				{
-					num_line_heredoc = 0;
+					num_line_heredoc = -1;
 					/* free(delim); */
 				}
 			}
 		}
 
-
+		for (int i = 0; args[i] != NULL; i++)
+			printf("args[%d]: %s\n", i, args[i]);
 		num_args = tokenize_input(input, args); /* Tokenizar la línea de entrada */
 
 		/* recupération du délimliteur */
@@ -144,12 +147,18 @@ int run_shell_loop(void)
 		{
 			delim = _strdup(args[2]);
 		}
-		/* printf("num_line_heredoc: %d line_num: %d\n", num_line_heredoc, line_number); */
-		if ((num_line_heredoc != 0 || (_sstrcmp(cropped_input, delim) == 0)) && num_line_heredoc != line_number )
+		printf("num_line_heredoc: %d line_num: %d\n", num_line_heredoc, line_number);
+		if (!isatty(STDIN_FILENO))
 		{
-			/* printf("continue!!!\n"); */
-			continue;
+			if ((num_line_heredoc > 0 || (_sstrcmp(cropped_input, delim) == 0)) && num_line_heredoc != line_number )
+			{
+				printf("continue!!!\n");
+				free(input);
+				free_args(args);
+				continue;
+			}
 		}
+
 		if (num_args == 0)
 		{
 			free(input);
@@ -188,7 +197,7 @@ int run_shell_loop(void)
 				free(environ);
 				exit(0);
 			}
-			status = execute_command(args, line_number); /* Execute comand ext */
+			status = execute_command(args, line_number, input); /* Execute comand ext */
 
 		}
 		free(input); /* Liberar la memoria de la línea de entrada */

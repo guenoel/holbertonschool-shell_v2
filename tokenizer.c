@@ -57,7 +57,7 @@ int tokenize_input(char *input, char *args[])
 			/* Si contiene '<<', es una redirección de heredoc */
 			args[i] = _strdup("<<");
 			i++;
-			token = strtok(NULL, " \t\n"); /* Obtén el delimitador del heredoc */
+			token = strtok(NULL, " \t"); /* Obtén el delimitador del heredoc */
 			if (token != NULL)
 			{
 				args[i] = _strdup(token);

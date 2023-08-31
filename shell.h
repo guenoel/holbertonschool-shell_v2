@@ -19,7 +19,7 @@
 extern char **environ;
 
 int tokenize_input(char *input, char *args[]);
-int execute_command(char *args[], int line_number);
+int execute_command(char *args[], int line_number, char *input);
 int run_shell_loop(void);
 
 int shell_cd(char *args[]);
@@ -48,5 +48,6 @@ int init_array_of_strings(char **array_of_strings, int size);
 int init_string(char *string, int size);
 long _strtol(const char *str, char **endptr, int base);
 char *_strchr(const char *str, int c);
+int copy_stdin(void);
 
 #endif /* SHELL_H */
