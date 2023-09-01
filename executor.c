@@ -90,7 +90,7 @@ void handle_heredoc(char *delimiter)
 	ssize_t read;
 	pid_t pid;
 	int pipe_fd[2];
-	printf("Entering handle_heredoc (Delimiter: %s)\n", delimiter);
+	/* printf("Entering handle_heredoc (Delimiter: %s)\n", delimiter); */
 
 	/* Crear una tubería para redirigir las líneas al proceso hijo */
 	if (pipe(pipe_fd) == -1)
@@ -107,7 +107,7 @@ void handle_heredoc(char *delimiter)
 	else if (pid == 0) /* Proceso hijo */
 	{
 		close(pipe_fd[0]);/* Cerramos el extremo de lectura de la tubería */
-		printf("Child process (PID: %d) handling heredoc\n", getpid());
+		/* printf("Child process (PID: %d) handling heredoc\n", getpid()); */
 		while ((read = getline(&line, &len, stdin)) != -1)
 		{
 			if (_strncmp(line, delimiter, _strlen(delimiter)) == 0)
@@ -116,7 +116,7 @@ void handle_heredoc(char *delimiter)
 			}
 			write(pipe_fd[1], line, read);
 		}
-		printf("Child process (PID: %d) finished handling heredoc\n", getpid());
+		/* printf("Child process (PID: %d) finished handling heredoc\n", getpid()); */
 
 		close(pipe_fd[1]); /* Cerramos el extremo de escritura de la tubería */
 		exit(EXIT_SUCCESS);
@@ -134,7 +134,7 @@ void handle_heredoc(char *delimiter)
 
 		free(line);
 	}
-	printf("Exiting handle_heredoc (Delimiter: %s)\n", delimiter);
+	/* printf("Exiting handle_heredoc (Delimiter: %s)\n", delimiter); */
 	exit(EXIT_SUCCESS);
 
 }
@@ -147,8 +147,7 @@ void handle_heredoc(char *delimiter)
 */
 int execute_command(char *args[], int line_number)
 {
-	printf("Entering execute_command for %s\n", args[0]);
-
+	/* printf("Entering execute_command for %s\n", args[0]); */
 	char *dir = NULL;
 	char *path = NULL;
 	char *path_copy = NULL;
@@ -274,15 +273,15 @@ int execute_command(char *args[], int line_number)
 		if (heredoc_redirect)
 		{
 			/* Imprime información antes de manejar el heredoc */
-			printf("Before handling heredoc (PID: %d):\n", getpid());
-			fflush(stdout);
+			/* printf("Before handling heredoc (PID: %d):\n", getpid());
+			fflush(stdout); */
 
 			handle_heredoc(heredoc_delimiter);
 			free(heredoc_delimiter);
 
 			/* Imprime información después de manejar el heredoc */
-			printf("After handling heredoc (PID: %d):\n", getpid());
-			fflush(stdout);
+			/* printf("After handling heredoc (PID: %d):\n", getpid());
+			fflush(stdout); */
 		}
 
 		free(path_copy);
@@ -315,6 +314,6 @@ int execute_command(char *args[], int line_number)
 		close(saved_stdin);
 		close(saved_stdout);
 	}
-	printf("Exiting execute_command finish %s\n", args[0]);
+	/* printf("Exiting execute_command finish %s\n", args[0]); */
 	return (0);
 }
