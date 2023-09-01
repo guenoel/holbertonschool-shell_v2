@@ -73,6 +73,7 @@ int run_shell_loop(void)
 
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */
 	{
+		printf("Parent process (PID: %d) \n", getpid());
 		line_number++; /* Incrementar el número de línea */
 		if (isatty(STDIN_FILENO))
 		{
