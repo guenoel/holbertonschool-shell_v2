@@ -95,7 +95,7 @@ void handle_heredoc(char *delimiter)
 	ssize_t read;
 	pid_t pid;
 	int pipe_fd[2];
-	off_t stdin_pos_before, stdin_pos_after;
+	/* off_t stdin_pos_before, stdin_pos_after; */
 	/* Crear una tubería para redirigir las líneas al proceso hijo */
 	if (pipe(pipe_fd) == -1)
 	{
@@ -127,7 +127,7 @@ void handle_heredoc(char *delimiter)
 	else
 	{
 		/* Guardar la posición actual de stdin antes de la redirección */
-		stdin_pos_before = lseek(STDIN_FILENO, 0, SEEK_CUR);
+		/* stdin_pos_before = lseek(STDIN_FILENO, 0, SEEK_CUR); */
 		/* printf("Before redirection: %lld\n", (long long)stdin_pos_before); */
 
 		close(pipe_fd[1]);
@@ -139,7 +139,7 @@ void handle_heredoc(char *delimiter)
 		lseek(STDIN_FILENO, 0, SEEK_END);
 
 		/* Guardar la posición actual de stdin después de la redirección */
-		stdin_pos_after = lseek(STDIN_FILENO, 0, SEEK_END);
+		/* stdin_pos_after = lseek(STDIN_FILENO, 0, SEEK_END); */
 		/* printf("After redirection: %lld\n", (long long)stdin_pos_after); */
 
 		free(line);
