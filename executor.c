@@ -90,8 +90,6 @@ void handle_heredoc(char *delimiter)
 	ssize_t read;
 	pid_t pid;
 	int pipe_fd[2];
-	/* printf("Entering handle_heredoc (Delimiter: %s)\n", delimiter); */
-
 	/* Crear una tubería para redirigir las líneas al proceso hijo */
 	if (pipe(pipe_fd) == -1)
 	{
@@ -106,8 +104,7 @@ void handle_heredoc(char *delimiter)
 	}
 	else if (pid == 0) /* Proceso hijo */
 	{
-		close(pipe_fd[0]);/* Cerramos el extremo de lectura de la tubería */
-		/* printf("Child process (PID: %d) handling heredoc\n", getpid()); */
+		close(pipe_fd[0]); /* Cerramos el extremo de lectura de la tubería */
 		while ((read = getline(&line, &len, stdin)) != -1)
 		{
 			if (_strncmp(line, delimiter, _strlen(delimiter)) == 0)
@@ -116,27 +113,17 @@ void handle_heredoc(char *delimiter)
 			}
 			write(pipe_fd[1], line, read);
 		}
-		/* printf("Child process (PID: %d) finished handling heredoc\n", getpid()); */
-
 		close(pipe_fd[1]); /* Cerramos el extremo de escritura de la tubería */
 		exit(EXIT_SUCCESS);
 	}
 	else
 	{
-
 		close(pipe_fd[1]);
-
-		 /* Redirigir la entrada estándar del proceso padre al final del heredoc */
 		dup2(pipe_fd[0], STDIN_FILENO);
 		close(pipe_fd[0]);
-
-		waitpid(pid, NULL, 0); /* Esperar a que el proceso hijo termine */
-
+		waitpid(pid, NULL, 0);
 		free(line);
 	}
-	/* printf("Exiting handle_heredoc (Delimiter: %s)\n", delimiter); */
-	exit(EXIT_SUCCESS);
-
 }
 
 /**
@@ -147,11 +134,10 @@ void handle_heredoc(char *delimiter)
 */
 int execute_command(char *args[], int line_number)
 {
-	/* printf("Entering execute_command for %s\n", args[0]); */
+	pid_t pid = 0;
 	char *dir = NULL;
 	char *path = NULL;
 	char *path_copy = NULL;
-	pid_t pid;
 	int saved_stdin, saved_stdout;
 
 	/* Arreglo de variables de entorno para execve */
@@ -170,7 +156,7 @@ int execute_command(char *args[], int line_number)
 	int heredoc_redirect = 0;
 	char *heredoc_delimiter = NULL;
 
-	/* recuper valor los descriptores de archivo de entrada y salida estándar */
+	/* Obtener el valor de los descriptores de archivo de entrada y salida estándar */
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 
@@ -209,7 +195,8 @@ int execute_command(char *args[], int line_number)
 			/* Salir del proceso hijo con un código de error */
 			return (127);
 		}
-	} else
+	}
+	else
 	{
 		_strcpy(executable_path, args[0]);
 	}
@@ -226,21 +213,24 @@ int execute_command(char *args[], int line_number)
 				free(args[i]);
 				args[i] = NULL;
 				/* printf("Input redirection detected: %s\n", input_file); */
-			} else if (_sstrcmp(args[i], ">") == 0)
+			}
+			else if (_sstrcmp(args[i], ">") == 0)
 			{
 				output_redirect = 1;
 				output_file = args[i + 1];
 				free(args[i]);
 				args[i] = NULL;
 				/* printf("Output redirection detected: %s\n", output_file); */
-			} else if (_sstrcmp(args[i], ">>") == 0)
+			}
+			else if (_sstrcmp(args[i], ">>") == 0)
 			{
 				double_output_redirect = 1;
 				free(args[i]);
 				output_file = args[i + 1];
 				args[i] = NULL;
 				/* printf("Double output redirection detected: %s\n", output_file); */
-			} else if (_sstrcmp(args[i], "<<") == 0)
+			}
+			else if (_sstrcmp(args[i], "<<") == 0)
 			{
 				heredoc_redirect = 1;
 				heredoc_delimiter = args[i + 1];
@@ -254,34 +244,29 @@ int execute_command(char *args[], int line_number)
 			}
 		}
 
-		/* Antes ejecutar comando, la redirección de entrada salida sinecesario */
+		/* Antes de ejecutar el comando, manejar la redirección de entrada y salida si es necesario */
 		if (input_redirect)
 		{
 			handle_input_redirection(input_file, line_number);
 			free(input_file);
 		}
+
 		if (output_redirect)
 		{
 			handle_output_redirection(output_file);
 			free(output_file);
 		}
+
 		if (double_output_redirect)
 		{
 			handle_double_output_redirection(output_file);
 			free(output_file);
 		}
+
 		if (heredoc_redirect)
 		{
-			/* Imprime información antes de manejar el heredoc */
-			/* printf("Before handling heredoc (PID: %d):\n", getpid());
-			fflush(stdout); */
-
 			handle_heredoc(heredoc_delimiter);
 			free(heredoc_delimiter);
-
-			/* Imprime información después de manejar el heredoc */
-			/* printf("After handling heredoc (PID: %d):\n", getpid());
-			fflush(stdout); */
 		}
 
 		free(path_copy);
@@ -299,14 +284,15 @@ int execute_command(char *args[], int line_number)
 	{
 		free(path_copy);
 		waitpid(pid, &status, 0);
-
 		if (WIFEXITED(status))
 		{
 			int exit_status = WEXITSTATUS(status);
-
 			return (exit_status);
 		}
-		printf("Child process did not exit normally\n");
+		else
+		{
+			printf("Child process did not exit normally\n");
+		}
 
 		/* Restaurar la entrada y salida estándar después de ejecutar el comando */
 		dup2(saved_stdin, STDIN_FILENO);
@@ -314,6 +300,5 @@ int execute_command(char *args[], int line_number)
 		close(saved_stdin);
 		close(saved_stdout);
 	}
-	/* printf("Exiting execute_command finish %s\n", args[0]); */
 	return (0);
 }
