@@ -19,7 +19,7 @@
 extern char **environ;
 
 int tokenize_input(char *input, char *args[]);
-int execute_command(char *args[], int line_number);
+int execute_command(char *args[], int line_number, char *input);
 int run_shell_loop(void);
 
 int shell_cd(char *args[]);

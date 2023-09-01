@@ -136,7 +136,7 @@ int run_shell_loop(void)
 				free(environ);
 				exit(0);
 			}
-			status = execute_command(args, line_number); /* Execute comand ext */
+			status = execute_command(args, line_number, input); /* Execute comand ext */
 
 		}
 		free(input); /* Liberar la memoria de la línea de entrada */
@@ -144,4 +144,3 @@ int run_shell_loop(void)
 	}
 	return (status);
 }
-
