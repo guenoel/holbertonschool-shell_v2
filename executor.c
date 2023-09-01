@@ -128,7 +128,7 @@ void handle_heredoc(char *delimiter)
 	{
 		/* Guardar la posición actual de stdin antes de la redirección */
 		stdin_pos_before = lseek(STDIN_FILENO, 0, SEEK_CUR);
-		printf("Before redirection: %lld\n", (long long)stdin_pos_before);
+		/* printf("Before redirection: %lld\n", (long long)stdin_pos_before); */
 
 		close(pipe_fd[1]);
 		/* Redirigir la entrada estándar desde la tubería */
@@ -140,7 +140,7 @@ void handle_heredoc(char *delimiter)
 
 		/* Guardar la posición actual de stdin después de la redirección */
 		stdin_pos_after = lseek(STDIN_FILENO, 0, SEEK_END);
-		printf("After redirection: %lld\n", (long long)stdin_pos_after);
+		/* printf("After redirection: %lld\n", (long long)stdin_pos_after); */
 
 		free(line);
 	}
