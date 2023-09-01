@@ -1,37 +1,22 @@
 #include "shell.h"
 
 int copy_stdin(void) {
-	/* Open the file in write mode */
-	int file_fd = open("stdin.txt", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-	if (file_fd == -1) {
-		perror("Error opening file");
-		return 1;
-	}
+	FILE *file = fopen("output.txt", "w");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        return 1;
+    }
 
-	char buffer[4096];
-	ssize_t bytes_read;
+    char buffer[4096];
+    
+    printf("Entrez les données (Ctrl-D pour terminer) :\n");
 
-	/* Read input from stdin and write it to the file */
-	while ((bytes_read = read(STDIN_FILENO, buffer, sizeof(buffer))) > 0) {
-		ssize_t bytes_written = write(file_fd, buffer, bytes_read);
-		if (bytes_written == -1) {
-			perror("Error writing to file");
-			close(file_fd);
-			return 1;
-		}
-	}
+    /* Lire chaque ligne depuis stdin et écrire dans le fichier */
+    while (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+        fputs(buffer, file);
+    }
 
-	if (bytes_read == -1) {
-		perror("Error reading from stdin");
-		close(file_fd);
-		return 1;
-	}
+    fclose(file); /* Fermer le fichier */
 
-	/* Close the file */
-	if (close(file_fd) == -1) {
-		perror("Error closing file");
-		return 1;
-	}
-
-	return 0;
+    return 0;
 }

@@ -41,6 +41,7 @@ char *getoptions(int argc, char *argv[])
  * or NULL in case of an error or end of file.
  */
 /* Leer una línea de entrada desde el usuario */
+
 char *read_input()
 {
 	char *line = NULL;
@@ -57,6 +58,31 @@ char *read_input()
 	return (line);
 }
 
+lines_t *create_line()
+{
+	lines_t *new_line = (lines_t *)malloc(sizeof(lines_t));
+	new_line->line = read_input();
+	printf("create_line: %s\n", new_line->line);
+	new_line->next = NULL;
+
+	return new_line;
+}
+
+int free_nodes_line(lines_t *node)
+{
+	lines_t *tmp;
+
+	while (node)
+	{
+		tmp = node->next;
+		if (node->line)
+			free(node->line);
+		free(node);
+		node = tmp;
+	}
+	return (0);
+}
+
 
 /**
  * run_shell_loop - Executes the main loop of the shell.
@@ -66,10 +92,14 @@ char *read_input()
 int run_shell_loop(void)
 {
 	char *input = NULL;
-	char *args[MAX_ARGS];
+	char *args[MAX_ARGS] = {NULL};
 	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
+	lines_t *node_line = NULL;
+	lines_t *tmp = NULL;
+	lines_t *first_node_line = NULL;
+	lines_t *first_node_line_to_free = NULL;
 
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */
 	{
@@ -78,7 +108,32 @@ int run_shell_loop(void)
 		{
 			printf("$ "); /* indicador de línea ($) solo en modo interactivo */
 		}
-		input = read_input(); /* Leer la línea de entrada */
+		if (!first_node_line)
+		{
+			node_line = create_line();
+			printf("first_node_line: %s\n", node_line->line);
+			first_node_line = node_line;
+			first_node_line_to_free = node_line;
+			if (!isatty(STDIN_FILENO))
+			{
+				while (node_line->line)
+				{
+					tmp = node_line;
+					node_line = create_line();
+					printf("loop_node_line: %s\n", node_line->line);
+					tmp->next = node_line;
+				}
+			}
+		}
+
+		if (first_node_line->line)
+		{
+			input = first_node_line->line;
+			printf("input: %s\n", input);
+			first_node_line = first_node_line->next;
+		} else {
+			free_nodes_line(first_node_line_to_free);
+		}
 
 		if (input == NULL)
 		{
@@ -106,8 +161,13 @@ int run_shell_loop(void)
 
 		if (_sstrcmp(args[0], "exit") == 0)
 		{
+			free_nodes_line(first_node_line_to_free);
 			free(input);
-			shell_exit(args, line_number, status);
+			free_args(args);
+			free_args(environ);
+			free(environ);
+			exit (0);
+			/* shell_exit(args, line_number, status); */
 		}
 		else if (_sstrcmp(args[0], "cd") == 0)
 		{
@@ -138,8 +198,8 @@ int run_shell_loop(void)
 			status = execute_command(args, line_number); /* Execute comand ext */
 
 		}
-		free(input); /* Liberar la memoria de la línea de entrada */
-		free_args(args); /* Liberar la memoria de los argumentos tokenizados */
+		free(input);
+		free_args(args);
 	}
 	return (status);
 }

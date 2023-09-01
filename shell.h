@@ -11,6 +11,7 @@
 #include <sys/wait.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <fcntl.h>
 
 #define MAX_INPUT_LENGTH 1024
 #define MAX_ARGS 64
@@ -18,9 +19,15 @@
 
 extern char **environ;
 
+typedef struct lines {
+    char *line;
+    struct lines *next;
+} lines_t;
+
 int tokenize_input(char *input, char *args[]);
 int execute_command(char *args[], int line_number);
 int run_shell_loop(void);
+int copy_stdin(void);
 
 int shell_cd(char *args[]);
 int shell_exit(char *args[], int line_number, int child_status);
