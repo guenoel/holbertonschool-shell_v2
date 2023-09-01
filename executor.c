@@ -148,10 +148,11 @@ void handle_heredoc(char *delimiter)
 int execute_command(char *args[], int line_number)
 {
 	printf("Entering execute_command for %s\n", args[0]);
-	pid_t pid = 0;
+
 	char *dir = NULL;
 	char *path = NULL;
 	char *path_copy = NULL;
+	pid_t pid;
 	int saved_stdin, saved_stdout;
 
 	/* Arreglo de variables de entorno para execve */
