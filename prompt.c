@@ -129,14 +129,15 @@ int run_shell_loop(void)
 			}
 		} else {
 			commands[0] = line;
+			commands[1] = NULL;
 		}
 		for (j = 0; commands[j]; j++)
 		{
+
 			num_args = tokenize_input(commands[j], args); /* Tokenizar la línea de entrada */
 
 			if (num_args == 0)
 			{
-				free(line);
 				free_args(args);
 				continue; /* Línea vacía, volver al inicio del bucle */
 			}
@@ -171,7 +172,7 @@ int run_shell_loop(void)
 					free(environ);
 					exit(0);
 				}
-				status = execute_command(args, line_number); /* Execute comand ext */
+				status = execute_command(args, line_number, commands[j]); /* Execute comand ext */
 			}
 			free_args(args);
 		}
