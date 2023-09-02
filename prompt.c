@@ -57,6 +57,24 @@ char *read_input()
 	return (line);
 }
 
+/* char *add_coma(char *arg)
+{
+	char *new_arg = (char *)malloc(strlen(arg) + 2);
+	if (new_arg == NULL)
+	{
+		perror("Erreur d'allocation de mémoire");
+		exit(EXIT_FAILURE);
+	}
+
+	_strcpy(new_arg, arg);
+	free(arg);
+
+	int longueur = strlen(new_arg);
+	new_arg[longueur] = ';';
+	new_arg[longueur + 1] = '\0';
+
+	return (new_arg);
+} */
 
 /**
  * run_shell_loop - Executes the main loop of the shell.
@@ -65,11 +83,15 @@ char *read_input()
  */
 int run_shell_loop(void)
 {
-	char *input = NULL;
-	char *args[MAX_ARGS];
+	char *line = NULL;
+	char *args[MAX_ARGS] = {NULL};
+	char *commands[MAX_ARGS] = {NULL};
+	char *token = NULL;
 	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
+	int i = 0;
+	int j = 0;
 
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */
 	{
@@ -79,9 +101,10 @@ int run_shell_loop(void)
 		{
 			printf("$ "); /* indicador de línea ($) solo en modo interactivo */
 		}
-		input = read_input(); /* Leer la línea de entrada */
 
-		if (input == NULL)
+		line = read_input(); /* Leer la línea de entrada */
+
+		if (line == NULL)
 		{
 			if (isatty(STDIN_FILENO))
 			{
@@ -90,57 +113,73 @@ int run_shell_loop(void)
 			break; /* Error o final del archivo */
 		}
 
-		if (_sstrcmp(input, "\n") == 0) /* Comparar con una línea en blanco */
+		if (_sstrcmp(line, "\n") == 0) /* Comparar con una línea en blanco */
 		{
-			free(input);
+			free(line);
 			continue; /* Línea vacía, volver al inicio del bucle */
 		}
 
-		num_args = tokenize_input(input, args); /* Tokenizar la línea de entrada */
-
-		if (num_args == 0)
+		if (_strchr(line, ';') != NULL)
 		{
-			free(input);
-			free_args(args);
-			continue; /* Línea vacía, volver al inicio del bucle */
-		}
-
-		if (_sstrcmp(args[0], "exit") == 0)
-		{
-			free(input);
-			shell_exit(args, line_number, status);
-		}
-		else if (_sstrcmp(args[0], "cd") == 0)
-		{
-			shell_cd(args); /* Ejecutar el comando "cd" */
-		}
-		else if (_sstrcmp(args[0], "env") == 0)
-		{
-			shell_env(args); /* Ejecutar el comando "env" */
-		}
-		else if (_sstrcmp(args[0], "setenv") == 0)
-		{
-			shell_setenv(args); /* Ejecutar el comando "setenv" */
-		}
-		else if (_sstrcmp(args[0], "unsetenv") == 0)
-		{
-			shell_unsetenv(args); /* Ejecutar el comando "unsetenv" */
-		}
-		else
-		{
-			if (status == 127)
+			token = strtok(line, ";");
+			for (i = 0; token != NULL; i++)
 			{
-				free(input);
-				free_args(args);
-				free_args(environ);
-				free(environ);
-				exit(0);
+				commands[i] = token;
+				token = strtok(NULL, ";");
 			}
-			status = execute_command(args, line_number, input); /* Execute comand ext */
-
+		} else {
+			commands[0] = line;
+			commands[1] = NULL;
 		}
-		free(input); /* Liberar la memoria de la línea de entrada */
-		free_args(args); /* Liberar la memoria de los argumentos tokenizados */
+		for (j = 0; commands[j]; j++)
+		{
+
+			num_args = tokenize_input(commands[j], args); /* Tokenizar la línea de entrada */
+
+			if (num_args == 0)
+			{
+				printf("jamais il va passer ici\n");
+				free(line);
+				free_args(args);
+				continue;
+			}
+
+			if (_sstrcmp(args[0], "exit") == 0)
+			{
+				free(line);
+				shell_exit(args, line_number, status);
+			}
+			else if (_sstrcmp(args[0], "cd") == 0)
+			{
+				shell_cd(args); /* Ejecutar el comando "cd" */
+			}
+			else if (_sstrcmp(args[0], "env") == 0)
+			{
+				shell_env(args); /* Ejecutar el comando "env" */
+			}
+			else if (_sstrcmp(args[0], "setenv") == 0)
+			{
+				shell_setenv(args); /* Ejecutar el comando "setenv" */
+			}
+			else if (_sstrcmp(args[0], "unsetenv") == 0)
+			{
+				shell_unsetenv(args); /* Ejecutar el comando "unsetenv" */
+			}
+			else
+			{
+				if (status == 127)
+				{
+					free(line);
+					free_args(args);
+					free_args(environ);
+					free(environ);
+					exit(0);
+				}
+				status = execute_command(args, line_number, commands[j]); /* Execute comand ext */
+			}
+			free_args(args);
+		}
+		free(line);
 	}
 	return (status);
 }
