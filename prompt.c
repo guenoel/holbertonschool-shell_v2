@@ -87,6 +87,7 @@ int run_shell_loop(void)
 	char *args[MAX_ARGS] = {NULL};
 	char *commands[MAX_ARGS] = {NULL};
 	char *token = NULL;
+	char *ptr_logic = NULL;
 	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
@@ -118,7 +119,7 @@ int run_shell_loop(void)
 			free(line);
 			continue; /* Línea vacía, volver al inicio del bucle */
 		}
-
+		ptr_logic = _strchr(line, '&');
 		if (_strchr(line, ';') != NULL)
 		{
 			token = strtok(line, ";");
@@ -127,10 +128,26 @@ int run_shell_loop(void)
 				commands[i] = token;
 				token = strtok(NULL, ";");
 			}
+		} else if (ptr_logic)
+		{
+			if (ptr_logic[1] == '&')
+			{
+				/* ptr_logic[1] = ' '; */
+				token = strtok(line, "&");
+				for (i = 0; token != NULL; i++)
+				{
+					commands[i] = token;
+					token = strtok(NULL, "&");
+				}
+			}
 		} else {
 			commands[0] = line;
 			commands[1] = NULL;
 		}
+		for (i = 0; commands[i]; i++)
+			printf("commands[%d]: %s\n", i, commands[i]);
+		printf("commands1[%d]: %s\n", i, commands[i + 1]);
+		printf("commands2[%d]: %s\n", i, commands[i + 2]);
 		for (j = 0; commands[j]; j++)
 		{
 
