@@ -46,7 +46,7 @@ getpwuid, isatty, printf, fflush, fprintf, vfprintf, `sprintf`
 * `ls -l`
 * `exit`
 * `cd -`
-
+![exp](images/example_shell.png)
 
 ### Authors
 * Jose Fernandez Armas [Github](https://github.com/crasride) - [Twitter](https://twitter.com/JosFern35900656)
