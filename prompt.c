@@ -138,8 +138,10 @@ int run_shell_loop(void)
 
 			if (num_args == 0)
 			{
+				printf("jamais il va passer ici\n");
+				free(line);
 				free_args(args);
-				continue; /* Línea vacía, volver al inicio del bucle */
+				continue;
 			}
 
 			if (_sstrcmp(args[0], "exit") == 0)
@@ -167,6 +169,7 @@ int run_shell_loop(void)
 			{
 				if (status == 127)
 				{
+					free(line);
 					free_args(args);
 					free_args(environ);
 					free(environ);

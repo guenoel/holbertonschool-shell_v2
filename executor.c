@@ -249,8 +249,8 @@ int execute_command(char *args[], int line_number, char *input)
 			else if (_sstrcmp(args[i], ">>") == 0)
 			{
 				double_output_redirect = 1;
-				free(args[i]);
 				output_file = args[i + 1];
+				free(args[i]);
 				args[i] = NULL;
 				/* printf("Double output redirection detected: %s\n", output_file); */
 			}
