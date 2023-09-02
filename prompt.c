@@ -144,10 +144,7 @@ int run_shell_loop(void)
 			commands[0] = line;
 			commands[1] = NULL;
 		}
-		for (i = 0; commands[i]; i++)
-			printf("commands[%d]: %s\n", i, commands[i]);
-		printf("commands1[%d]: %s\n", i, commands[i + 1]);
-		printf("commands2[%d]: %s\n", i, commands[i + 2]);
+
 		for (j = 0; commands[j]; j++)
 		{
 
