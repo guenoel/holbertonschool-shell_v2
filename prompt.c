@@ -41,7 +41,6 @@ char *getoptions(int argc, char *argv[])
  * or NULL in case of an error or end of file.
  */
 /* Leer una línea de entrada desde el usuario */
-
 char *read_input()
 {
 	char *line = NULL;
@@ -58,31 +57,24 @@ char *read_input()
 	return (line);
 }
 
-lines_t *create_line()
+/* char *add_coma(char *arg)
 {
-	lines_t *new_line = (lines_t *)malloc(sizeof(lines_t));
-	new_line->line = read_input();
-	printf("create_line: %s\n", new_line->line);
-	new_line->next = NULL;
-
-	return new_line;
-}
-
-int free_nodes_line(lines_t *node)
-{
-	lines_t *tmp;
-
-	while (node)
+	char *new_arg = (char *)malloc(strlen(arg) + 2);
+	if (new_arg == NULL)
 	{
-		tmp = node->next;
-		if (node->line)
-			free(node->line);
-		free(node);
-		node = tmp;
+		perror("Erreur d'allocation de mémoire");
+		exit(EXIT_FAILURE);
 	}
-	return (0);
-}
 
+	_strcpy(new_arg, arg);
+	free(arg);
+
+	int longueur = strlen(new_arg);
+	new_arg[longueur] = ';';
+	new_arg[longueur + 1] = '\0';
+
+	return (new_arg);
+} */
 
 /**
  * run_shell_loop - Executes the main loop of the shell.
@@ -91,15 +83,15 @@ int free_nodes_line(lines_t *node)
  */
 int run_shell_loop(void)
 {
-	char *input = NULL;
+	char *line = NULL;
 	char *args[MAX_ARGS] = {NULL};
+	char *commands[MAX_ARGS] = {NULL};
+	char *token = NULL;
 	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
-	lines_t *node_line = NULL;
-	lines_t *tmp = NULL;
-	lines_t *first_node_line = NULL;
-	lines_t *first_node_line_to_free = NULL;
+	int i = 0;
+	int j = 0;
 
 	while (1) /* Bucle infinito para mantener la shell en funcionamiento */
 	{
@@ -108,34 +100,10 @@ int run_shell_loop(void)
 		{
 			printf("$ "); /* indicador de línea ($) solo en modo interactivo */
 		}
-		if (!first_node_line)
-		{
-			node_line = create_line();
-			printf("first_node_line: %s\n", node_line->line);
-			first_node_line = node_line;
-			first_node_line_to_free = node_line;
-			if (!isatty(STDIN_FILENO))
-			{
-				while (node_line->line)
-				{
-					tmp = node_line;
-					node_line = create_line();
-					printf("loop_node_line: %s\n", node_line->line);
-					tmp->next = node_line;
-				}
-			}
-		}
 
-		if (first_node_line->line)
-		{
-			input = first_node_line->line;
-			printf("input: %s\n", input);
-			first_node_line = first_node_line->next;
-		} else {
-			free_nodes_line(first_node_line_to_free);
-		}
+		line = read_input(); /* Leer la línea de entrada */
 
-		if (input == NULL)
+		if (line == NULL)
 		{
 			if (isatty(STDIN_FILENO))
 			{
@@ -144,62 +112,69 @@ int run_shell_loop(void)
 			break; /* Error o final del archivo */
 		}
 
-		if (_sstrcmp(input, "\n") == 0) /* Comparar con una línea en blanco */
+		if (_sstrcmp(line, "\n") == 0) /* Comparar con una línea en blanco */
 		{
-			free(input);
+			free(line);
 			continue; /* Línea vacía, volver al inicio del bucle */
 		}
 
-		num_args = tokenize_input(input, args); /* Tokenizar la línea de entrada */
-
-		if (num_args == 0)
+		if (_strchr(line, ';') != NULL)
 		{
-			free(input);
-			free_args(args);
-			continue; /* Línea vacía, volver al inicio del bucle */
-		}
-
-		if (_sstrcmp(args[0], "exit") == 0)
-		{
-			free_nodes_line(first_node_line_to_free);
-			free(input);
-			free_args(args);
-			free_args(environ);
-			free(environ);
-			exit (0);
-			/* shell_exit(args, line_number, status); */
-		}
-		else if (_sstrcmp(args[0], "cd") == 0)
-		{
-			shell_cd(args); /* Ejecutar el comando "cd" */
-		}
-		else if (_sstrcmp(args[0], "env") == 0)
-		{
-			shell_env(args); /* Ejecutar el comando "env" */
-		}
-		else if (_sstrcmp(args[0], "setenv") == 0)
-		{
-			shell_setenv(args); /* Ejecutar el comando "setenv" */
-		}
-		else if (_sstrcmp(args[0], "unsetenv") == 0)
-		{
-			shell_unsetenv(args); /* Ejecutar el comando "unsetenv" */
-		}
-		else
-		{
-			if (status == 127)
+			token = strtok(line, ";");
+			for (i = 0; token != NULL; i++)
 			{
-				free(input);
-				free_args(args);
-				free_args(environ);
-				free(environ);
-				exit(0);
+				commands[i] = token;
+				token = strtok(NULL, ";");
 			}
-			status = execute_command(args, line_number); /* Execute comand ext */
-
+		} else {
+			commands[0] = line;
 		}
-		free(input);
-		free_args(args);
+		for (j = 0; commands[j]; j++)
+		{
+			num_args = tokenize_input(commands[j], args); /* Tokenizar la línea de entrada */
+
+			if (num_args == 0)
+			{
+				free(line);
+				free_args(args);
+				continue; /* Línea vacía, volver al inicio del bucle */
+			}
+
+			if (_sstrcmp(args[0], "exit") == 0)
+			{
+				free(line);
+				shell_exit(args, line_number, status);
+			}
+			else if (_sstrcmp(args[0], "cd") == 0)
+			{
+				shell_cd(args); /* Ejecutar el comando "cd" */
+			}
+			else if (_sstrcmp(args[0], "env") == 0)
+			{
+				shell_env(args); /* Ejecutar el comando "env" */
+			}
+			else if (_sstrcmp(args[0], "setenv") == 0)
+			{
+				shell_setenv(args); /* Ejecutar el comando "setenv" */
+			}
+			else if (_sstrcmp(args[0], "unsetenv") == 0)
+			{
+				shell_unsetenv(args); /* Ejecutar el comando "unsetenv" */
+			}
+			else
+			{
+				if (status == 127)
+				{
+					free_args(args);
+					free_args(environ);
+					free(environ);
+					exit(0);
+				}
+				status = execute_command(args, line_number); /* Execute comand ext */
+			}
+			free_args(args);
+		}
+		free(line);
 	}
 	return (status);
 }
