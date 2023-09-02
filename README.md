@@ -18,11 +18,11 @@ In addition to running executables in the PATH, the following features are curre
 This program is coded under the restriction that only the following standard library functions are allowed to be used.
 The allowed functions:
 
-access, chdir, close, execve, fork, stat (__xstat), lstat (__lxstat), fstat (__fxstat) , kill,
-open, read, signal, wait, waitpid, wait3, wait4, write, _exit, dup, dup2, pipe, unlink, time,
-gethostname, geteuid, sigaction, sigemptyset, select, getpid, __errno_location (errno macros),
-closedir, exit, free, getcwd, getline, malloc, opendir, perror, readdir, strtok, localtime,
-getpwuid, isatty, printf, fflush, fprintf, vfprintf, `sprintf`
+`access`, `chdir`, `close`, `execve`, `fork`, `stat (__xstat)`, `lstat (__lxstat)`, `fstat (__fxstat)`, `kill`,
+`open`, `read`, `signal`, `wait`, `waitpid`, `wait3`, `wait4`, `write`, `_exit`, `dup`, `dup2`, `pipe`, `unlink`, `time`,
+`gethostname`, `geteuid`, `sigaction`, `sigemptyset`, `select`, `getpid`, `__errno_location (errno macros)`,
+`closedir`, `exit`, `free`, `getcwd`, `getline`, `malloc`, `opendir`, `perror`, `readdir`, `strtok`, `localtime`,
+`getpwuid`, `isatty`, `printf`, `fflush`, `fprintf`, `vfprintf`, `sprintf`
 
 
 
@@ -46,7 +46,11 @@ getpwuid, isatty, printf, fflush, fprintf, vfprintf, `sprintf`
 * `ls -l`
 * `exit`
 * `cd -`
+<br>
+Example:
 ![exp](images/example_shell.png)
+You can also redirect:
+![exp](images/example_shell_exec.png)
 
 ### Authors
 * Jose Fernandez Armas [Github](https://github.com/crasride) - [Twitter](https://twitter.com/JosFern35900656)
