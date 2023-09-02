@@ -1,0 +1,173 @@
+.\" Process this file with
+.\" groff -man -Tascii
+.\"
+.TH "C - Shell v2 HOLBERTON SCHOOL" "#C19-FRANCE/JAPON Sep 2022"
+.\"Manpage of the Shell v2"
+.\" Contact 3230@holbertonstudents.com or 5020@holbertonstudents.com or 4990@holbertonstudents.com to correct errors or typos."
+.SH NAME
+Shell v2
+
+.PP
+.B Shell v2 man page
+.SH SYNOPSIS
+.B
+#include "shell.h"
+
+Shell v2 [option...] [arguments ...]
+
+.SH DESCRIPTION
+.B
+The Shell v2 is a shell based program,that uses a command line interface(CLI).
+The users inputs datas(human-readable),using the keyboard interface. 
+Then the progam reads, converts, compiles,and executes the commands in a standard output.
+
+
+.SH EXAMPLES FOR STANDARD INPUT COMMANDS
+
+.TS
+center box tab(#);
+c s s
+c | l c.
+STANDARD INPUT LISTS
+_
+ls#list directory contents.
+#
+#$ ls
+#$ AUTHORS.md builtin.c executor.c functions_env.c hsh main.c Makefile prompt.c
+
+_
+ls -l#List in long format file system type.
+#
+#$ ls -l
+#-rw-rw-r--  1 crasride crasride   280 Aug 30 19:08 AUTHORS.md
+#-rw-rw-r--  1 crasride crasride  5126 Sep  1 14:35 builtin.c
+#-rw-rw-r--  1 crasride crasride  7508 Sep  2 09:27 executor.c
+#-rw-rw-r--  1 crasride crasride  5224 Aug 30 18:09 functions_env.c
+#-rwxrwxr-x  1 crasride crasride 49288 Sep  2 09:21 hsh
+#-rw-rw-r--  1 crasride crasride  1182 Sep  1 16:03 main.c
+#-rw-rw-r--  1 crasride crasride   357 Aug 30 18:00 Makefile
+#-rw-rw-r--  1 crasride crasride  3056 Sep  1 17:14 prompt.c
+_
+pwd#Will display the present working directory.
+#
+#$ pwd
+#$ /home/crasride/Holberton SPEC/holbertonschool-shell_v2
+_
+mv#Will move or rename one or more files or directories.
+#
+#$ ls
+#$ AUTHORS.md builtin.c executor.c test.txt
+#$ mv test.txt newtest.txt
+#$ ls
+#$ AUTHORS.md builtin.c executor.c newtest.txt
+
+_
+rm#Will remove a file.
+#
+#$ ls
+#$ AUTHORS.md builtin.c executor.c newtest.txt
+#$ rm newtest
+#$ ls
+#$ AUTHORS.md builtin.c executor.c
+_
+setenv#A command which will set environmental variable.
+#
+#$ env
+#SHELL=/bin/bash
+#SESSION_MANAGER=local/crasride:@/tmp/.ICE-unix/4187,unix/crasride
+#QT_ACCESSIBILITY=1
+#COLORTERM=truecolor
+#$ setenv HOLBERTON test
+#$ env
+#SHELL=/bin/bash
+#SESSION_MANAGER=local/crasride:@/tmp/.ICE-unix/4187,unix/crasride
+#QT_ACCESSIBILITY=1
+#COLORTERM=truecolor
+_
+unsetenv#Unsets environmental variable.
+#
+#$ env
+#SHELL=/bin/bash
+#SESSION_MANAGER=local/crasride:@/tmp/.ICE-unix/4187,unix/crasride
+#QT_ACCESSIBILITY=1
+#COLORTERM=truecolor
+#HOLBERTON=test
+#$ unsetenv HOLBERTON
+#$ env
+#SHELL=/bin/bash
+#SESSION_MANAGER=local/crasride:@/tmp/.ICE-unix/4187,unix/crasride
+#QT_ACCESSIBILITY=1
+#COLORTERM=truecolor
+#HOLBERTON=test
+_
+exit#Cause normal process termination.
+_
+ctrl + d, ctrl + c#Stop the prompt input.
+.TE
+
+.SH EXAMPLES FOR REDIRECTIONS
+.B
+.TS
+center box tab(|);
+c s s
+c | l c.
+ REDIRECTIONS LISTS
+_
+<|Redirect input. $ cat -e small_file
+|Holberton$
+|Second line$
+|$ rev < small_file
+|notrebloH
+|enil dnoceS
+_
+
+>|Redirect output. $ Holberton School > test.txt
+|$ cat -e test
+|Holberton School$
+_
+<<|Append input (heredoc). $ rev << HBTN
+|>Holberton
+|> School
+|>Battery
+|>HBT
+|>N
+|> HBTN
+|>HBTN
+|(stdout)notrebloH
+|loohcS
+|yrettaB
+|TBH
+|N
+|NTBH
+|$ pwd
+|$ /root/test
+_
+>>|Append output. $ echo Holberton School >> test
+|$ cat -e test
+|Holberton School$
+|$ echo Holberton School >> test
+|$ cat -e test
+|Holberton School$
+|Holberton School$
+
+.TE
+
+.SH RETURN VALUE
+.B
+If the program succed the return value is 0. 
+If there is an issue,(end of the child process),an error message is displayed.
+A new prompt is returning by the Shell process.
+
+.SH EXIT STATUS
+.B
+In interactive mode, to exit the Shell usethis commands: [CTRL + D] or [CTRL + C].
+Else, you have nothing to do, the execution will be aborded.
+
+.SH SEE ALSO
+wikipedia Shell Unix at: <https://fr.wikipedia.org/wiki/Shell_Unix>
+
+Ubuntu manual at: <https://manpages.ubuntu.com/manpages/impish/en/man1/ls.1plan9.html>
+
+.SH AUTHORS
+Anna Takasu & Guenoel Andrieux & Jose Fernandez Armas
+                                        
