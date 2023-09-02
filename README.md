@@ -49,7 +49,7 @@ The allowed functions:
 <br>
 Example:
 
-![exp](images/images/ls_cd_exit.png)
+![exp](images/ls_cd_exit.png)
 
 You can also redirect:
 
