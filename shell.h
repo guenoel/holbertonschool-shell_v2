@@ -22,7 +22,6 @@ extern char **environ;
 int tokenize_input(char *input, char *args[]);
 int execute_command(char *args[], int line_number, char *input);
 int run_shell_loop(void);
-int copy_stdin(void);
 
 int shell_cd(char *args[]);
 int shell_exit(char *args[], int line_number, int child_status);
