@@ -87,7 +87,8 @@ int run_shell_loop(void)
 	char *args[MAX_ARGS] = {NULL};
 	char *commands[MAX_ARGS] = {NULL};
 	char *token = NULL;
-	char *ptr_logic = NULL;
+	char *ptr_and = NULL;
+	char *ptr_or = NULL;
 	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
@@ -122,7 +123,8 @@ int run_shell_loop(void)
 			free(line);
 			continue; /* Línea vacía, volver al inicio del bucle */
 		}
-		ptr_logic = _strchr(line, '&');
+		ptr_and = _strchr(line, '&');
+		ptr_or = _strchr(line, '|');
 		if (_strchr(line, ';') != NULL)
 		{
 			token = strtok(line, ";");
@@ -131,9 +133,9 @@ int run_shell_loop(void)
 				commands[i] = token;
 				token = strtok(NULL, ";");
 			}
-		} else if (ptr_logic)
+		} else if (ptr_and)
 		{
-			if (ptr_logic[1] == '&')
+			if (ptr_and[1] == '&')
 			{
 				is_and = 1;
 				token = strtok(line, "&");
@@ -141,6 +143,18 @@ int run_shell_loop(void)
 				{
 					commands[i] = token;
 					token = strtok(NULL, "&");
+				}
+			}
+		} else if (ptr_or)
+		{
+			if (ptr_or[1] == '|')
+			{
+				is_and = 1;
+				token = strtok(line, "|");
+				for (i = 0; token != NULL; i++)
+				{
+					commands[i] = token;
+					token = strtok(NULL, "|");
 				}
 			}
 		} else {
@@ -160,7 +174,6 @@ int run_shell_loop(void)
 
 				if (num_args == 0)
 				{
-					printf("jamais il va passer ici\n");
 					free(line);
 					free_args(args);
 					continue;
