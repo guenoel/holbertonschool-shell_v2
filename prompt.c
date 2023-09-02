@@ -174,7 +174,6 @@ int run_shell_loop(void)
 
 				if (num_args == 0)
 				{
-					free(line);
 					free_args(args);
 					continue;
 				}
