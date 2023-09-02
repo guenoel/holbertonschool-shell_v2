@@ -11,6 +11,9 @@
 * redirecting input from a file.
 * @input_file: The name of the input file.
 * @line_number: The line number in the shell script where redirection is being
+* @input: The input
+* @args: The arguments
+* @path_copy: The path
 * handled.
 */
 void handle_input_redirection(char *input_file, int line_number,char *args[], char *path_copy, char *input)
@@ -150,6 +153,7 @@ void handle_heredoc(char *delimiter)
 * execute_command - Executes command with optional input and output redirection
 * @args: An array of strings representing the command and its arguments
 * @line_number: Line number in the shell script where the command is executed
+* @input: Command input
 * Return: The exit status of the executed command
 */
 int execute_command(char *args[], int line_number, char *input)
