@@ -51,7 +51,7 @@ The allowed functions:
 `closedir`, `exit`, `free`, `getcwd`, `getline`, `malloc`, `opendir`, `perror`, `readdir`, `strtok`, `localtime`,
 `getpwuid`, `isatty`, `printf`, `fflush`, `fprintf`, `vfprintf`, `sprintf`
 
-
+<div align="center">
 
 |  Builtin Commands  |    Functionality                            |
 | ------------------ | ------------------------------------------- |
@@ -67,6 +67,8 @@ The allowed functions:
 | `>`		     | Redirect output				   |
 | `<<`		     | Append input (heredoc)			   |
 | `>>`		     | Append output				   |
+
+</div>
 
 ### Example of use
 * This shell takes input the same as a standard unix shell.  After running the executable `hsh`, enter desired input and press return.
