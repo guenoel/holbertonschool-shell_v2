@@ -21,7 +21,7 @@ access, chdir, close, execve, fork, stat (__xstat), lstat (__lxstat), fstat (__f
 open, read, signal, wait, waitpid, wait3, wait4, write, _exit, dup, dup2, pipe, unlink, time,
 gethostname, geteuid, sigaction, sigemptyset, select, getpid, __errno_location (errno macros),
 closedir, exit, free, getcwd, getline, malloc, opendir, perror, readdir, strtok, localtime,
-getpwuid, isatty, printf, fflush, fprintf, vfprintf, sprintf
+getpwuid, isatty, printf, fflush, fprintf, vfprintf, 'sprintf'
 
 
 
