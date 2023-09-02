@@ -52,7 +52,6 @@ The allowed functions:
 `getpwuid`, `isatty`, `printf`, `fflush`, `fprintf`, `vfprintf`, `sprintf`
 
 
-
 |  Builtin Commands  |    Functionality                            |
 | ------------------ | ------------------------------------------- |
 | `exit`             | Exit shell				   |
@@ -67,6 +66,8 @@ The allowed functions:
 | `>`		     | Redirect output				   |
 | `<<`		     | Append input (heredoc)			   |
 | `>>`		     | Append output				   |
+
+
 
 ### Example of use
 * This shell takes input the same as a standard unix shell.  After running the executable `hsh`, enter desired input and press return.
