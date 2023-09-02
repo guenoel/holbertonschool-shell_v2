@@ -48,8 +48,11 @@ The allowed functions:
 * `cd -`
 <br>
 Example:
+
 ![exp](images/example_shell.png)
+
 You can also redirect:
+
 ![exp](images/example_shell_exec.png)
 
 ### Authors
