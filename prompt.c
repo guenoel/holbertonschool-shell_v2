@@ -151,6 +151,7 @@ int run_shell_loop(void)
 			printf("commands[%d]: %s\n", i, commands[i]);
 		printf("commands1[%d]: %s\n", i, commands[i + 1]);
 		printf("commands2[%d]: %s\n", i, commands[i + 2]); */
+
 		for (j = 0; commands[j]; j++)
 		{
 			if (status == 0 || !is_and)
