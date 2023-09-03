@@ -21,7 +21,7 @@ extern char **environ;
 
 int tokenize_input(char *input, char *args[]);
 int execute_command(char *args[], int line_number, char *input);
-int run_shell_loop(void);
+
 
 int shell_cd(char *args[]);
 int shell_exit(char *args[], int line_number, int child_status);
@@ -40,10 +40,18 @@ int _strncmp(const char *s1, const char *s2, size_t n);
 int _sstrcmp(const char *s1, const char *s2);
 int _setenv(const char *name, const char *value);
 
+/* Prompt functions */
+int run_shell_loop(void);
 char *read_input();
+int send_command(char *command, char *line, int status,
+				 int line_number, int flag_logic_func);
+void line_to_command(char *commands[], char *line, char *ptr_logic);
+int tokenize_line(char *commands[], char *line, int *status);
+int handle_logic(char *commands[], int logic_flag, char *line,
+				  int line_number, int status);
+
+/* Others */
 void free_args(char *args[]);
-char *path_remover(char *arg);
-char *getoptions(int argc, char *argv[]);
 void malloc_environ();
 int init_array_of_strings(char **array_of_strings, int size);
 int init_string(char *string, int size);
