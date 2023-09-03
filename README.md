@@ -77,7 +77,7 @@ The allowed functions:
 |  Handle  Operator      |    Functionality                            |
 | ------------------ | ------------------------------------------- |
 | `&&`		     |  The logical operator		          	   |
-
+| `\|\|`		     |  The logical operator		          	   |
 
 
 ### Example of use
