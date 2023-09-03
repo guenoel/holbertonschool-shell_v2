@@ -57,6 +57,16 @@ char *read_input()
 	return (line);
 }
 
+/**
+ * send_command - send command to executor.
+ * @command: string of the command to send
+ * @line: complete line with possibly multiple command in it
+ * @status: status of last executed command
+ * @line_number: number of the line of the command
+ * @flag_logic_func: boolean flag to avoid exit 
+ * in case of logic operators
+ * Return: status of executed command
+ */
 int send_command(char *command, char *line, int status,
 				int line_number, int flag_logic_func)
 {
