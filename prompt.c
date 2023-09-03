@@ -172,10 +172,7 @@ int handle_logic(char *commands[], int logic_flag, char *line,
 		else if (logic_flag == 2)
 		{
 			if (status != 0)
-			{
 				status = send_command(commands[j], line, status, line_number, logic_flag);
-				printf("status ||: %d\n", status);
-			}
 			else
 			{
 				logic_flag = 0;
@@ -184,10 +181,7 @@ int handle_logic(char *commands[], int logic_flag, char *line,
 			}
 		}
 		else
-		{
 			status = send_command(commands[j], line, status, line_number, 0);
-			printf("status no flag: %d\n", status);
-		}
 	}
 	return (status);
 }
