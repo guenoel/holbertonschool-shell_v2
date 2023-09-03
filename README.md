@@ -53,7 +53,6 @@ The allowed functions:
 `getpwuid`, `isatty`, `printf`, `fflush`, `fprintf`, `vfprintf`, `sprintf`
 
 
-
 |  Builtin Commands  |    Functionality                            |
 | ------------------ | ------------------------------------------- |
 | `exit`             | Exit shell				   |
@@ -69,6 +68,7 @@ The allowed functions:
 | `<<`		     | Append input (heredoc)			   |
 | `>>`		     | Append output				   |
 
+
 |  Handle  Separator    |    Functionality                            |
 | ------------------ | ------------------------------------------- |
 | `;`		     | The commands separator		          	   |
@@ -77,6 +77,7 @@ The allowed functions:
 |  Handle  Operator      |    Functionality                            |
 | ------------------ | ------------------------------------------- |
 | `&&`		     |  The logical operator		          	   |
+
 
 
 ### Example of use
