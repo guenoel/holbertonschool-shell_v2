@@ -47,7 +47,6 @@ int count_env_var(char **env, char *args[], int *flag_var_env_found)
 		num_vars++;
 		env++;
 	}
-	env = environ;
 	return (num_vars);
 }
 
@@ -61,21 +60,20 @@ int count_env_var(char **env, char *args[], int *flag_var_env_found)
  *
  * Return: status 0 on success, 1 on failure.
  */
-int set_env_var(char **env, char *args[], int size_malloc,
+char **set_env_var(char *args[], int size_malloc,
 char *new_env_var, int flag_var_env_found)
 {
 	char **new_environ = NULL;
-	int i = 0, status = 0;
+	int i = 0;
 	char *tmp = NULL;
 	char *tmp2 = NULL;
+	char **env = environ;
 
 	new_environ = (char **)malloc((size_malloc) * sizeof(char *));
 	init_array_of_strings(new_environ, (size_malloc));
 	if (new_environ == NULL)
 	{
 		perror("malloc"); /* Mostrar error si la asignación de memoria falla */
-		status = 1;
-		return (status);
 	}
 	while (*env)
 	{
@@ -94,8 +92,9 @@ char *new_env_var, int flag_var_env_found)
 		new_environ[i] = new_env_var;/* add new var de entorno al arreglo */
 		i++;
 	}
-	return (status);
+	return (new_environ);
 }
+
 /**
  * shell_unsetenv - Remove an environment variable.
  * @args: An array of arguments passed to the 'unsetenv' command.
@@ -117,10 +116,11 @@ int shell_unsetenv(char *args[])
 		num_args++;
 	if (num_args == 1)
 		return (0);
-
 	num_vars = count_env_var(env, args, &flag_var_env_found);
 	if (flag_var_env_found)
 	{
+		char **env = environ;
+
 		new_environ = (char **)malloc((num_vars) * sizeof(char *));
 		while (*env)
 		{
@@ -160,10 +160,10 @@ int shell_unsetenv(char *args[])
  */
 int shell_setenv(char *args[])
 {
-	int flag_var_env_found = 0, size_malloc = 0, num_vars = 0, status = 0;
-	char **env = environ; /* Obtener arreglo de variables entorno existentes */
 	char **new_environ = NULL;
+	char **env = environ; /* Obtener arreglo de variables entorno existentes */
 	char *new_env_var = NULL;
+	int num_vars = 0, size_malloc = 0, flag_var_env_found = 0, status = 0;
 
 	if (args[1] != NULL && args[2] != NULL) /* si se dan suficientes argumentos */
 	{
@@ -173,18 +173,19 @@ int shell_setenv(char *args[])
 		size_malloc = 0;
 		if (new_env_var == NULL)
 		{
-			perror("malloc");/* Mostrar error si la asignación de memoria falla */
-			return (1);
+			perror("malloc");
+			status = 1;
+			return (status);
 		}
 		sprintf(new_env_var, "%s=%s", args[1], args[2]); /* hacer cadena env */
 		num_vars = count_env_var(env, args, &flag_var_env_found);
-		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
+
 		if (flag_var_env_found)
 			size_malloc = num_vars + 1;
 		else
 			size_malloc = num_vars + 2;
-		set_env_var(env, args, size_malloc, new_env_var, flag_var_env_found);
-
+		new_environ = set_env_var(args, size_malloc, new_env_var,
+							flag_var_env_found);
 		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
 		free_args(env);
 		free(env);
@@ -196,5 +197,5 @@ int shell_setenv(char *args[])
 		status = 1;
 		return (status);
 	}
-	return (status);
+	return (0);
 }
