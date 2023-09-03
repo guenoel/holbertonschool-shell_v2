@@ -224,8 +224,8 @@ int run_shell_loop(void)
 					status = send_command(commands[j], line, status, line_number, is_or);
 				else
 				{
-					/* printf("no flag condition\n");
-					printf("status: %d\n", status); */
+					printf("no flag condition\n");
+					printf("status: %d\n", status);
 					is_or = 0;
 					while(commands[j] != NULL)
 						j++;
@@ -233,7 +233,7 @@ int run_shell_loop(void)
 
 			} else
 			{
-				/* printf("is_or = 0\n"); */
+				printf("is_or = 0\n");
 				status = send_command(commands[j], line, status, line_number, 0);
 			}
 		}
