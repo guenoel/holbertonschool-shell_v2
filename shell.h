@@ -54,7 +54,7 @@ int handle_logic(char *commands[], int logic_flag, char *line,
 
 /* Others */
 void free_args(char *args[]);
-void malloc_environ();
+void malloc_environ(void);
 int init_array_of_strings(char **array_of_strings, int size);
 int init_string(char *string, int size);
 long _strtol(const char *str, char **endptr, int base);
