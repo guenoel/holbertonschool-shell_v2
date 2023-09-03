@@ -9,6 +9,7 @@
 - [Example Usage](#example-of-use)
 - [Authors](#authors)
 - [License](#license)
+- [Man-page](#man-page)
 
 ### Description
 `shell` is a UNIX command interpreter that replicates core functionalities of the `sh` shell. Through this project we recoded shell as exercise of Holberton School.
@@ -81,6 +82,9 @@ Example:
 You can also redirect:
 
 ![exp](images/example_shell_exec.png)
+
+### Man-Page
+
 
 ### Authors
 * Jose Fernandez Armas [Github](https://github.com/crasride) - [Twitter](https://twitter.com/JosFern35900656)
