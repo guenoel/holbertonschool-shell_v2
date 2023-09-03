@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -pedantic
-SRCS = main.c prompt.c tokenizer.c executor.c builtin.c utilities.c utilities1.c functions_env.c loop_prompt.c
+SRCS = main.c prompt.c tokenizer.c executor.c builtin.c builtin2.c utilities.c utilities1.c functions_env.c loop_prompt.c handle_redirections.c
 OBJS = $(SRCS:.c=.o)
 TARGET = hsh
 
