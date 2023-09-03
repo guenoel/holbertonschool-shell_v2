@@ -38,7 +38,7 @@ int send_command(char *command, char *line, int status,
 	int num_args = 0;
 	char *args[MAX_ARGS] = {NULL};
 
-	num_args = tokenize_input(command, args);
+	num_args = tokenize_command(command, args);
 	if (num_args == 0)
 	{
 		free_args(args);
@@ -52,7 +52,7 @@ int send_command(char *command, char *line, int status,
 	else if (_sstrcmp(args[0], "cd") == 0)
 		shell_cd(args); /* Ejecutar el comando "cd" */
 	else if (_sstrcmp(args[0], "env") == 0)
-		shell_env(args); /* Ejecutar el comando "env" */
+		shell_env(); /* Ejecutar el comando "env" */
 	else if (_sstrcmp(args[0], "setenv") == 0)
 		shell_setenv(args); /* Ejecutar el comando "setenv" */
 	else if (_sstrcmp(args[0], "unsetenv") == 0)
@@ -150,6 +150,7 @@ int tokenize_line(char *commands[], char *line, int *status)
  * @line_number: number of the line of the command
  * @status: status of last executed command
  * in case of logic operators
+ * Return: exit status number
  */
 int handle_logic(char *commands[], int logic_flag, char *line,
 				  int line_number, int status)
