@@ -57,7 +57,8 @@ char *read_input()
 	return (line);
 }
 
-int send_command(char *command, char *line, int status, int line_number, int flag_logic_func)
+int send_command(char *command, char *line, int status,
+				int line_number, int flag_logic_func)
 {
 	int num_args = 0;
 	char *args[MAX_ARGS] = {NULL};
@@ -193,47 +194,37 @@ int run_shell_loop(void)
 				}
 				status = 1;
 			}
-		} else {
+		} else
+		{
 			commands[0] = line;
 			commands[1] = NULL;
 		}
-/* 		for (i = 0; commands[i]; i++)
-			printf("commands[%d]: %s\n", i, commands[i]);
-		printf("commands1[%d]: %s\n", i, commands[i + 1]);
-		printf("commands2[%d]: %s\n", i, commands[i + 2]); */
 
 		for (j = 0; commands[j]; j++)
 		{
 			if (is_and)
 			{
-				/* printf("is_and condition\n");
-				printf("status: %d\n", status); */
 				if (status == 0)
 					status = send_command(commands[j], line, status, line_number, is_and);
 				else
 				{
 					is_and = 0;
-					while(commands[j] != NULL)
+					while (commands[j] != NULL)
 						j++;
 				}
 			} else if (is_or)
 			{
-				/* printf("is_or condition\n");
-				printf("status: %d\n", status); */
 				if (status != 0)
 					status = send_command(commands[j], line, status, line_number, is_or);
 				else
 				{
-					printf("no flag condition\n");
-					printf("status: %d\n", status);
 					is_or = 0;
-					while(commands[j] != NULL)
+					while (commands[j] != NULL)
 						j++;
 				}
 
 			} else
 			{
-				printf("is_or = 0\n");
 				status = send_command(commands[j], line, status, line_number, 0);
 			}
 		}
