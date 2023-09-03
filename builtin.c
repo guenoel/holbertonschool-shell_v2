@@ -143,6 +143,25 @@ int shell_exit(char *args[], int line_number, int child_status)
 }
 
 /**
+ * shell_env - Display the environment variables.
+ *
+ * Return: 1 (success).
+ *
+ * This function displays all environment variables to the standard output.
+ */
+int shell_env(void)
+{
+	char **env = environ; /* Obtener el arreglo de variables de entorno */
+
+	while (*env)
+	{
+		printf("%s\n", *env); /* Imprimir cada variable de entorno */
+		env++;
+	}
+	return (1); /* Indicar que el comando se ejecutó correctamente */
+}
+
+/**
  * free_args - Free memory occupied by an array of strings.
  * @args: An array of strings.
  *

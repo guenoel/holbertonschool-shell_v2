@@ -82,7 +82,7 @@ char *_strcpy(char *dest, const char *src)
  * Return: Pointer to a new copy of the string, or NULL if memory allocation
  * fails.
  */
-char *_strdup(const char *str)
+char *_strdup(char *str)
 {
 	size_t len;
 	char *copy;
