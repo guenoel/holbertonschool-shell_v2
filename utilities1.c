@@ -142,7 +142,7 @@ long _strtol(const char *str, char **endptr, int base)
 char *_strchr(const char *str, int c)
 {
 	if (str == NULL)
-		return (NULL);
+		return NULL;
 	while (*str != '\0')
 	{
 		if (*str == c)
@@ -159,3 +159,4 @@ char *_strchr(const char *str, int c)
 
 	return (NULL);
 }
+
