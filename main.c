@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 			{
 				printf("$ %s", line); /* indicador de línea y la línea leída */
 				/* Tokenizar línea leída y almacenar los tokens en args */
-				tokenize_command(line, args);
+				tokenize_input(line, args);
 			}
 			fclose(input_file); /* Cerrar el archivo de entrada */
 		}
@@ -46,3 +46,4 @@ int main(int argc, char *argv[])
 	free(environ);
 	return (status); /* Salir con éxito */
 }
+
