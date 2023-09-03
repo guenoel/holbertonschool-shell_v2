@@ -57,24 +57,56 @@ char *read_input()
 	return (line);
 }
 
-/* char *add_coma(char *arg)
+int send_command(char *command, char *line, int status, int line_number, int flag_logic_func)
 {
-	char *new_arg = (char *)malloc(strlen(arg) + 2);
-	if (new_arg == NULL)
+	int num_args = 0;
+	char *args[MAX_ARGS] = {NULL};
+
+	num_args = tokenize_input(command, args); /* Tokenizar la línea de entrada */
+
+	if (num_args == 0)
 	{
-		perror("Erreur d'allocation de mémoire");
-		exit(EXIT_FAILURE);
+		free_args(args);
+		return (0);
 	}
 
-	_strcpy(new_arg, arg);
-	free(arg);
+	if (_sstrcmp(args[0], "exit") == 0)
+	{
+		free(line);
+		shell_exit(args, line_number, status);
+	}
+	else if (_sstrcmp(args[0], "cd") == 0)
+	{
+		shell_cd(args); /* Ejecutar el comando "cd" */
+	}
+	else if (_sstrcmp(args[0], "env") == 0)
+	{
+		shell_env(args); /* Ejecutar el comando "env" */
+	}
+	else if (_sstrcmp(args[0], "setenv") == 0)
+	{
+		shell_setenv(args); /* Ejecutar el comando "setenv" */
+	}
+	else if (_sstrcmp(args[0], "unsetenv") == 0)
+	{
+		shell_unsetenv(args); /* Ejecutar el comando "unsetenv" */
+	}
+	else
+	{
+		if (status == 127 && !flag_logic_func)
+		{
+			free(line);
+			free_args(args);
+			free_args(environ);
+			free(environ);
+			exit(0);
+		}
+		status = execute_command(args, line_number, command);
+	}
+	free_args(args);
 
-	int longueur = strlen(new_arg);
-	new_arg[longueur] = ';';
-	new_arg[longueur + 1] = '\0';
-
-	return (new_arg);
-} */
+	return (status);
+}
 
 /**
  * run_shell_loop - Executes the main loop of the shell.
@@ -84,15 +116,14 @@ char *read_input()
 int run_shell_loop(void)
 {
 	char *line = NULL;
-	char *args[MAX_ARGS] = {NULL};
 	char *commands[MAX_ARGS] = {NULL};
 	char *token = NULL;
 	char *ptr_and = NULL;
 	char *ptr_or = NULL;
-	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
 	int is_and = 0;
+	int is_or = 0;
 	int i = 0;
 	int j = 0;
 
@@ -123,8 +154,10 @@ int run_shell_loop(void)
 			free(line);
 			continue; /* Línea vacía, volver al inicio del bucle */
 		}
+
 		ptr_and = _strchr(line, '&');
 		ptr_or = _strchr(line, '|');
+
 		if (_strchr(line, ';') != NULL)
 		{
 			token = strtok(line, ";");
@@ -149,13 +182,16 @@ int run_shell_loop(void)
 		{
 			if (ptr_or[1] == '|')
 			{
-				is_and = 1;
+				is_or = 1;
 				token = strtok(line, "|");
+				/* printf("token_first: %s\n", token); */
 				for (i = 0; token != NULL; i++)
 				{
 					commands[i] = token;
 					token = strtok(NULL, "|");
+					/* printf("token_loop: %s\n", token); */
 				}
+				status = 1;
 			}
 		} else {
 			commands[0] = line;
@@ -168,50 +204,37 @@ int run_shell_loop(void)
 
 		for (j = 0; commands[j]; j++)
 		{
-			if (status == 0 || !is_and)
+			if (is_and)
 			{
-				num_args = tokenize_input(commands[j], args); /* Tokenizar la línea de entrada */
-
-				if (num_args == 0)
-				{
-					free_args(args);
-					continue;
-				}
-
-				if (_sstrcmp(args[0], "exit") == 0)
-				{
-					free(line);
-					shell_exit(args, line_number, status);
-				}
-				else if (_sstrcmp(args[0], "cd") == 0)
-				{
-					shell_cd(args); /* Ejecutar el comando "cd" */
-				}
-				else if (_sstrcmp(args[0], "env") == 0)
-				{
-					shell_env(args); /* Ejecutar el comando "env" */
-				}
-				else if (_sstrcmp(args[0], "setenv") == 0)
-				{
-					shell_setenv(args); /* Ejecutar el comando "setenv" */
-				}
-				else if (_sstrcmp(args[0], "unsetenv") == 0)
-				{
-					shell_unsetenv(args); /* Ejecutar el comando "unsetenv" */
-				}
+				/* printf("is_and condition\n");
+				printf("status: %d\n", status); */
+				if (status == 0)
+					status = send_command(commands[j], line, status, line_number, is_and);
 				else
 				{
-					if (status == 127)
-					{
-						free(line);
-						free_args(args);
-						free_args(environ);
-						free(environ);
-						exit(0);
-					}
-					status = execute_command(args, line_number, commands[j]);
+					is_and = 0;
+					while(commands[j] != NULL)
+						j++;
 				}
-				free_args(args);
+			} else if (is_or)
+			{
+				/* printf("is_or condition\n");
+				printf("status: %d\n", status); */
+				if (status != 0)
+					status = send_command(commands[j], line, status, line_number, is_or);
+				else
+				{
+					/* printf("no flag condition\n");
+					printf("status: %d\n", status); */
+					is_or = 0;
+					while(commands[j] != NULL)
+						j++;
+				}
+
+			} else
+			{
+				/* printf("is_or = 0\n"); */
+				status = send_command(commands[j], line, status, line_number, 0);
 			}
 		}
 		free(line);
