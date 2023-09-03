@@ -30,7 +30,7 @@ int run_shell_loop(void)
 			continue; /* Línea vacía, volver al inicio del bucle */
 		}
 		logic_flag = tokenize_line(commands, line, &status);
-		handle_logic(commands, logic_flag, line, line_number, status);
+		status = handle_logic(commands, logic_flag, line, line_number, status);
 		free(line);
 	}
 	return (status);

@@ -47,7 +47,7 @@ int send_command(char *command, char *line, int status,
 				 int line_number, int flag_logic_func);
 void line_to_command(char *commands[], char *line, char *ptr_logic);
 int tokenize_line(char *commands[], char *line, int *status);
-void handle_logic(char *commands[], int logic_flag, char *line,
+int handle_logic(char *commands[], int logic_flag, char *line,
 				  int line_number, int status);
 
 /* Others */
