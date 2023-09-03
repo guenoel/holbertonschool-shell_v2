@@ -60,21 +60,20 @@ int count_env_var(char **env, char *args[], int *flag_var_env_found)
  *
  * Return: status 0 on success, 1 on failure.
  */
-int set_env_var(char **env, char *args[], int size_malloc,
+char **set_env_var(char *args[], int size_malloc,
 char *new_env_var, int flag_var_env_found)
 {
 	char **new_environ = NULL;
-	int i = 0, status = 0;
+	int i = 0;
 	char *tmp = NULL;
 	char *tmp2 = NULL;
+	char **env = environ;
 
 	new_environ = (char **)malloc((size_malloc) * sizeof(char *));
 	init_array_of_strings(new_environ, (size_malloc));
 	if (new_environ == NULL)
 	{
 		perror("malloc"); /* Mostrar error si la asignación de memoria falla */
-		status = 1;
-		return (status);
 	}
 	while (*env)
 	{
@@ -93,7 +92,7 @@ char *new_env_var, int flag_var_env_found)
 		new_environ[i] = new_env_var;/* add new var de entorno al arreglo */
 		i++;
 	}
-	return (status);
+	return (new_environ);
 }
 
 /**
@@ -180,12 +179,12 @@ int shell_setenv(char *args[])
 		}
 		sprintf(new_env_var, "%s=%s", args[1], args[2]); /* hacer cadena env */
 		num_vars = count_env_var(env, args, &flag_var_env_found);
-		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
+
 		if (flag_var_env_found)
 			size_malloc = num_vars + 1;
 		else
 			size_malloc = num_vars + 2;
-		status = set_env_var(env, args, size_malloc, new_env_var,
+		new_environ = set_env_var(args, size_malloc, new_env_var,
 							flag_var_env_found);
 		env = environ;/* Reiniciar el puntero al arreglo de variables de entorno */
 		free_args(env);
