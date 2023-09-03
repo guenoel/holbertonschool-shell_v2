@@ -39,7 +39,7 @@ int tokenize_input(char *input, char *args[])
 				i++;
 			}
 		}
-		else if (strcmp(token, "<<") == 0)
+		else if (_strcmp(token, "<<") == 0)
 		{
 			/* Si contiene '<<', es una redirección de heredoc */
 			args[i] = _strdup("<<");
