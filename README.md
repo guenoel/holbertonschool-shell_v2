@@ -9,6 +9,7 @@
 - [Example Usage](#example-of-use)
 - [Authors](#authors)
 - [License](#license)
+- [Man-page](#man-page)
 
 ### Description
 `shell` is a UNIX command interpreter that replicates core functionalities of the `sh` shell. Through this project we recoded shell as exercise of Holberton School.
@@ -61,12 +62,22 @@ The allowed functions:
 | `unsetenv`         | Unset an environment variable               |
 | `cd`               | Change directories                          |
 
-|  Other Features    |    Functionality                            |
+|  Handle  Redirections    |    Functionality                            |
 | ------------------ | ------------------------------------------- |
 | `<`		     | Redirect input		          	   |
 | `>`		     | Redirect output				   |
 | `<<`		     | Append input (heredoc)			   |
 | `>>`		     | Append output				   |
+
+|  Handle  Separator    |    Functionality                            |
+| ------------------ | ------------------------------------------- |
+| `;`		     | The commands separator		          	   |
+
+
+|  Handle  Operator      |    Functionality                            |
+| ------------------ | ------------------------------------------- |
+| `&&`		     |  The logical operator		          	   |
+
 
 ### Example of use
 * This shell takes input the same as a standard unix shell.  After running the executable `hsh`, enter desired input and press return.
@@ -81,6 +92,13 @@ Example:
 You can also redirect:
 
 ![exp](images/example_shell_exec.png)
+
+### Man-Page
+
+* [man-page](./man_1_hsh.1)
+
+![exp](images/man-page.png)
+
 
 ### Authors
 * Jose Fernandez Armas [Github](https://github.com/crasride) - [Twitter](https://twitter.com/JosFern35900656)

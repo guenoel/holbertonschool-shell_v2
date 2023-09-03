@@ -18,7 +18,9 @@ Shell v2 [option...] [arguments ...]
 .SH DESCRIPTION
 .B
 The Shell v2 is a shell based program,that uses a command line interface(CLI).
-The users inputs datas(human-readable),using the keyboard interface. 
+
+The users inputs datas(human-readable),using the keyboard interface.
+
 Then the progam reads, converts, compiles,and executes the commands in a standard output.
 
 
@@ -41,12 +43,7 @@ ls -l#List in long format file system type.
 #$ ls -l
 #-rw-rw-r--  1 crasride crasride   280 Aug 30 19:08 AUTHORS.md
 #-rw-rw-r--  1 crasride crasride  5126 Sep  1 14:35 builtin.c
-#-rw-rw-r--  1 crasride crasride  7508 Sep  2 09:27 executor.c
-#-rw-rw-r--  1 crasride crasride  5224 Aug 30 18:09 functions_env.c
-#-rwxrwxr-x  1 crasride crasride 49288 Sep  2 09:21 hsh
-#-rw-rw-r--  1 crasride crasride  1182 Sep  1 16:03 main.c
-#-rw-rw-r--  1 crasride crasride   357 Aug 30 18:00 Makefile
-#-rw-rw-r--  1 crasride crasride  3056 Sep  1 17:14 prompt.c
+
 _
 pwd#Will display the present working directory.
 #
@@ -105,13 +102,67 @@ _
 ctrl + d, ctrl + c#Stop the prompt input.
 .TE
 
+.SH EXAMPLES FOR COMMANDS SEPARATOR AND LOGICAL OPERATOR
+
+.TS
+center box tab(#);
+c s s
+c | l c.
+COMMANDS SEPARATOR
+_
+;#Case true/true.
+#
+#$ ls /var ; ls /var
+#backups cache crash lib local lock log mail metrics opt run spool tmp
+#backups cache crash lib local lock log mail metrics opt run spool tmp
+
+_
+;#Case false/true.
+#
+#$ ls /hbtn ; ls /var
+#ls: cannot access /hbtn: No such file or directory
+_
+;#Case true/false.
+#
+#$ ls /var ; ls /hbtn
+#backups cache crash lib local lock log mail metrics opt run spool tmp
+#ls: cannot access /hbtn: No such file or directory
+
+.TE
+
+.TS
+center box tab(#);
+c s s
+c | l c.
+LOGICAL OPERATOR
+_
+&&#Case true/true.
+#
+#$ ls /var && ls /var
+#backups cache crash lib local lock log mail metrics opt run spool tmp
+#backups cache crash lib local lock log mail metrics opt run spool tmp
+_
+&&#Case false/true.
+#
+#$ ls /hbtn && ls /var
+#ls: cannot access /hbtn: No such file or directory
+_
+&&#Case true//true/true/false.
+#
+#$ ls /var && ls /var && ls /var && ls /hbtn
+#backups cache crash lib local lock log mail metrics opt run spool tmp
+#backups cache crash lib local lock log mail metrics opt run spool tmp
+#backups cache crash lib local lock log mail metrics opt run spool tmp
+#ls: cannot access /hbtn: No such file or directory
+.TE
+
 .SH EXAMPLES FOR REDIRECTIONS
 .B
 .TS
 center box tab(|);
 c s s
 c | l c.
- REDIRECTIONS LISTS
+ Handle  Redirections
 _
 <|Redirect input. $ cat -e small_file
 |Holberton$
@@ -151,6 +202,7 @@ _
 |Holberton School$
 
 .TE
+
 
 .SH RETURN VALUE
 .B
