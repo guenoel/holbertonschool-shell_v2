@@ -87,9 +87,12 @@ int run_shell_loop(void)
 	char *args[MAX_ARGS] = {NULL};
 	char *commands[MAX_ARGS] = {NULL};
 	char *token = NULL;
+	char *ptr_and = NULL;
+	char *ptr_or = NULL;
 	int num_args = 0;
 	int line_number = 0;
 	int status = 0;
+	int is_and = 0;
 	int i = 0;
 	int j = 0;
 
@@ -97,6 +100,8 @@ int run_shell_loop(void)
 	{
 		/* printf("Parent process (PID: %d) \n", getpid()); */
 		line_number++; /* Incrementar el número de línea */
+		is_and = 0;
+
 		if (isatty(STDIN_FILENO))
 		{
 			printf("$ "); /* indicador de línea ($) solo en modo interactivo */
@@ -118,7 +123,8 @@ int run_shell_loop(void)
 			free(line);
 			continue; /* Línea vacía, volver al inicio del bucle */
 		}
-
+		ptr_and = _strchr(line, '&');
+		ptr_or = _strchr(line, '|');
 		if (_strchr(line, ';') != NULL)
 		{
 			token = strtok(line, ";");
@@ -127,57 +133,86 @@ int run_shell_loop(void)
 				commands[i] = token;
 				token = strtok(NULL, ";");
 			}
+		} else if (ptr_and)
+		{
+			if (ptr_and[1] == '&')
+			{
+				is_and = 1;
+				token = strtok(line, "&");
+				for (i = 0; token != NULL; i++)
+				{
+					commands[i] = token;
+					token = strtok(NULL, "&");
+				}
+			}
+		} else if (ptr_or)
+		{
+			if (ptr_or[1] == '|')
+			{
+				is_and = 1;
+				token = strtok(line, "|");
+				for (i = 0; token != NULL; i++)
+				{
+					commands[i] = token;
+					token = strtok(NULL, "|");
+				}
+			}
 		} else {
 			commands[0] = line;
 			commands[1] = NULL;
 		}
+/* 		for (i = 0; commands[i]; i++)
+			printf("commands[%d]: %s\n", i, commands[i]);
+		printf("commands1[%d]: %s\n", i, commands[i + 1]);
+		printf("commands2[%d]: %s\n", i, commands[i + 2]); */
+
 		for (j = 0; commands[j]; j++)
 		{
+			if (status == 0 || !is_and)
+			{
+				num_args = tokenize_input(commands[j], args); /* Tokenizar la línea de entrada */
 
-			num_args = tokenize_input(commands[j], args); /* Tokenizar la línea de entrada */
+				if (num_args == 0)
+				{
+					free_args(args);
+					continue;
+				}
 
-			if (num_args == 0)
-			{
-				printf("jamais il va passer ici\n");
-				free(line);
-				free_args(args);
-				continue;
-			}
-
-			if (_sstrcmp(args[0], "exit") == 0)
-			{
-				free(line);
-				shell_exit(args, line_number, status);
-			}
-			else if (_sstrcmp(args[0], "cd") == 0)
-			{
-				shell_cd(args); /* Ejecutar el comando "cd" */
-			}
-			else if (_sstrcmp(args[0], "env") == 0)
-			{
-				shell_env(args); /* Ejecutar el comando "env" */
-			}
-			else if (_sstrcmp(args[0], "setenv") == 0)
-			{
-				shell_setenv(args); /* Ejecutar el comando "setenv" */
-			}
-			else if (_sstrcmp(args[0], "unsetenv") == 0)
-			{
-				shell_unsetenv(args); /* Ejecutar el comando "unsetenv" */
-			}
-			else
-			{
-				if (status == 127)
+				if (_sstrcmp(args[0], "exit") == 0)
 				{
 					free(line);
-					free_args(args);
-					free_args(environ);
-					free(environ);
-					exit(0);
+					shell_exit(args, line_number, status);
 				}
-				status = execute_command(args, line_number, commands[j]); /* Execute comand ext */
+				else if (_sstrcmp(args[0], "cd") == 0)
+				{
+					shell_cd(args); /* Ejecutar el comando "cd" */
+				}
+				else if (_sstrcmp(args[0], "env") == 0)
+				{
+					shell_env(args); /* Ejecutar el comando "env" */
+				}
+				else if (_sstrcmp(args[0], "setenv") == 0)
+				{
+					shell_setenv(args); /* Ejecutar el comando "setenv" */
+				}
+				else if (_sstrcmp(args[0], "unsetenv") == 0)
+				{
+					shell_unsetenv(args); /* Ejecutar el comando "unsetenv" */
+				}
+				else
+				{
+					if (status == 127)
+					{
+						free(line);
+						free_args(args);
+						free_args(environ);
+						free(environ);
+						exit(0);
+					}
+					status = execute_command(args, line_number, commands[j]);
+				}
+				free_args(args);
 			}
-			free_args(args);
 		}
 		free(line);
 	}
