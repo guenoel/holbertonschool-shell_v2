@@ -154,24 +154,6 @@ _
 #backups cache crash lib local lock log mail metrics opt run spool tmp
 #backups cache crash lib local lock log mail metrics opt run spool tmp
 #ls: cannot access /hbtn: No such file or directory
-_
-||#Case true/true.
-#
-#$ ls /var || ls /var
-#backups cache crash lib local lock log mail metrics opt run spool tmp
-_
-||#Case false/true.
-#
-#$ ls /hbtn || ls /var
-#ls: cannot access /hbtn: No such file or directory
-_
-||#Case fase/false/false/true
-#
-#$ ls /hbtn || ls /hbtn || ls /hbtn || ls /var
-#ls: cannot access /hbtn: No such file or directory
-#ls: cannot access /hbtn: No such file or directory
-#ls: cannot access /hbtn: No such file or directory
-#backups cache crash lib local lock log mail metrics opt run spool tmp
 .TE
 
 .SH EXAMPLES FOR REDIRECTIONS

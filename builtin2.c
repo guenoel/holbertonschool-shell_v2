@@ -9,11 +9,11 @@ int cd_old(void)
 {
 	int status = 0;
 	char *oldpwd = get_env_var("OLDPWD"); /* Obtener el valor actual de OLDPWD */
-	printf("oldpwd: %s\n", oldpwd);
+
 	if (oldpwd == NULL)
 	{
 		char *pwd = get_env_var("PWD"); /* Obtener el valor actual de PWD */
-		printf("pwd: %s\n", pwd);
+
 		if (pwd == NULL)
 		{
 			fprintf(stderr, "cd: No se ha definido la variable OLDPWD ni PWD\n");
@@ -98,14 +98,10 @@ int shell_cd(char *args[])
 	if (args[1] == NULL || _sstrcmp(args[1], "~") == 0)
 	{
 		status = cd_home();
-		if (status != 0)
-			return status;
 	}
 	else if (args[1][0] == '-' && args[1][1] == '\0')
 	{
 		status = cd_old();
-		if (status != 0)
-			return status;
 	} else
 	{
 		if (chdir(args[1]) != 0)
