@@ -52,7 +52,6 @@ int count_env_var(char **env, char *args[], int *flag_var_env_found)
 
 /**
  * set_env_var - set variable in environement
- * @env: pointer to extern environement variable
  * @args: An array of arguments passed to the 'unsetenv' command.
  * @size_malloc: size of new environement
  * @new_env_var: name of new variable
